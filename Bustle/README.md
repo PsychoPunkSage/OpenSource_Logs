@@ -2,7 +2,7 @@
 
 ## Shell interaction using `[busctl]`
 
->  service from the shell, and notify the desktop with `[busctl]`
+>>  service from the shell, and notify the desktop with `[busctl]`
 
 ```bash
 busctl --user call \
@@ -29,7 +29,7 @@ This command shows us several aspects of the D-Bus communication:
 
 ## Low-level call from a `zbus::Connection`
 
-> zbus `Connection` has a `call_method()` method, which you can use directly.
+>> zbus `Connection` has a `call_method()` method, which you can use directly.
 
 ```rust
 use std::collections::HashMap;
@@ -57,4 +57,59 @@ async fn main() -> Result<(), Box<dyn Error>> {
 ```
 
 
-Although this is already quite flexible, and handles various details for you (such as the message signature), it is also somewhat inconvenient and error-prone: one can easily miss arguments, or give arguments with the wrong type or other kind of errors
+Although this is already quite flexible, and handles various details for you (such as the message signature), it is also somewhat inconvenient and error-prone: one can easily miss arguments, or give arguments with the wrong type or other kind of errors.
+
+
+## Trait-derived proxy call
+
+>> A trait declaration `T` with a `proxy` attribute will have a derived `TProxy` and `TProxyBlocking` implemented thanks to procedural macros. The trait methods will have respective `impl` methods wrapping the D-Bus calls
+
+```rust
+use std::collections::HashMap;
+use std::error::Error;
+
+use zbus::{zvariant::Value, proxy, Connection};
+
+#[proxy(
+    default_service = "org.freedesktop.Notifications",
+    default_path = "/org/freedesktop/Notifications"
+)]
+trait Notifications {
+    /// Call the org.freedesktop.Notifications.Notify D-Bus method
+    fn notify(&self,
+              app_name: &str,
+              replaces_id: u32,
+              app_icon: &str,
+              summary: &str,
+              body: &str,
+              actions: &[&str],
+              hints: HashMap<&str, &Value<'_>>,
+              expire_timeout: i32) -> zbus::Result<u32>;
+}
+
+// Although we use `async-std` here, you can use any async runtime of choice.
+#[async_std::main]
+async fn main() -> Result<(), Box<dyn Error>> {
+    let connection = Connection::session().await?;
+
+    let proxy = NotificationsProxy::new(&connection).await?;
+    let reply = proxy.notify(
+        "my-app",
+        0,
+        "dialog-information",
+        "A summary", "Some body",
+        &[],
+        HashMap::new(),
+        5000,
+    ).await?;
+    dbg!(reply);
+
+    Ok(())
+}
+```
+
+> When you define a trait with the `#[proxy]` attribute, the `zbus` crate automatically generates a proxy struct that implements that trait. This proxy struct is named by appending `Proxy` to the trait name. So in this case, since your trait is named `Notifications`, the generated proxy struct will be named `NotificationsProxy`.
+
+A `TProxy` and `TProxyBlocking` has a few associated methods, such as `new`(connection), using the **default associated service name** and **object path**, and an **associated builder** if one need to specify something different.
+
+This should help to avoid mistakes (saw earlier). It’s also a bit easier to use. This makes it also possible to have higher-level types, they fit more naturally with the rest of the code. One can further document the D-Bus API or provide additional helpers.
