@@ -171,4 +171,57 @@ trait MyInterface {
 }
 ```
 
-> The `state()` method will translate to a "`State`" property `Get` call.
+> The `state()` method will translate to a "`State`" property `Get` call.<br>To set the property, prefix the name of the property with `set_`.
+
+* reading two properties from systemd’s main service..
+```rust
+use zbus::{Connection, proxy, Result};
+
+#[proxy(
+    interface = "org.freedesktop.systemd1.Manager",
+    default_service = "org.freedesktop.systemd1",
+    default_path = "/org/freedesktop/systemd1"
+)]
+trait SystemdManager {
+    #[zbus(property)]
+    fn architecture(&self) -> Result<String>;
+    #[zbus(property)]
+    fn environment(&self) -> Result<Vec<String>>;
+}
+
+#[async_std::main]
+async fn main() -> Result<()> {
+    let connection = Connection::system().await?;
+
+    let proxy = SystemdManagerProxy::new(&connection).await?;
+    println!("Host architecture: {}", proxy.architecture().await?);
+    println!("Environment:");
+    for env in proxy.environment().await? {
+        println!("  {}", env);
+    }
+
+    Ok(())
+}
+```
+
+<details>
+<summary>Output</summary>
+
+```
+Host architecture: x86-64
+Environment variables:
+  HOME=/home/zeenix
+  LANG=en_US.UTF-8
+  LC_ADDRESS=de_DE.UTF-8
+  LC_IDENTIFICATION=de_DE.UTF-8
+  LC_MEASUREMENT=de_DE.UTF-8
+  LC_MONETARY=de_DE.UTF-8
+  LC_NAME=de_DE.UTF-8
+  LC_NUMERIC=de_DE.UTF-8
+  LC_PAPER=de_DE.UTF-8
+  LC_TELEPHONE=de_DE.UTF-8
+  LC_TIME=de_DE.UTF-8
+  ...
+```
+
+</details>
