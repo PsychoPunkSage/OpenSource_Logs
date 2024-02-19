@@ -225,3 +225,121 @@ Environment variables:
 ```
 
 </details>
+
+## Generating the trait from an XML interface
+
+>> The `zbus_xmlgen` crate provides a **developer-friendly tool**, that can generate Rust traits from a given D-Bus introspection XML.
+
+The tool can be used to generate rust code directly from a D-Bus service running on system:
+```rust
+zbus-xmlgen session \
+  org.freedesktop.Notifications \
+  /org/freedesktop/Notifications
+```
+
+Alternatively one can also get the XML interface from a different source and use it to generate the interface code.<br>
+We can fetch the XML interface of the notification service, using the `--xml-interface` option of the `busctl` command.
+
+```bash
+busctl --user --xml-interface introspect \
+  org.freedesktop.Notifications \
+  /org/freedesktop/Notifications
+```
+
+<details>
+<summary>Output</summary>
+
+```
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+                      "http://www.freedesktop.org/standards/dbus/1.0/introspect>
+<!-- GDBus 2.78.0 -->
+<node>
+  <interface name="org.freedesktop.DBus.Properties">
+    <method name="Get">
+      <arg type="s" name="interface_name" direction="in"/>
+      <arg type="s" name="property_name" direction="in"/>
+      <arg type="v" name="value" direction="out"/>
+    </method>
+    <method name="GetAll">
+      <arg type="s" name="interface_name" direction="in"/>
+      <arg type="a{sv}" name="properties" direction="out"/>
+    </method>
+    <method name="Set">
+      <arg type="s" name="interface_name" direction="in"/>
+      <arg type="s" name="property_name" direction="in"/>
+      <arg type="v" name="value" direction="in"/>
+    </method>
+    <signal name="PropertiesChanged">
+      <arg type="s" name="interface_name"/>
+      <arg type="a{sv}" name="changed_properties"/>
+      <arg type="as" name="invalidated_properties"/>
+    </signal>
+  </interface>
+  <interface name="org.freedesktop.DBus.Introspectable">
+    <method name="Introspect">
+      <arg type="s" name="xml_data" direction="out"/>
+    </method>
+  </interface>
+  <interface name="org.freedesktop.DBus.Peer">
+    <method name="Ping"/>
+    <method name="GetMachineId">
+      <arg type="s" name="machine_uuid" direction="out"/>
+    </method>
+  </interface>
+  <interface name="org.freedesktop.Notifications">
+    <method name="Notify">
+      <arg type="s" name="arg_0" direction="in">
+      </arg>
+      <arg type="u" name="arg_1" direction="in">
+      </arg>
+      <arg type="s" name="arg_2" direction="in">
+      </arg>
+      <arg type="s" name="arg_3" direction="in">
+      </arg>
+      <arg type="s" name="arg_4" direction="in">
+      </arg>
+      <arg type="as" name="arg_5" direction="in">
+      </arg>
+      <arg type="a{sv}" name="arg_6" direction="in">
+      </arg>
+      <arg type="i" name="arg_7" direction="in">
+      </arg>
+      <arg type="u" name="arg_8" direction="out">
+      </arg>
+    </method>
+    <method name="CloseNotification">
+      <arg type="u" name="arg_0" direction="in">
+      </arg>
+    </method>
+    <method name="GetCapabilities">
+      <arg type="as" name="arg_0" direction="out">
+      </arg>
+    </method>
+    <method name="GetServerInformation">
+      <arg type="s" name="arg_0" direction="out">
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+                      "http://www.freedesktop.org/standards/dbus/1.0/introspect>
+<!-- GDBus 2.78.0 -->
+<node>
+  <interface name="org.freedesktop.DBus.Properties">
+    <method name="Get">
+      <arg type="s" name="interface_name" direction="in"/>
+      <arg type="s" name="property_name" direction="in"/>
+      <arg type="v" name="value" direction="out"/>
+    </method>
+    <method name="GetAll">
+      <arg type="s" name="interface_name" direction="in"/>
+      <arg type="a{sv}" name="properties" direction="out"/>
+    </method>
+    <method name="Set">
+      <arg type="s" name="interface_name" direction="in"/>
+      <arg type="s" name="property_name" direction="in"/>
+      <arg type="v" name="value" direction="in"/>
+    </method>
+    <signal name="PropertiesChanged">
+      <arg type="s" name="interface_name"/>
+      <arg type="a{sv}" name="changed_properties"/>
+      <arg type="as" name="invalidated_properties"/>
+```
+
+</details>
