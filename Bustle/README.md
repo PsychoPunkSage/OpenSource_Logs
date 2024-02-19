@@ -348,7 +348,7 @@ busctl --user --xml-interface introspect \
 
 </details>
 
-## Writing a server interface
+## **Writing a server interface**
 
 >>> Going to implement a server with a method “SayHello”, to greet back the calling client.<br>
 >>>* First discuss the need to associate a service name with the server. 
@@ -419,3 +419,17 @@ async fn main() -> zbus::Result<()> {
     Ok(())
 }
 ```
+
+Checker:
+```bash
+busctl --user call org.zbus.MyGreeter /org/zbus/MyGreeter org.zbus.MyGreeter1 SayHello s "zbus"
+```
+
+<details>
+<summary>Output</summary>
+
+```
+"Hello zbus!"
+```
+
+</details>
