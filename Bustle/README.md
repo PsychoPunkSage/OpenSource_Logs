@@ -433,3 +433,44 @@ busctl --user call org.zbus.MyGreeter /org/zbus/MyGreeter org.zbus.MyGreeter1 Sa
 ```
 
 </details>
+
+### Using the ObjectServer
+
+>> One can write an impl block with a set of methods and let the interface procedural macro write the D-Bus message handling details. It will dispatch the incoming method calls to their respective handlers, as well as replying to introspection requests.
+
+`MyGreeter` interface:
+
+```rust
+use zbus::{Connection, interface, Result};
+
+struct Greeter;
+
+#[interface(name = "org.zbus.MyGreeter1")]
+impl Greeter {
+    async fn say_hello(&self, name: &str) -> String {
+        format!("Hello {}!", name)
+    }
+}
+
+// Although we use `async-std` here, you can use any async runtime of choice.
+#[async_std::main]
+async fn main() -> Result<()> {
+    let connection = Connection::session().await?;
+    // setup the server
+    connection
+        .object_server()
+        .at("/org/zbus/MyGreeter", Greeter)
+        .await?;
+    // before requesting the name
+    connection
+        .request_name("org.zbus.MyGreeter")
+        .await?;
+
+    loop {
+        // do something else, wait forever or timeout here:
+        // handling D-Bus messages is done in the background
+        std::future::pending::<()>().await;
+    }
+}
+```
+
