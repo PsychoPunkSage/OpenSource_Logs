@@ -355,3 +355,29 @@ busctl --user --xml-interface introspect \
 >>>* Going to manually handle incoming messages using the low-level API. 
 >>>* Finally, present the `ObjectServer` higher-level API and some of its more advanced concepts.
 
+### Taking a service name
+
+>> As we know, each connection on the bus is given a **unique name** (such as “:1.27”). This could be all we need, depending on our use case, and the design of our D-Bus API. However, typically services use a **service name** (aka well-known name) so peers (clients, in this context) can easily discover them.
+
+Requesting the bus for the service name of our choice:
+
+```rust
+use zbus::{Connection, Result};
+
+// Although we use `async-std` here, you can use any async runtime of choice.
+#[async_std::main]
+async fn main() -> Result<()> {
+    let connection = Connection::session()
+        .await?;
+    connection
+        .request_name("org.zbus.MyGreeter")
+        .await?;
+
+    loop {}
+}
+```
+
+We can check our service is running and is associated with the service name:
+```bash
+busctl --user list | grep SERVICE_NAME
+```
