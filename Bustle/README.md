@@ -1,6 +1,6 @@
 # D-Bus 
 
-## Shell interaction using `[busctl]`
+### Shell interaction using `[busctl]`
 
 >>  service from the shell, and notify the desktop with `[busctl]`
 
@@ -27,7 +27,7 @@ This command shows us several aspects of the D-Bus communication:
 * **signature**  : That susssasa{sv}i means the method takes 8 arguments of various types. ‘s’, for example, is for a string. ‘as’ is for array of strings.
 * The method arguments.
 
-## Low-level call from a `zbus::Connection`
+### Low-level call from a `zbus::Connection`
 
 >> zbus `Connection` has a `call_method()` method, which you can use directly.
 
@@ -60,7 +60,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 Although this is already quite flexible, and handles various details for you (such as the message signature), it is also somewhat inconvenient and error-prone: one can easily miss arguments, or give arguments with the wrong type or other kind of errors.
 
 
-## Trait-derived proxy call
+### Trait-derived proxy call
 
 >> A trait declaration `T` with a `proxy` attribute will have a derived `TProxy` and `TProxyBlocking` implemented thanks to procedural macros. The trait methods will have respective `impl` methods wrapping the D-Bus calls
 
@@ -114,7 +114,7 @@ A `TProxy` and `TProxyBlocking` has a few associated methods, such as `new`(conn
 
 This should help to avoid mistakes (saw earlier). It’s also a bit easier to use. This makes it also possible to have higher-level types, they fit more naturally with the rest of the code. One can further document the D-Bus API or provide additional helpers.
 
-## Signals
+### Signals
 
 >> `Signals` are like methods, except they don’t expect a reply. They are typically emitted by services to notify interested peers of any changes to the state of the service. zbus provides a `Stream`-based API for receiving signals.
 
@@ -157,7 +157,7 @@ async fn watch_systemd_jobs() -> zbus::Result<()> {
 } 
 ```
 
-## Properties
+### Properties
 
 >> Interfaces can have associated properties, which can be read or set with the `org.freedesktop.DBus.Properties` interface. Here again, the `#[proxy]` attribute comes to the rescue. One can annotate a trait method to be a getter:
 
@@ -226,7 +226,7 @@ Environment variables:
 
 </details>
 
-## Generating the trait from an XML interface
+### Generating the trait from an XML interface
 
 >> The `zbus_xmlgen` crate provides a **developer-friendly tool**, that can generate Rust traits from a given D-Bus introspection XML.
 
