@@ -113,3 +113,62 @@ async fn main() -> Result<(), Box<dyn Error>> {
 A `TProxy` and `TProxyBlocking` has a few associated methods, such as `new`(connection), using the **default associated service name** and **object path**, and an **associated builder** if one need to specify something different.
 
 This should help to avoid mistakes (saw earlier). It’s also a bit easier to use. This makes it also possible to have higher-level types, they fit more naturally with the rest of the code. One can further document the D-Bus API or provide additional helpers.
+
+## Signals
+
+>> `Signals` are like methods, except they don’t expect a reply. They are typically emitted by services to notify interested peers of any changes to the state of the service. zbus provides a `Stream`-based API for receiving signals.
+
+```rust
+use async_std::stream::StreamExt;
+use zbus::Connection;
+use zbus_macros::proxy;
+use zvariant::OwnedObjectPath;
+
+
+#[proxy(
+    default_service = "org.freedesktop.systemd1",
+    default_path = "/org/freedesktop/systemd1",
+    interface = "org.freedesktop.systemd1.Manager"
+)]
+trait Systemd1Manager {
+    // Defines signature for D-Bus signal named `JobNew`
+    #[zbus(signal)]
+    fn job_new(&self, id: u32, job: OwnedObjectPath, unit: String) -> zbus::Result<()>;
+}
+
+async fn watch_systemd_jobs() -> zbus::Result<()> {
+    let connection = Connection::system().await?;
+    // `Systemd1ManagerProxy` is generated from `Systemd1Manager` trait
+    let systemd_proxy = Systemd1ManagerProxy::new(&connection).await?;
+    // Method `receive_job_new` is generated from `job_new` signal
+    let mut new_jobs_stream = systemd_proxy.receive_job_new().await?;
+
+    while let Some(msg) = new_jobs_stream.next().await {
+        // struct `JobNewArgs` is generated from `job_new` signal function arguments
+        let args: JobNewArgs = msg.args().expect("Error parsing message");
+
+        println!(
+            "JobNew received: unit={} id={} path={}",
+            args.unit, args.id, args.job
+        );
+    }
+
+    panic!("Stream ended unexpectedly");
+} 
+```
+
+## Properties
+
+>> Interfaces can have associated properties, which can be read or set with the `org.freedesktop.DBus.Properties` interface. Here again, the `#[proxy]` attribute comes to the rescue. One can annotate a trait method to be a getter:
+
+```rust
+use zbus::{proxy, Result};
+
+#[proxy]
+trait MyInterface {
+    #[zbus(property)]
+    fn state(&self) -> Result<String>;
+}
+```
+
+> The `state()` method will translate to a "`State`" property `Get` call.
