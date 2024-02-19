@@ -348,3 +348,10 @@ busctl --user --xml-interface introspect \
 
 </details>
 
+## Writing a server interface
+
+>>> Going to implement a server with a method “SayHello”, to greet back the calling client.<br>
+>>>* First discuss the need to associate a service name with the server. 
+>>>* Going to manually handle incoming messages using the low-level API. 
+>>>* Finally, present the `ObjectServer` higher-level API and some of its more advanced concepts.
+
