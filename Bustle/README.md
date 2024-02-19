@@ -381,3 +381,41 @@ We can check our service is running and is associated with the service name:
 ```bash
 busctl --user list | grep SERVICE_NAME
 ```
+
+### Handling low-level messages
+
+>> At the low-level, one can handle method calls by checking the incoming messages manually.
+
+`SayHello method`, takes a string as argument, and reply with a “hello” greeting by replacing the loop above with this code:
+```rust
+use futures_util::stream::TryStreamExt;
+
+// Although we use `async-std` here, you can use any async runtime of choice.
+#[async_std::main]
+async fn main() -> zbus::Result<()> {
+    let connection = zbus::Connection::session().await?;
+    let mut stream = zbus::MessageStream::from(&connection);
+       connection
+           .request_name("org.zbus.MyGreeter")
+           .await?;
+
+    while let Some(msg) = stream.try_next().await? {
+        let msg_header = msg.header();
+        dbg!(&msg);
+
+        match msg_header.message_type() {
+            zbus::message::Type::MethodCall => {
+                // real code would check msg_header path(), interface() and member()
+                // handle invalid calls, introspection, errors etc
+                let body = msg.body();
+                let arg: &str = body.deserialize()?;
+                connection.reply(&msg, &(format!("Hello {}!", arg))).await?;
+
+                break;
+            }
+            _ => continue,
+        }
+    }
+    Ok(())
+}
+```
