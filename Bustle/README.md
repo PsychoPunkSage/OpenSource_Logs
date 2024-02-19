@@ -1,4 +1,8 @@
-# D-Bus 
+# **D-Bus** 
+
+
+## **Client Proxy**
+>>> **How to make low-level D-Bus method calls.**
 
 ### Shell interaction using `[busctl]`
 
@@ -343,3 +347,4 @@ busctl --user --xml-interface introspect \
 ```
 
 </details>
+
