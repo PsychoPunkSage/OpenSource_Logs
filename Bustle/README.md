@@ -695,3 +695,16 @@ println!(
 );
 }
 ```
+
+### Server
+
+>> Similarly here, use `blocking::ObjectServer` that is associated with every `blocking::Connection` instance. While there is no blocking version of Interface, interface allows to write non-async methods.
+
+<details>
+<summary>Note</summary>
+
+```
+Even though you can write non-async methods, these methods are still called from an async context. Therefore, you can not use blocking API in the method implementation directly. See note at the beginning of this chapter for details on why and a possible workaround.
+```
+
+</details>
