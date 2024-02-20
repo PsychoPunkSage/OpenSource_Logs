@@ -504,4 +504,16 @@ A possible issue here is that one must request the **service name** after one se
 //     }
 // }
 ```
+* It should work with the same `busctl` command used previously.
 
+
+<details>
+<summary>Introspect Service</summary>
+
+```
+$ busctl --user introspect org.zbus.MyGreeter /org/zbus/MyGreeter
+NAME                                TYPE      SIGNATURE RESULT/VALUE FLAGS
+bla-bla-bla-bla-bla-bla-bla         bla       -         -             -
+```
+
+</details>
