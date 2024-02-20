@@ -621,3 +621,77 @@ Use of the blocking API in an async context will likely result in panics and han
 ### Establishing a connection
 
 >> The only difference to that of asynchronous Connection API is that you use blocking::Connection type instead. This type’s API is almost identical to that of Connection, except all its methods are blocking.
+
+### Client
+
+>> Similar to `blocking::Connection`, use `blocking::Proxy` type. Its constructors require `blocking::Connection` instead of `Connection`. Moreover, `proxy` macro generates a `blocking::Proxy wrapper` for you as well.
+
+Blocking connection and proxy usage:
+```rust
+#![allow(unused)]
+fn main() {
+use zbus::{blocking::Connection, zvariant::ObjectPath, proxy, Result};
+
+#[proxy(
+    default_service = "org.freedesktop.GeoClue2",
+    interface = "org.freedesktop.GeoClue2.Manager",
+    default_path = "/org/freedesktop/GeoClue2/Manager"
+)]
+trait Manager {
+    #[zbus(object = "Client")]
+    /// The method normally returns an `ObjectPath`.
+    /// With the object attribute, we can make it return a `ClientProxy` directly.
+    fn get_client(&self);
+}
+
+#[proxy(
+    default_service = "org.freedesktop.GeoClue2",
+    interface = "org.freedesktop.GeoClue2.Client"
+)]
+trait Client {
+    fn start(&self) -> Result<()>;
+    fn stop(&self) -> Result<()>;
+
+    #[zbus(property)]
+    fn set_desktop_id(&mut self, id: &str) -> Result<()>;
+
+    #[zbus(signal)]
+    fn location_updated(&self, old: ObjectPath<'_>, new: ObjectPath<'_>) -> Result<()>;
+}
+
+#[proxy(
+    default_service = "org.freedesktop.GeoClue2",
+    interface = "org.freedesktop.GeoClue2.Location"
+)]
+trait Location {
+    #[zbus(property)]
+    fn latitude(&self) -> Result<f64>;
+    #[zbus(property)]
+    fn longitude(&self) -> Result<f64>;
+}
+let conn = Connection::system().unwrap();
+let manager = ManagerProxyBlocking::new(&conn).unwrap();
+let mut client = manager.get_client().unwrap();
+// Gotta do this, sorry!
+client.set_desktop_id("org.freedesktop.zbus").unwrap();
+
+let mut location_updated = client.receive_location_updated().unwrap();
+
+client.start().unwrap();
+
+// Wait for the signal.
+let signal = location_updated.next().unwrap();
+let args = signal.args().unwrap();
+
+let location = LocationProxyBlocking::builder(&conn)
+    .path(args.new())
+    .unwrap()
+    .build()
+    .unwrap();
+println!(
+    "Latitude: {}\nLongitude: {}",
+    location.latitude().unwrap(),
+    location.longitude().unwrap(),
+);
+}
+```
