@@ -16,3 +16,11 @@
 >> An object is akin to the concept of an object or an instance in many programming languages. All services expose at least one object on the bus and all clients interact with the service through these objects. These objects can be ephemeral or they could live as long as the service itself.
 
 >> Every object is identified by a string, which is referred to as its path. An example of an object path is `/org/freedesktop/Notifications`, which identities the only object exposed by the FreeDesktop Notifications Service.
+
+## Interface
+
+>> An interface defines the API exposed by object on the bus. They are akin to the concept of interfaces in many programming languages and traits in Rust. Each object can (and typically do) provide multiple interfaces at the same time. A D-Bus interface can have methods, properties and signals.
+
+>> While each interface of a service is identified by a **unique name**, its API is described by an XML description. It is mostly a machine-level detail. Most services can be queried for this description through a D-Bus standard **introspection interface**.
+
+>> zbus provides convenient macro that implements the introspection interface for services, and helper to generate client-side Rust API, given an XML description. We’ll see both of these in action in the following chapters.
