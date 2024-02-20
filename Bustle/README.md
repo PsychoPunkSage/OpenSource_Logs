@@ -438,7 +438,7 @@ busctl --user call org.zbus.MyGreeter /org/zbus/MyGreeter org.zbus.MyGreeter1 Sa
 
 >> One can write an impl block with a set of methods and let the interface procedural macro write the D-Bus message handling details. It will dispatch the incoming method calls to their respective handlers, as well as replying to introspection requests.
 
-`MyGreeter` interface:
+> `MyGreeter` interface:
 
 ```rust
 use zbus::{Connection, interface, Result};
@@ -473,4 +473,8 @@ async fn main() -> Result<()> {
     }
 }
 ```
+
+> Service activation `pitfalls`
+
+A possible issue here is that one must request the **service name** after one setup the **handlers**, otherwise incoming messages may be lost. Activated services may receive calls (or messages) right after taking their name. This is why it’s typically better to make use of `connection::Builder` for **setting up interfaces** and **requesting names**, and not have to care about this:
 
