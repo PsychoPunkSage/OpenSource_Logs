@@ -476,5 +476,32 @@ async fn main() -> Result<()> {
 
 > Service activation `pitfalls`
 
-A possible issue here is that one must request the **service name** after one setup the **handlers**, otherwise incoming messages may be lost. Activated services may receive calls (or messages) right after taking their name. This is why it’s typically better to make use of `connection::Builder` for **setting up interfaces** and **requesting names**, and not have to care about this:
+A possible issue here is that one must request the **service name** after one setup the **handlers**, otherwise incoming messages may be lost. Activated services may receive calls (or messages) right after taking their name. This is why it’s typically better to make use of `connection::Builder` for **setting up interfaces** and **requesting names**
+
+```rust
+// use zbus::{connection, interface, Result};
+
+// struct Greeter;
+
+// #[interface(name = "org.zbus.MyGreeter1")]
+// impl Greeter {
+//     async fn say_hello(&self, name: &str) -> String {
+//         format!("Hello {}!", name)
+//     }
+// }
+
+// #[async_std::main]
+// async fn main() -> Result<()> {
+    let _connection = connection::Builder::session()?
+        .name("org.zbus.MyGreeter")?
+        .serve_at("/org/zbus/MyGreeter", Greeter)?
+        .build()
+        .await?;
+//     loop {
+//         // do something else, wait forever or timeout here:
+//         // handling D-Bus messages is done in the background
+//         std::future::pending::<()>().await;
+//     }
+// }
+```
 
