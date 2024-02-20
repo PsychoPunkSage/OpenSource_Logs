@@ -613,7 +613,11 @@ org.zbus.MyGreeter1                 interface -         -             -
 <summary>Note</summary>
 
 ```
-Use of the blocking API presented in this chapter in an async context will likely result in panics and hangs. This is not a limitation of zbus but rather a well-known general problem in the Rust async/await world. The blocking crate, async-std and tokio crates provide a easy way around this problem.
+Use of the blocking API in an async context will likely result in panics and hangs. This is not a limitation of zbus but rather a well-known general problem in the Rust async/await. The blocking crate, async-std and tokio crates provide a easy way around this problem.
 ```
 
 </details>
+
+### Establishing a connection
+
+>> The only difference to that of asynchronous Connection API is that you use blocking::Connection type instead. This type’s API is almost identical to that of Connection, except all its methods are blocking.
