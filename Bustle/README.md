@@ -603,3 +603,11 @@ org.zbus.MyGreeter1                 interface -         -             -
 ```
 
 </details>
+
+
+## **Blocking API**
+
+>>> While zbus API being primarily asynchronous (since 2.0) is a great thing, it could easily feel daunting for simple use cases. Not to worry! In the spirit of “ease” being a primary goal of zbus, it provides blocking wrapper types, under the blocking module.
+
+Note: Use of the blocking API presented in this chapter in an async context will likely result in panics and hangs. This is not a limitation of zbus but rather a well-known general problem in the Rust async/await world. The blocking crate, async-std and tokio crates provide a easy way around this problem.
+
