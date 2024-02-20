@@ -607,7 +607,7 @@ org.zbus.MyGreeter1                 interface -         -             -
 
 ## **Blocking API**
 
->>> While zbus API being primarily asynchronous (since 2.0) is a great thing, it could easily feel daunting for simple use cases. Not to worry! In the spirit of “ease” being a primary goal of zbus, it provides blocking wrapper types, under the blocking module.
+>>> While zbus API being primarily asynchronous (since 2.0), it could easily feel daunting for simple use cases. For “ease” zbus provides blocking wrapper types, under the **blocking module**.
 
 <details>
 <summary>Note</summary>
