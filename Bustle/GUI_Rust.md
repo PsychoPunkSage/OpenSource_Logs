@@ -126,3 +126,5 @@ GObject
 ╰── Widget
     ╰── Button
 ```
+
+* In the "Hello World" app we wanted to react to a button click. This behavior is specific to a button, so we expect to find a suitable method in the `ButtonExt` trait. And indeed, `ButtonExt` includes the method **`connect_clicked`**.
