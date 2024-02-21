@@ -302,4 +302,35 @@ fn build_ui(application: &Application) {
     window.present();
 }
 ```
-* compiles as expected
+* compiles as expected.
+
+#### **complicated example:) two buttons which both modify the same number**
+
+> For that, we need a way that both closures take ownership of the same value
+
+> That is exactly what the `std::rc::Rc` type is there for. `Rc` counts the number of strong references created via `Clone::clone` and released via `Drop::drop`, and only `deallocates the value when this number drops to zero`. If we want to modify the content of our `Rc`, we can again use the `Cell` type.
+
+*Filesystem*: ...../g_object_memory_management/2/main.rs
+
+```rust
+// Reference-counted object with inner-mutability
+let number = Rc::new(Cell::new(0));
+
+// Connect callbacks, when a button is clicked `number` will be changed
+let number_copy = number.clone();
+button_increase.connect_clicked(move |_| number_copy.set(number_copy.get() + 1));
+button_decrease.connect_clicked(move |_| number.set(number.get() - 1));
+```
+It is not very nice though to fill the scope with temporary variables like `number_copy`. We can improve that by using the `glib::clone!` macro.
+
+*Filesystem*: ...../g_object_memory_management/3/main.rs
+
+```rust
+    button_increase.connect_clicked(clone!(@strong number => move |_| {
+        number.set(number.get() + 1);
+    }));
+    button_decrease.connect_clicked(move |_| {
+        number.set(number.get() - 1);
+    });
+```
+
