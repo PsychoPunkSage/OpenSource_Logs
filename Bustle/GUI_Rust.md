@@ -334,3 +334,42 @@ It is not very nice though to fill the scope with temporary variables like `numb
     });
 ```
 
+* Just like Rc\<Cell<T>>, GObjects are *reference-counted* and *mutable*. Therefore, we can pass the buttons the same way to the closure as we did with number.
+
+*Filesystem*: ...../g_object_memory_management/4/main.rs
+
+```rust
+    button_increase.connect_clicked(clone!(@strong number => move |_| {
+        number.set(number.get() + 1);
+    }));
+    button_decrease.connect_clicked(move |_| {
+        number.set(number.get() - 1);
+    });
+```
+* If we now click on one button, the other button's label gets changed.
+
+<details>
+<summary>Error</summary>
+
+[reference cycles](https://doc.rust-lang.org/book/ch15-06-reference-cycles.html). `button_increase` holds a *strong reference* to `button_decrease` and vice-versa. A strong reference keeps the referenced value from being deallocated. If this chain leads to a circle, none of the values in this cycle ever get deallocated. With **weak references** we can break this cycle, because they don't keep their value alive but instead provide a way to retrieve a strong reference if the value is still alive. Since we want our apps to free unneeded memory, we should use weak references for the buttons instead.
+
+</details>
+
+*Filesystem*: ...../g_object_memory_management/5/main.rs
+
+```rust
+    // Connect callbacks
+    // When a button is clicked, `number` and label of the other button will be changed
+    button_increase.connect_clicked(clone!(@weak number, @weak button_decrease =>
+        move |_| {
+            number.set(number.get() + 1);
+            button_decrease.set_label(&number.get().to_string());
+    }));
+    button_decrease.connect_clicked(clone!(@weak button_increase =>
+        move |_| {
+            number.set(number.get() - 1);
+            button_increase.set_label(&number.get().to_string());
+    }));
+
+```
+
