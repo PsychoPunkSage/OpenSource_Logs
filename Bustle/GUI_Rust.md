@@ -113,3 +113,16 @@ fn build_ui(app: &Application) {
 ```
 
 ** here is now a **button** and if we click on it, its label becomes `"Hello World!"`.
+
+## **Widgets**
+
+>>> Widgets are the components that make up a GTK application. GTK offers many widgets ( one can even create custom ones). There are, for example, display widgets, buttons, containers and windows. One kind of widget might be able to contain other widgets, it might present information and it might react to interaction.
+
+[Widget Gallery](https://docs.gtk.org/gtk4/visual_index.html) - Best place to find best suited widgets.
+
+* GTK is an object-oriented framework, so all widgets are part of an inheritance tree with GObject at the top. The inheritance tree of a Button looks like this:
+```
+GObject
+╰── Widget
+    ╰── Button
+```
