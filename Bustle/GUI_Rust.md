@@ -356,7 +356,6 @@ It is not very nice though to fill the scope with temporary variables like `numb
 </details>
 
 *Filesystem*: ...../g_object_memory_management/5/main.rs
-
 ```rust
     // Connect callbacks
     // When a button is clicked, `number` and label of the other button will be changed
@@ -370,6 +369,31 @@ It is not very nice though to fill the scope with temporary variables like `numb
             number.set(number.get() - 1);
             button_increase.set_label(&number.get().to_string());
     }));
+```
+* The reference cycle is broken. 
+ 
+Every time the button is clicked, `glib::clone` tries to upgrade the weak reference. If we now for example click on one button and the other button is not there anymore, the callback will be skipped. Per default, it immediately returns from the closure with `()` as return value. In case the closure expects a different return value **`@default-return`** can be specified.
+
+Notice that we move `number` in the second closure. If we had moved weak references in both closures, nothing would have kept number alive and the closure would have never been called. Thinking about this, `button_increase` and `button_decrease` are also dropped at the end of the scope of `build_ui`. Who then keeps the buttons alive?
+
+*Filesystem*: ...../g_object_memory_management/5/main.rs
+```rust
+    // Add buttons to `gtk_box`
+    let gtk_box = gtk::Box::builder()
+        .orientation(Orientation::Vertical)
+        .build();
+    gtk_box.append(&button_increase);
+    gtk_box.append(&button_decrease);
 
 ```
+* When we append the buttons to the `gtk_box`, gtk_box keeps a strong reference to them.
 
+*Filesystem*: ...../g_object_memory_management/5/main.rs
+```rust
+    // Create a window
+    let window = ApplicationWindow::builder()
+        .application(app)
+        .title("My GTK App")
+        .child(&gtk_box)
+        .build();
+```
