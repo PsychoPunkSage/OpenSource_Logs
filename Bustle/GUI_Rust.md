@@ -617,3 +617,6 @@ fn build_ui(app: &Application) {
     window.present();
 }
 ```
+
+In `build_ui` we stop calling `connect_clicked`, and that was it. After a rebuild, the app now features our `CustomButton` with the label **"0"**. Every time we click on the button, the number displayed by the label increases by 1.
+
