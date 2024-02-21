@@ -141,7 +141,7 @@ Will focus on:
 * How to use properties
 * How to emit and receive signals
 
-### Memory Management
+### **Memory Management**
 
 >> Memory management when writing a gtk-rs app can be a bit tricky. 
 
@@ -401,3 +401,74 @@ Notice that we move `number` in the second closure. If we had moved weak referen
 When we set `gtk_box` as child of `window`, `window` keeps a strong reference to it. Until we close the `window` it keeps `gtk_box` and with it the buttons alive. Since our application has only one window, closing it also means exiting the application.
 
 As long as you use weak references whenever possible, you will find it perfectly doable to avoid memory cycles within your application. Without memory cycles, you can rely on GTK to properly manage the memory of GObjects you pass to it.
+
+### **Subclassing**
+
+GObjects rely heavily on inheritance. Therefore, it makes sense that if we want to create a custom GObject, this is done via subclassing. Let's see how this works by replacing the button in our "Hello World!" app with a custom one. First, we need to create an implementation struct that holds the state and overrides the virtual methods.
+
+*Filesystem*: listings/g_object_subclassing/1/custom_button/imp.rs
+
+```rust
+use gtk::glib;
+use gtk::subclass::prelude::*;
+
+// Object holding the state
+#[derive(Default)]
+pub struct CustomButton;
+
+// The central trait for subclassing a GObject
+#[glib::object_subclass]
+impl ObjectSubclass for CustomButton {
+    const NAME: &'static str = "MyGtkAppCustomButton";
+    type Type = super::CustomButton;
+    type ParentType = gtk::Button;
+}
+
+// Trait shared by all GObjects
+impl ObjectImpl for CustomButton {}
+
+// Trait shared by all widgets
+impl WidgetImpl for CustomButton {}
+
+// Trait shared by all buttons
+impl ButtonImpl for CustomButton {}
+```
+
+The description of the subclassing is in ObjectSubclass.
+
+* `NAME` should consist of crate-name and object-name in order to avoid name collisions. Use UpperCamelCase here.
+* `Type` refers to the actual GObject that will be created afterwards.
+* `ParentType` is the GObject we inherit of.
+
+After that, we would have the option to override the virtual methods of ancestors. Since we only want to have a plain button for now, we override nothing. We still have to add the empty `impl` though. Next, we describe the public interface of our custom GObject.
+
+*Filesystem*: listings/g_object_subclassing/1/custom_button/mod.rs
+
+```rust
+mod imp;
+
+use glib::Object;
+use gtk::glib;
+
+glib::wrapper! {
+    pub struct CustomButton(ObjectSubclass<imp::CustomButton>)
+        @extends gtk::Button, gtk::Widget,
+        @implements gtk::Accessible, gtk::Actionable, gtk::Buildable, gtk::ConstraintTarget;
+}
+
+impl CustomButton {
+    pub fn new() -> Self {
+        Object::builder().build()
+    }
+
+    pub fn with_label(label: &str) -> Self {
+        Object::builder().property("label", label).build()
+    }
+}
+
+// impl Default for CustomButton {
+//     fn default() -> Self {
+//         Self::new()
+//     }
+// }
+```
