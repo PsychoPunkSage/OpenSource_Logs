@@ -221,3 +221,85 @@ help: to force the closure to take ownership of `number` (and any other referenc
 ```
 
 </details>
+
+* Our closure only borrows `number`. Signal handlers in GTK require `static'` lifetimes for their references, so we cannot borrow a variable that only lives for the scope of the function `build_ui`. The compiler also suggests how to fix this. By adding the move keyword in front of the closure, number will be moved into the closure.
+
+```rust
+// DOES NOT COMPILE!
+// A mutable integer
+let mut number = 0;
+
+// Connect callbacks
+// When a button is clicked, `number` should be changed
+button_increase.connect_clicked(move |_| number += 1);
+```
+
+<details>
+<summary>Error</summary>
+
+```
+error[E0594]: cannot assign to `number`, as it is a captured variable in a `Fn` closure
+   |
+32 |     button_increase.connect_clicked(move |_| number += 1);
+   |                                              ^^^^^^^^^^^ cannot assign 
+```
+
+</details>
+
+> In order to understand that error message we have to understand the difference between the three closure traits **`FnOnce`**, **`FnMut`** and **`Fn`**. APIs that take closures implementing the 
+
+> `FnOnce trait` give the most freedom to the API consumer. The closure is called only once, so it can even consume its state. Signal handlers can be called multiple times, so they cannot accept FnOnce.
+
+> The more restrictive `FnMut trait` doesn't allow closures to consume their state, but they can still mutate it. Signal handlers can't allow this either, because they can be called from inside themselves. This would lead to multiple mutable references which the borrow checker doesn't appreciate at all.
+
+> `Fn`. State can be immutably borrowed, but then how can we modify number? We need a data type with interior mutability like **`std::cell::Cell`**.
+
+`Filesystem`: ...../g_object_memory_management/1/main.rs
+
+```rust 
+// use gtk::prelude::*;
+// use gtk::{glib, Application, ApplicationWindow, Button};
+// use std::cell::Cell;
+
+// const APP_ID: &str = "org.gtk_rs.GObjectMemoryManagement1";
+
+// fn main() -> glib::ExitCode {
+//     // Create a new application
+//     let app = Application::builder().application_id(APP_ID).build();
+
+//     // Connect to "activate" signal of `app`
+//     app.connect_activate(build_ui);
+
+//     // Run the application
+//     app.run()
+// }
+
+fn build_ui(application: &Application) {
+    // Create two buttons
+    let button_increase = Button::builder()
+        .label("Increase")
+        .margin_top(12)
+        .margin_bottom(12)
+        .margin_start(12)
+        .margin_end(12)
+        .build();
+
+    // A mutable integer
+    let number = Cell::new(0);
+
+    // Connect callbacks
+    // When a button is clicked, `number` should be changed
+    button_increase.connect_clicked(move |_| number.set(number.get() + 1));
+
+    // Create a window
+    let window = ApplicationWindow::builder()
+        .application(application)
+        .title("My GTK App")
+        .child(&button_increase)
+        .build();
+
+    // Present the window
+    window.present();
+}
+```
+* compiles as expected
