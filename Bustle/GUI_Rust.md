@@ -472,3 +472,55 @@ impl CustomButton {
 //     }
 // }
 ```
+
+**glib::wrapper!** implements the same traits that our `ParentType` implements. Theoretically that would mean that the `ParentType` is also the only thing we have to specify here. Unfortunately, nobody has yet found a good way to do that. Which is why, as of today, subclassing of GObjects in Rust requires to mention all ancestors and interfaces apart from `GObject` and `GInitiallyUnowned`. For `gtk::Button`.
+
+After these steps, nothing is stopping us from replacing gtk::Button with our CustomButton.
+
+*Filesystem*: listings/g_object_subclassing/1/main.rs
+
+```rust
+mod custom_button;
+
+use custom_button::CustomButton;
+use gtk::prelude::*;
+use gtk::{glib, Application, ApplicationWindow};
+
+const APP_ID: &str = "org.gtk_rs.GObjectSubclassing1";
+
+fn main() -> glib::ExitCode {
+    // Create a new application
+    let app = Application::builder().application_id(APP_ID).build();
+
+    // Connect to "activate" signal of `app`
+    app.connect_activate(build_ui);
+
+    // Run the application
+    app.run()
+}
+
+fn build_ui(app: &Application) {
+    // Create a button
+    let button = CustomButton::with_label("Press me!");
+    button.set_margin_top(12);
+    button.set_margin_bottom(12);
+    button.set_margin_start(12);
+    button.set_margin_end(12);
+
+    // Connect to "clicked" signal of `button`
+    button.connect_clicked(move |button| {
+        // Set the label to "Hello World!" after the button has been clicked on
+        button.set_label("Hello World!");
+    });
+
+    // Create a window
+    let window = ApplicationWindow::builder()
+        .application(app)
+        .title("My GTK App")
+        .child(&button)
+        .build();
+
+    // Present window
+    window.present();
+}
+```
