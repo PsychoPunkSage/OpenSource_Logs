@@ -397,3 +397,7 @@ Notice that we move `number` in the second closure. If we had moved weak referen
         .child(&gtk_box)
         .build();
 ```
+
+When we set `gtk_box` as child of `window`, `window` keeps a strong reference to it. Until we close the `window` it keeps `gtk_box` and with it the buttons alive. Since our application has only one window, closing it also means exiting the application.
+
+As long as you use weak references whenever possible, you will find it perfectly doable to avoid memory cycles within your application. Without memory cycles, you can rely on GTK to properly manage the memory of GObjects you pass to it.
