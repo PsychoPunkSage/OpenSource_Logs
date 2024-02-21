@@ -442,7 +442,7 @@ The description of the subclassing is in ObjectSubclass.
 
 After that, we would have the option to override the virtual methods of ancestors. Since we only want to have a plain button for now, we override nothing. We still have to add the empty `impl` though. Next, we describe the public interface of our custom GObject.
 
-*Filesystem*: listings/g_object_subclassing/1/custom_button/mod.rs
+*Filesystem*: ...../g_object_subclassing/1/custom_button/mod.rs
 
 ```rust
 mod imp;
@@ -477,7 +477,7 @@ impl CustomButton {
 
 After these steps, nothing is stopping us from replacing gtk::Button with our CustomButton.
 
-*Filesystem*: listings/g_object_subclassing/1/main.rs
+*Filesystem*: ...../g_object_subclassing/1/main.rs
 
 ```rust
 mod custom_button;
@@ -522,5 +522,54 @@ fn build_ui(app: &Application) {
 
     // Present window
     window.present();
+}
+```
+
+#### Adding Functionality
+
+We are able to use `CustomButton` as a drop-in replacement for `gtk::Button`. This is cool, but also not very tempting to do in a real application. For the gain of zero benefits, it did involve quite a bit of boilerplate after all.
+
+So let's make it a bit more interesting! `gtk::Button` does not hold much state, but we can let `CustomButton` hold a number.
+
+*Filesystem*: ...../g_object_subclassing/2/custom_button/imp.rs
+
+```rust
+use std::cell::Cell;
+
+use gtk::glib;
+use gtk::prelude::*;
+use gtk::subclass::prelude::*;
+
+// Object holding the state
+#[derive(Default)]
+pub struct CustomButton {
+    number: Cell<i32>,
+}
+
+// The central trait for subclassing a GObject
+#[glib::object_subclass]
+impl ObjectSubclass for CustomButton {
+    const NAME: &'static str = "MyGtkAppCustomButton";
+    type Type = super::CustomButton;
+    type ParentType = gtk::Button;
+}
+
+// Trait shared by all GObjects
+impl ObjectImpl for CustomButton {
+    fn constructed(&self) {
+        self.parent_constructed();
+        self.obj().set_label(&self.number.get().to_string());
+    }
+}
+
+// Trait shared by all widgets
+impl WidgetImpl for CustomButton {}
+
+// Trait shared by all buttons
+impl ButtonImpl for CustomButton {
+    fn clicked(&self) {
+        self.number.set(self.number.get() + 1);
+        self.obj().set_label(&self.number.get().to_string())
+    }
 }
 ```
