@@ -701,3 +701,24 @@ If want to differentiate between specifying the wrong type and a `Value` represe
     assert_eq!(string_none, None);
 ```
 We will use `Value` when we deal with properties and signals later on.
+
+#### Variant
+
+A `Variant` is used whenever data needs to be serialized, for example for sending it to another process or over the network, or for storing it on disk. Although `GVariant` supports arbitrarily complex types, the Rust bindings are currently limited to `bool`, `u8`, `i16`, `u16`, `i32`, `u32`, `i64`, `u64`, `f64`, `&str/String`, and [VariantDict](https://gtk-rs.org/gtk-rs-core/stable/latest/docs/glib/struct.VariantDict.html). Containers of the above types are possible as well, such as `HashMap`, `Vec`, `Option`, `tuples` up to 16 elements, and `Variant`. Variants can even be derived from Rust structs as long as its members can be represented by variants.
+
+In the most simple case, converting Rust types to `Variant` and vice-versa is very similar to the way it worked with `Value`.
+
+`Filesystem`: ...../g_object_values/1/main.rs
+
+```rust
+    // Store `i32` as `Variant`
+    let integer_variant = 10.to_variant();
+
+    // Retrieve `i32` from `Variant`
+    let integer = integer_variant
+        .get::<i32>()
+        .expect("The variant needs to be of type `i32`.");
+
+    // Check if the retrieved value is correct
+    assert_eq!(integer, 10);
+```
