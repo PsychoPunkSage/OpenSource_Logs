@@ -915,3 +915,25 @@ If we wanted to, we could have connected to it with the generic `connect_closure
         }),
     );
 ```
+
+The advantage of `connect_closure` is that it also works with custom signals.
+
+#### Adding Signals to Custom GObjects
+
+Let's see how we can create our own signals. Again we do that by extending our `CustomButton`. First we override the `signals` method in `ObjectImpl`. In order to do that, we need to lazily initialize a static item **SIGNALS**. `std::sync::OnceLock` ensures that SIGNALS will only be initialized once.
+
+`Filesystem`: ...../hello_world/3/main.rs
+
+```rust
+// Trait shared by all GObjects
+#[glib::derived_properties]
+impl ObjectImpl for CustomButton {
+    fn signals() -> &'static [Signal] {
+        static SIGNALS: OnceLock<Vec<Signal>> = OnceLock::new();
+        SIGNALS.get_or_init(|| {
+            vec![Signal::builder("max-number-reached")
+                .param_types([i32::static_type()])
+                .build()]
+        })
+    }
+```
