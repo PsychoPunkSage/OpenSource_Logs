@@ -902,7 +902,7 @@ Note that it has a (computational) cost to send a signal each time the value cha
 
 If we wanted to, we could have connected to it with the generic `connect_closure` method and the `glib::closure_local!` macro.
 
-<!-- `Filesystem`: ...../hello_world/3/main.rs
+`Filesystem`: ...../hello_world/3/main.rs
 
 ```rust
     // Connect to "clicked" signal of `button`
@@ -914,4 +914,4 @@ If we wanted to, we could have connected to it with the generic `connect_closure
             button.set_label("Hello World!");
         }),
     );
-``` -->
+```
