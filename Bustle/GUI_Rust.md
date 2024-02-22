@@ -884,3 +884,34 @@ Introducing properties to your custom GObjects is useful if you want to
 * notify consumers whenever a property value changes
 
 Note that it has a (computational) cost to send a signal each time the value changes. If you only want to expose internal state, adding getter and setter methods is the better option.
+
+### **Signals**
+
+>> GObject signals are a system for registering callbacks for specific events. For example, if we press on a button, the "clicked" signal will be emitted. The signal then takes care that all the registered callbacks will be executed.<br>
+>> `gtk-rs` provides convenience methods for registering callbacks. In our "Hello World" example we **connected** the "clicked" signal to a closure which sets the label of the button to "Hello World" as soon as it gets called.
+
+`Filesystem`: ...../hello_world/3/main.rs
+
+```rust
+    // Connect to "clicked" signal of `button`
+    button.connect_clicked(|button| {
+        // Set the label to "Hello World!" after the button has been clicked on
+        button.set_label("Hello World!");
+    });
+```
+
+If we wanted to, we could have connected to it with the generic `connect_closure` method and the `glib::closure_local!` macro.
+
+<!-- `Filesystem`: ...../hello_world/3/main.rs
+
+```rust
+    // Connect to "clicked" signal of `button`
+    button.connect_closure(
+        "clicked",
+        false,
+        closure_local!(move |button: Button| {
+            // Set the label to "Hello World!" after the button has been clicked on
+            button.set_label("Hello World!");
+        }),
+    );
+``` -->
