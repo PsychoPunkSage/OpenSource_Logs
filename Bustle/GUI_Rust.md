@@ -863,3 +863,24 @@ We have already seen that bound properties don't necessarily have to be of the s
         .build();
 ```
 Now if we click on one button, the "number" and "label" properties of the other button change as well.
+
+Another nice feature of properties is, that you can connect a callback to the event, when a property gets changed. For example like this:
+
+`Filesystem`: ...../g_object_properties/3/main.rs
+
+```rust
+    // The closure will be called
+    // whenever the property "number" of `button_1` gets changed
+    button_1.connect_number_notify(|button| {
+        println!("The current number of `button_1` is {}.", button.number());
+    });
+```
+
+Now, whenever the "number" property gets changed, the closure gets executed and prints the current value of "number" to standard output.
+
+Introducing properties to your custom GObjects is useful if you want to
+
+* bind state of (different) GObjects
+* notify consumers whenever a property value changes
+
+Note that it has a (computational) cost to send a signal each time the value changes. If you only want to expose internal state, adding getter and setter methods is the better option.
