@@ -965,3 +965,17 @@ impl ButtonImpl for CustomButton {
 ```
 
 If we now press on the button, the number of its label increases until it reaches **MAX_NUMBER**. Then it emits the "max-number-reached" signal which we can nicely connect to. Whenever we now receive the "max-number-reached" signal, the accompanying number is printed to *standard output*.
+
+`Filesystem`: ...../g_object_signals/2/main.rs
+
+```rust
+    button.connect_closure(
+        "max-number-reached",
+        false,
+        closure_local!(move |_button: CustomButton, number: i32| {
+            println!("The maximum number {} has been reached", number);
+        }),
+    );
+```
+
+You now know how to connect to every kind of signal and how to create your own. Custom signals are especially useful, if you want to notify consumers of your GObject that a certain event occurred.
