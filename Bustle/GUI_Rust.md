@@ -722,3 +722,18 @@ In the most simple case, converting Rust types to `Variant` and vice-versa is ve
     // Check if the retrieved value is correct
     assert_eq!(integer, 10);
 ```
+
+However, a `Variant` is also able to represent containers such as `HashMap` or `Vec`. The following snippet shows how to convert between `Vec` and `Variant`. More examples can be found in the docs.
+
+`Filesystem`: ...../g_object_values/1/main.rs
+
+```rust
+    let variant = vec!["Hello", "there!"].to_variant();
+    assert_eq!(variant.n_children(), 2);
+    let vec = &variant
+        .get::<Vec<String>>()
+        .expect("The variant needs to be of type `String`.");
+    assert_eq!(vec[0], "Hello");
+```
+
+We will use Variant when saving settings using `gio::Settings` or activating actions via `gio::Action`.
