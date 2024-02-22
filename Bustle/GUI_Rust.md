@@ -922,7 +922,7 @@ The advantage of `connect_closure` is that it also works with custom signals.
 
 Let's see how we can create our own signals. Again we do that by extending our `CustomButton`. First we override the `signals` method in `ObjectImpl`. In order to do that, we need to lazily initialize a static item **SIGNALS**. `std::sync::OnceLock` ensures that SIGNALS will only be initialized once.
 
-`Filesystem`: ...../hello_world/3/main.rs
+`Filesystem`: ...../g_object_signals/2/custom_button/imp.rs
 
 ```rust
 // Trait shared by all GObjects
@@ -936,4 +936,30 @@ impl ObjectImpl for CustomButton {
                 .build()]
         })
     }
+```
+
+The `signals` method is responsible for defining a set of signals. In our case, we only create a single signal named "max-number-reached". When naming our signal, we make sure to do that in [kebab-case](https://en.wikipedia.org/wiki/Letter_case#Kebab_case). When emitted, it sends a single `i32` value.
+
+We want the signal to be emitted, whenever `number` reaches **MAX_NUMBER**. Together with the signal we send the value `number` currently holds. After we did that, we set `number` back to 0.
+
+`Filesystem`: ...../g_object_signals/2/custom_button/imp.rs
+
+```rust
+static MAX_NUMBER: i32 = 8;
+
+// Trait shared by all buttons
+impl ButtonImpl for CustomButton {
+    fn clicked(&self) {
+        let incremented_number = self.obj().number() + 1;
+        let obj = self.obj();
+        // If `number` reached `MAX_NUMBER`,
+        // emit "max-number-reached" signal and set `number` back to 0
+        if incremented_number == MAX_NUMBER {
+            obj.emit_by_name::<()>("max-number-reached", &[&incremented_number]);
+            obj.set_number(0);
+        } else {
+            obj.set_number(incremented_number);
+        }
+    }
+}
 ```
