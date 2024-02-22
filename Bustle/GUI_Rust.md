@@ -776,3 +776,40 @@ In our case, we want to bind the "active" property of `switch_1` to the "active"
         .bidirectional()
         .build();
 ```
+
+#### Adding Properties to Custom GObjects
+
+We can also add properties to custom GObjects. We can demonstrate that by binding the number of our `CustomButton` to a property. Most of the work is done by the **glib::Properties** derive macro. We tell it that the wrapper type is `super::CustomButton`. We also annotate `number`, so that macro knows that it should create a property "number" that is readable and writable. It also generates wrapper.
+
+`Filesystem`: ...../g_object_properties/3/custom_button/imp.rs
+
+```rust
+// Object holding the state
+#[derive(Properties, Default)]
+#[properties(wrapper_type = super::CustomButton)]
+pub struct CustomButton {
+    #[property(get, set)]
+    number: Cell<i32>,
+}
+```
+
+The **glib::derived_properties** macro generates boilerplate that is the same for every GObject that generates its properties with the `Property` macro. In `constructed` we use our new property "number" by binding the "label" property to it. `bind_property` converts the integer value of "number" to the string of "label" on its own. Now we don't have to adapt the label in the "clicked" callback anymore.
+
+`Filesystem`: ...../g_object_properties/3/custom_button/imp.rs
+
+```rust
+// Trait shared by all GObjects
+#[glib::derived_properties]
+impl ObjectImpl for CustomButton {
+    fn constructed(&self) {
+        self.parent_constructed();
+
+        // Bind label to number
+        // `SYNC_CREATE` ensures that the label will be immediately set
+        let obj = self.obj();
+        obj.bind_property("number", obj.as_ref(), "label")
+            .sync_create()
+            .build();
+    }
+}
+```
