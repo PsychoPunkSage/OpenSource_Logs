@@ -813,3 +813,29 @@ impl ObjectImpl for CustomButton {
     }
 }
 ```
+
+We also have to adapt the `clicked` method. Before we modified `number` directly, now we can use the generated wrapper methods `number` and `set_number`. This way the "notify" signal will be emitted, which is necessary for the bindings to work as expected.
+
+`Filesystem`: ...../g_object_properties/3/custom_button/imp.rs
+
+```rust
+// Trait shared by all GObjects
+#[glib::derived_properties]
+// Trait shared by all buttons
+impl ButtonImpl for CustomButton {
+    fn clicked(&self) {
+        let incremented_number = self.obj().number() + 1;
+        self.obj().set_number(incremented_number);
+    }
+}
+```
+
+Let's see what we can do with this by creating two custom buttons.
+
+`Filesystem`: ...../g_object_properties/3/main.rs
+
+```rust
+    // Create the buttons
+    let button_1 = CustomButton::new();
+    let button_2 = CustomButton::new();
+```
