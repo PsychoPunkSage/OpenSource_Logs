@@ -620,3 +620,11 @@ fn build_ui(app: &Application) {
 
 In `build_ui` we stop calling `connect_clicked`, and that was it. After a rebuild, the app now features our `CustomButton` with the label **"0"**. Every time we click on the button, the number displayed by the label increases by 1.
 
+
+### **Generic Values**
+
+>> Some GObject-related functions rely on generic values for their arguments or return parameters. Since GObject introspection works through a C interface, these functions cannot rely on any powerful Rust concepts. In these cases `glib::Value` or `glib::Variant` are used.
+
+#### Value
+
+> Conceptually, a `Value` is similar to a Rust `enum` defined like this:
