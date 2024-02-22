@@ -725,7 +725,7 @@ In the most simple case, converting Rust types to `Variant` and vice-versa is ve
 
 However, a `Variant` is also able to represent containers such as `HashMap` or `Vec`. The following snippet shows how to convert between `Vec` and `Variant`. More examples can be found in the docs.
 
-`Filesystem`: ...../g_object_values/1/main.rs
+`Filesystem`: ...../g_object_values/2/main.rs
 
 ```rust
     let variant = vec!["Hello", "there!"].to_variant();
@@ -737,3 +737,23 @@ However, a `Variant` is also able to represent containers such as `HashMap` or `
 ```
 
 We will use Variant when saving settings using `gio::Settings` or activating actions via `gio::Action`.
+
+### **Properties**
+
+>> Properties provide a public API for accessing state of GObjects.<br>
+>> Experimentation with the `Switch` widget. One of its properties is called **active**. According to the GTK docs, it can be read and be written to. That is why `gtk-rs` provides corresponding **is_active** and **set_acti`** methods.
+
+`Filesystem`: ...../g_object_values/1/main.rs
+
+```rust
+    // Create the switch
+    let switch = Switch::new();
+
+    // Set and then immediately obtain active property
+    switch.set_active(true);
+    let switch_active = switch.is_active();
+
+    // This prints: "The active property of switch is true"
+    println!("The active property of switch is {}", switch_active);
+```
+Properties can not only be accessed via getters & setters, they can also be bound to each other. Let's see how that would look like for two `Switch` instances.
