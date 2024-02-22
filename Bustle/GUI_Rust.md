@@ -757,3 +757,22 @@ We will use Variant when saving settings using `gio::Settings` or activating act
     println!("The active property of switch is {}", switch_active);
 ```
 Properties can not only be accessed via getters & setters, they can also be bound to each other. Let's see how that would look like for two `Switch` instances.
+
+`Filesystem`: ...../g_object_values/2/main.rs
+
+```rust
+    // Create the switches
+    let switch_1 = Switch::new();
+    let switch_2 = Switch::new();
+```
+
+In our case, we want to bind the "active" property of `switch_1` to the "active" property of `switch_2`. We also want the binding to be bidirectional, so we specify by calling the **bidirectional** method.
+
+`Filesystem`: ...../g_object_values/2/main.rs
+
+```rust
+    switch_1
+        .bind_property("active", &switch_2, "active")
+        .bidirectional()
+        .build();
+```
