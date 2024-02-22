@@ -839,3 +839,27 @@ Let's see what we can do with this by creating two custom buttons.
     let button_1 = CustomButton::new();
     let button_2 = CustomButton::new();
 ```
+
+We have already seen that bound properties don't necessarily have to be of the same type. By leveraging `transform_to` and `transform_from`, we can assure that `button_2` always displays a number which is 1 higher than the number of `button_1`.
+
+`Filesystem`: ...../g_object_properties/3/main.rs
+
+```rust
+    // Assure that "number" of `button_2` is always 1 higher than "number" of `button_1`
+    button_1
+        .bind_property("number", &button_2, "number")
+        // How to transform "number" from `button_1` to "number" of `button_2`
+        .transform_to(|_, number: i32| {
+            let incremented_number = number + 1;
+            Some(incremented_number.to_value())
+        })
+        // How to transform "number" from `button_2` to "number" of `button_1`
+        .transform_from(|_, number: i32| {
+            let decremented_number = number - 1;
+            Some(decremented_number.to_value())
+        })
+        .bidirectional()
+        .sync_create()
+        .build();
+```
+Now if we click on one button, the "number" and "label" properties of the other button change as well.
