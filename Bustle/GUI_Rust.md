@@ -963,3 +963,5 @@ impl ButtonImpl for CustomButton {
     }
 }
 ```
+
+If we now press on the button, the number of its label increases until it reaches **MAX_NUMBER**. Then it emits the "max-number-reached" signal which we can nicely connect to. Whenever we now receive the "max-number-reached" signal, the accompanying number is printed to *standard output*.
