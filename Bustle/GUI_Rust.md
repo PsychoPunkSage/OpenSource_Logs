@@ -628,3 +628,76 @@ In `build_ui` we stop calling `connect_clicked`, and that was it. After a rebuil
 #### Value
 
 > Conceptually, a `Value` is similar to a Rust `enum` defined like this:
+
+```rust
+enum Value <T> {
+    bool(bool),
+    i8(i8),
+    i32(i32),
+    u32(u32),
+    i64(i64),
+    u64(u64),
+    f32(f32),
+    f64(f64),
+    // boxed types
+    String(Option<String>),
+    Object(Option<dyn IsA<glib::Object>>),
+}
+```
+
+
+* `Value` representing an `i32`.
+`Filesystem`: ...../g_object_values/1/main.rs
+
+```rust
+    // Store `i32` as `Value`
+    let integer_value = 10.to_value();
+
+    // Retrieve `i32` from `Value`
+    let integer = integer_value
+        .get::<i32>()
+        .expect("The value needs to be of type `i32`.");
+
+    // Check if the retrieved value is correct
+    assert_eq!(integer, 10);
+```
+
+Also note that in the `enum` above boxed types such as `String` or `glib::Object` are wrapped in an `Option`. This comes from C, where every boxed type can potentially be `None` (or `NULL` in C terms). You can still access it the same way as with the `i32` above. **`get`** will then not only return `Err` if you specified the wrong type, but also if the `Value` represents `None`.
+
+`Filesystem`: ...../g_object_values/1/main.rs
+
+```rust
+    // Store string as `Value`
+    let string_value = "Hello!".to_value();
+
+    // Retrieve `String` from `Value`
+    let string = string_value
+        .get::<String>()
+        .expect("The value needs to be of type `String`.");
+
+    // Check if the retrieved value is correct
+    assert_eq!(string, "Hello!".to_string());
+```
+
+If want to differentiate between specifying the wrong type and a `Value` representing `None`, just call `get::<Option<T>>` instead.
+
+`Filesystem`: ...../g_object_values/1/main.rs
+
+```rust
+    // Store `Option<String>` as `Value`
+    let string_some_value = "Hello!".to_value();
+    let string_none_value = None::<String>.to_value();
+
+    // Retrieve `String` from `Value`
+    let string_some = string_some_value
+        .get::<Option<String>>()
+        .expect("The value needs to be of type `Option<String>`.");
+    let string_none = string_none_value
+        .get::<Option<String>>()
+        .expect("The value needs to be of type `Option<String>`.");
+
+    // Check if the retrieved value is correct
+    assert_eq!(string_some, Some("Hello!".to_string()));
+    assert_eq!(string_none, None);
+```
+We will use `Value` when we deal with properties and signals later on.
