@@ -978,4 +978,4 @@ If we now press on the button, the number of its label increases until it reache
     );
 ```
 
-You now know how to connect to every kind of signal and how to create your own. Custom signals are especially useful, if you want to notify consumers of your GObject that a certain event occurred.
+Now we know how to connect to every kind of signal and how to create our own. Custom signals are especially useful, if we want to notify consumers of your GObject that a certain event occurred.
