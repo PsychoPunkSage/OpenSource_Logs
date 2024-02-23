@@ -1019,3 +1019,30 @@ impl Window {
 ```
 
 </details>
+
+When using boxed lists, we also have to take care to hide the `ListBox` when there is no task present.
+
+`Filesystem`: ...../todo/6/window/mod.rs
+
+```rust
+        // Assure that the task list is only visible when it is supposed to
+        self.set_task_list_visible(&self.tasks());
+        self.tasks().connect_items_changed(
+            clone!(@weak self as window => move |tasks, _, _, _| {
+                window.set_task_list_visible(tasks);
+            }),
+        );
+```
+
+Finally, we define the `set_task_list_visible` method.
+
+`Filesystem`: ...../todo/6/window/mod.rs
+
+```rust
+    /// Assure that `tasks_list` is only visible
+    /// if the number of tasks is greater than 0
+    fn set_task_list_visible(&self, tasks: &gio::ListStore) {
+        self.imp().tasks_list.set_visible(tasks.n_items() > 0);
+    }
+
+```
