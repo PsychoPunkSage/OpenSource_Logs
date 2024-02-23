@@ -2445,3 +2445,77 @@ impl Window {
 
 </details>
 
+As always, we want our data to be saved when we close the window. Since most of the implementation is in the method `CollectionObject::to_collection_data`, the implementation of `close_request` doesn't change much.
+
+`Filesystem`: ...../todo/8/window/mod.rs
+
+```rust
+// Trait shared by all windows
+impl WindowImpl for Window {
+    fn close_request(&self) -> glib::Propagation {
+        // Store task data in vector
+        let backup_data: Vec<CollectionData> = self
+            .obj()
+            .collections()
+            .iter::<CollectionObject>()
+            .filter_map(|collection_object| collection_object.ok())
+            .map(|collection_object| collection_object.to_collection_data())
+            .collect();
+
+        // Save state to file
+        let file = File::create(data_path()).expect("Could not create json file.");
+        serde_json::to_writer(file, &backup_data)
+            .expect("Could not write data to json file");
+
+        // Pass close request on to the parent
+        self.parent_close_request()
+    }
+}
+```
+
+`constructed` stays mostly the same as well. Instead of `setup_tasks` we now call `setup_collections`.
+
+`Filesystem`: ...../todo/8/window/imp.rs
+
+```rust
+// Trait shared by all GObjects
+impl ObjectImpl for Window {
+    fn constructed(&self) {
+        // Call "constructed" on parent
+        self.parent_constructed();
+
+        // Setup
+        let obj = self.obj();
+        obj.setup_settings();
+        obj.setup_collections();
+        obj.restore_data();
+        obj.setup_callbacks();
+        obj.setup_actions();
+    }
+}
+```
+
+`setup_collections` sets up the `collections` list store as well as assuring that changes in the model will be reflected in the `collections_list`. To do that it uses the method `create_collection_row`.
+
+`Filesystem`: ...../todo/8/window/mod.rs
+
+```rust
+    fn setup_collections(&self) {
+        let collections = gio::ListStore::new::<CollectionObject>();
+        self.imp()
+            .collections
+            .set(collections.clone())
+            .expect("Could not set collections");
+
+        self.imp().collections_list.bind_model(
+            Some(&collections),
+            clone!(@weak self as window => @default-panic, move |obj| {
+                let collection_object = obj
+                    .downcast_ref()
+                    .expect("The object should be of type `CollectionObject`.");
+                let row = window.create_collection_row(collection_object);
+                row.upcast()
+            }),
+        )
+    }
+```
