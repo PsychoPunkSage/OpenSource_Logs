@@ -2519,3 +2519,56 @@ impl ObjectImpl for Window {
         )
     }
 ```
+
+`create_collection_row` takes a `CollectionObject` and builds a `gtk::ListBoxRow` from its information.
+
+`Filesystem`: ...../todo/8/window/mod.rs
+
+```rust
+    fn create_collection_row(
+        &self,
+        collection_object: &CollectionObject,
+    ) -> ListBoxRow {
+        let label = Label::builder()
+            .ellipsize(pango::EllipsizeMode::End)
+            .xalign(0.0)
+            .build();
+
+        collection_object
+            .bind_property("title", &label, "label")
+            .sync_create()
+            .build();
+
+        ListBoxRow::builder().child(&label).build()
+    }
+```
+
+We also adapt `restore_data`. Again, the heavy lifting comes from `CollectionObject::from_collection_data`, so we don't have to change too much here. Since the rows of `collections_list` can be selected, we have to select one of them after restoring the data. We choose the first one and let the method `set_current_collection` do the rest.
+
+`Filesystem`: ...../todo/8/window/mod.rs
+
+```rust
+    fn restore_data(&self) {
+        if let Ok(file) = File::open(data_path()) {
+            // Deserialize data from file to vector
+            let backup_data: Vec<CollectionData> = serde_json::from_reader(file)
+                .expect(
+                    "It should be possible to read `backup_data` from the json file.",
+                );
+
+            // Convert `Vec<CollectionData>` to `Vec<CollectionObject>`
+            let collections: Vec<CollectionObject> = backup_data
+                .into_iter()
+                .map(CollectionObject::from_collection_data)
+                .collect();
+
+            // Insert restored objects into model
+            self.collections().extend_from_slice(&collections);
+
+            // Set first collection as current
+            if let Some(first_collection) = collections.first() {
+                self.set_current_collection(first_collection.clone());
+            }
+        }
+    }
+```
