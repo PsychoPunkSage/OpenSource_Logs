@@ -64,7 +64,6 @@ fn build_ui(app: &adw::Application) {
 }
 ```
 
-
 `Filesystem`: ...../todo/5/window/mod.rs
 
 ```rust
@@ -311,3 +310,196 @@ impl Window {
 
 </details>
 
+* **`adw::Application`** calls `adw::init` internally and makes sure that translations, types, stylesheets, and icons are set up properly for Libadwaita. It also loads stylesheets automatically from resources as long as they are named correctly.
+
+
+### **Boxed List**
+
+>> Of course Libadwaita is more than just a couple of stylesheets and a `StyleManager`. But before we get to the interesting stuff, we will make our lives easier for the future by replacing all occurrences of `gtk::prelude` and `gtk::subclass::prelude` with `adw::prelude` and `adw::subclass::prelude`. This works because the `adw` preludes, in addition to the Libadwaita-specific traits, re-export the corresponding `gtk` preludes.
+
+We can use boxed lists by using `gtk::ListBox` instead of `gtk::ListView`. We will also add the boxed-list style class provided by Libadwaita.
+
+Let's implement all these changes in the **window.ui** file. All of the changes are confined within the second child of the **ApplicationWindow**. To see the complete file, just click on the link after "Filename".
+
+`Filesystem`: ...../todo/6/resources/window.ui
+
+```html
+<child>
+  <object class="GtkScrolledWindow">
+    <property name="hscrollbar-policy">never</property>
+    <property name="min-content-height">420</property>
+    <property name="vexpand">True</property>
+    <property name="child">
+      <object class="AdwClamp">
+        <property name="child">
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <property name="spacing">18</property>
+            <property name="margin-top">24</property>
+            <property name="margin-bottom">24</property>
+            <property name="margin-start">12</property>
+            <property name="margin-end">12</property>
+            <child>
+              <object class="GtkEntry" id="entry">
+                <property name="placeholder-text" translatable="yes">Enter a Task…</property>
+                <property name="secondary-icon-name">list-add-symbolic</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkListBox" id="tasks_list">
+                <property name="visible">False</property>
+                <property name="selection-mode">none</property>
+                <style>
+                  <class name="boxed-list" />
+                </style>
+              </object>
+            </child>
+          </object>
+        </property>
+      </object>
+    </property>
+  </object>
+</child>
+```
+
+In order to follow the boxed list pattern, we switched to **gtk::ListBox**, set its property "selection-mode" to "none" and added the boxed-list style class.
+
+Let's continue with **window/imp.rs**. The member variable `tasks_list` now describes a `ListBox` rather than a `ListView`.
+
+`Filesystem`: ...../todo/6/resources/window.ui
+
+```rust
+// Object holding the state
+#[derive(CompositeTemplate, Default)]
+#[template(resource = "/org/gtk_rs/Todo6/window.ui")]
+pub struct Window {
+    #[template_child]
+    pub entry: TemplateChild<Entry>,
+    #[template_child]
+    pub tasks_list: TemplateChild<ListBox>,
+    pub tasks: RefCell<Option<gio::ListStore>>,
+    pub settings: OnceCell<Settings>,
+}
+
+// The central trait for subclassing a GObject
+#[glib::object_subclass]
+impl ObjectSubclass for Window {
+    // `NAME` needs to match `class` attribute of template
+    const NAME: &'static str = "TodoWindow";
+    type Type = super::Window;
+    type ParentType = gtk::ApplicationWindow;
+
+    fn class_init(klass: &mut Self::Class) {
+        klass.bind_template();
+
+        // Create action to remove done tasks and add to action group "win"
+        klass.install_action("win.remove-done-tasks", None, |window, _, _| {
+            window.remove_done_tasks();
+        });
+    }
+
+    fn instance_init(obj: &InitializingObject<Self>) {
+        obj.init_template();
+    }
+}
+```
+
+<details>
+<summary>Full Code</summary>
+
+```rust
+use std::cell::RefCell;
+use std::fs::File;
+
+use adw::subclass::prelude::*;
+
+use gio::Settings;
+use glib::subclass::InitializingObject;
+
+use adw::prelude::*;
+use gtk::{gio, glib, CompositeTemplate, Entry, ListBox};
+use std::cell::OnceCell;
+
+use crate::task_object::{TaskData, TaskObject};
+use crate::utils::data_path;
+
+// Object holding the state
+#[derive(CompositeTemplate, Default)]
+#[template(resource = "/org/gtk_rs/Todo6/window.ui")]
+pub struct Window {
+    #[template_child]
+    pub entry: TemplateChild<Entry>,
+    #[template_child]
+    pub tasks_list: TemplateChild<ListBox>,
+    pub tasks: RefCell<Option<gio::ListStore>>,
+    pub settings: OnceCell<Settings>,
+}
+
+// The central trait for subclassing a GObject
+#[glib::object_subclass]
+impl ObjectSubclass for Window {
+    // `NAME` needs to match `class` attribute of template
+    const NAME: &'static str = "TodoWindow";
+    type Type = super::Window;
+    type ParentType = gtk::ApplicationWindow;
+
+    fn class_init(klass: &mut Self::Class) {
+        klass.bind_template();
+
+        // Create action to remove done tasks and add to action group "win"
+        klass.install_action("win.remove-done-tasks", None, |window, _, _| {
+            window.remove_done_tasks();
+        });
+    }
+
+    fn instance_init(obj: &InitializingObject<Self>) {
+        obj.init_template();
+    }
+}
+
+// Trait shared by all GObjects
+impl ObjectImpl for Window {
+    fn constructed(&self) {
+        // Call "constructed" on parent
+        self.parent_constructed();
+
+        // Setup
+        let obj = self.obj();
+        obj.setup_settings();
+        obj.setup_tasks();
+        obj.restore_data();
+        obj.setup_callbacks();
+        obj.setup_actions();
+    }
+}
+
+// Trait shared by all widgets
+impl WidgetImpl for Window {}
+
+// Trait shared by all windows
+impl WindowImpl for Window {
+    fn close_request(&self) -> glib::Propagation {
+        // Store task data in vector
+        let backup_data: Vec<TaskData> = self
+            .obj()
+            .tasks()
+            .iter::<TaskObject>()
+            .filter_map(Result::ok)
+            .map(|task_object| task_object.task_data())
+            .collect();
+
+        // Save state to file
+        let file = File::create(data_path()).expect("Could not create json file.");
+        serde_json::to_writer(file, &backup_data)
+            .expect("Could not write data to json file");
+
+        // Pass close request on to the parent
+        self.parent_close_request()
+    }
+}
+
+// Trait shared by all application windows
+impl ApplicationWindowImpl for Window {}
+```
+
+</details>
