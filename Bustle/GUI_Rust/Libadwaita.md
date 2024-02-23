@@ -1046,3 +1046,11 @@ Finally, we define the `set_task_list_visible` method.
     }
 
 ```
+
+## **Adding Collections**
+
+### **Sidebar**
+
+>> These collections will get their own sidebar on the left of the app. We will start by adding an empty sidebar without any functionality.
+
+There are a couple of steps we have to go through to get to this state. First, we have to replace `gtk::ApplicationWindow` with `adw::ApplicationWindow`. The main difference between those two is that `adw::ApplicationWindow` has no **titlebar area**. That comes in handy when we build up our interface with `adw::NavigationSplitView`. The `NavigationSplitView` adds a sidebar for the collection view to the left, while the task view occupies the space on the right. When using `adw::ApplicationWindow` the collection view and task view have their own `adw::HeaderBar` and the separator spans over the whole window.
