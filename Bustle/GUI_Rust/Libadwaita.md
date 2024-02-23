@@ -1129,3 +1129,62 @@ We add the necessary UI elements for the collection view, such as a header bar w
     </object>
 ```
 
+We also add a header bar to the task view.
+
+`Filesystem`: ...../todo/7/resources/window.ui
+
+```html
+<object class="AdwNavigationPage">
+  <property name="title" translatable="yes">Tasks</property>
+  <property name="child">
+    <object class="AdwToolbarView">
+      <child type="top">
+        <object class="AdwHeaderBar">
+          <property name="show-title">False</property>
+          <child type="end">
+            <object class="GtkMenuButton">
+              <property name="icon-name">open-menu-symbolic</property>
+              <property name="menu-model">main-menu</property>
+              <property name="tooltip-text" translatable="yes">Main Menu</property>
+            </object>
+          </child>
+        </object>
+      </child>
+      <property name="content">
+        <object class="GtkScrolledWindow">
+          <property name="child">
+            <object class="AdwClamp">
+              <property name="maximum-size">400</property>
+              <property name="tightening-threshold">300</property>
+              <property name="child">
+                <object class="GtkBox">
+                  <property name="orientation">vertical</property>
+                  <property name="margin-start">12</property>
+                  <property name="margin-end">12</property>
+                  <property name="spacing">12</property>
+                  <child>
+                    <object class="GtkEntry" id="entry">
+                      <property name="placeholder-text" translatable="yes">Enter a Task…</property>
+                      <property name="secondary-icon-name">list-add-symbolic</property>
+                    </object>
+                  </child>
+                  <child>
+                    <object class="GtkListBox" id="tasks_list">
+                      <property name="visible">False</property>
+                      <property name="selection-mode">none</property>
+                      <style>
+                        <class name="boxed-list" />
+                      </style>
+                    </object>
+                  </child>
+                </object>
+              </property>
+            </object>
+          </property>
+        </object>
+      </property>
+    </object>
+  </property>
+</object>
+```
+
