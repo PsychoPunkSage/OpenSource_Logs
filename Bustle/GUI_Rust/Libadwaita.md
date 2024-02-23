@@ -1576,3 +1576,276 @@ impl Window {
 ```
 
 </details>
+
+### **Placeholder Page**
+
+>> Even before we start to populate the collection view, we ought to think about a different challenge: the empty state of our To-Do app. Before, the empty state without a single task was quite okay. It was clear that one had to add tasks in the entry bar. However, now the situation is different. Users will have to add a collection first, and we have to make that clear. The GNOME HIG suggests to use a **placeholder page** for that. In our case, this placeholder page will be presented to the user if they open the app without any collections present.
+
+We now wrap our UI in a `gtk::Stack`. One stack page describes the placeholder page, the other describes the main page. We will later wire up the logic to display the correct stack page in the Rust code.
+
+`Filesystem`: ...../todo/8/resources/window.ui
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <menu id="main-menu">
+    <!--Menu implementation--> 
+  </menu>
+  <template class="TodoWindow" parent="AdwApplicationWindow">
+    <property name="title" translatable="yes">To-Do</property>
+    <property name="width-request">360</property>
+    <property name="height-request">200</property>
+    <child>
+      <object class="AdwBreakpoint">
+        <condition>max-width: 500sp</condition>
+        <setter object="split_view" property="collapsed">True</setter>
+      </object>
+    </child>
+    <property name="content">
+      <object class="GtkStack" id="stack">
+        <property name="transition-type">crossfade</property>
+        <child>
+          <object class="GtkStackPage">
+            <property name="name">placeholder</property>
+            <property name="child">
+              <object class="GtkBox">
+                <!--Placeholder page implementation--> 
+              </object>
+            </property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkStackPage">
+            <property name="name">main</property>
+            <property name="child">
+              <object class="AdwNavigationSplitView" id="split_view">
+                <!--Main page implementation-->
+              </object>
+            </property>
+          </object>
+        </child>
+      </object>
+    </property>
+  </template>
+</interface>
+```
+
+In order to create the pageholder page as displayed before, we combine a flat header bar with `adw::StatusPage`.
+
+`Filesystem`: ...../todo/8/resources/window.ui
+
+```xml
+<object class="GtkBox">
+  <property name="orientation">vertical</property>
+  <child>
+    <object class="GtkHeaderBar">
+      <style>
+        <class name="flat" />
+      </style>
+    </object>
+  </child>
+  <child>
+    <object class="GtkWindowHandle">
+      <property name="vexpand">True</property>
+      <property name="child">
+        <object class="AdwStatusPage">
+          <property name="icon-name">checkbox-checked-symbolic</property>
+          <property name="title" translatable="yes">No Tasks</property>
+          <property name="description" translatable="yes">Create some tasks to start using the app.</property>
+          <property name="child">
+            <object class="GtkButton">
+              <property name="label" translatable="yes">_New Collection</property>
+              <property name="use-underline">True</property>
+              <property name="halign">center</property>
+              <property name="action-name">win.new-collection</property>
+              <style>
+                <class name="pill" />
+                <class name="suggested-action" />
+              </style>
+            </object>
+          </property>
+        </object>
+      </property>
+    </object>
+  </child>
+</object>
+```
+
+### **Collections**
+
+>> We still need a way to store our collections. Just like we have already created `TaskObject`, we will now introduce `CollectionObject`. It will have the members `title` and `tasks`, both of which will be exposed as properties. As usual, the full implementation can be seen by clicking at the eye symbol at the top right of the snippet.
+
+`Filesystem`: ...../todo/8/collection_object/imp.rs
+
+```rust
+// Object holding the state
+#[derive(Properties, Default)]
+#[properties(wrapper_type = super::CollectionObject)]
+pub struct CollectionObject {
+    #[property(get, set)]
+    pub title: RefCell<String>,
+    #[property(get, set)]
+    pub tasks: OnceCell<gio::ListStore>,
+}
+
+// The central trait for subclassing a GObject
+#[glib::object_subclass]
+impl ObjectSubclass for CollectionObject {
+    const NAME: &'static str = "TodoCollectionObject";
+    type Type = super::CollectionObject;
+}
+```
+
+<details>
+<summary>Full Code</summary>
+
+```rust
+use std::cell::RefCell;
+
+use adw::prelude::*;
+use adw::subclass::prelude::*;
+use glib::Properties;
+use gtk::{gio, glib};
+use std::cell::OnceCell;
+
+// Object holding the state
+#[derive(Properties, Default)]
+#[properties(wrapper_type = super::CollectionObject)]
+pub struct CollectionObject {
+    #[property(get, set)]
+    pub title: RefCell<String>,
+    #[property(get, set)]
+    pub tasks: OnceCell<gio::ListStore>,
+}
+
+// The central trait for subclassing a GObject
+#[glib::object_subclass]
+impl ObjectSubclass for CollectionObject {
+    const NAME: &'static str = "TodoCollectionObject";
+    type Type = super::CollectionObject;
+}
+
+// Trait shared by all GObjects
+#[glib::derived_properties]
+impl ObjectImpl for CollectionObject {}
+```
+
+</details>
+
+We also add the struct `CollectionData` to aid in serialization and deserialization.
+
+`Filesystem`: ...../todo/8/collection_object/mod.rs
+
+```rust
+#[derive(Default, Clone, Serialize, Deserialize)]
+pub struct CollectionData {
+    pub title: String,
+    pub tasks_data: Vec<TaskData>,
+}
+```
+
+Finally, we add methods to `CollectionObject` in order to
+
+* construct it with new,
+* easily access the tasks ListStore with tasks and
+* convert to and from CollectionData with to_collection_data and from_collection_data.
+
+`Filesystem`: ...../todo/8/collection_object/mod.rs
+
+```rust
+impl CollectionObject {
+    pub fn new(title: &str, tasks: gio::ListStore) -> Self {
+        Object::builder()
+            .property("title", title)
+            .property("tasks", tasks)
+            .build()
+    }
+
+    pub fn to_collection_data(&self) -> CollectionData {
+        let title = self.imp().title.borrow().clone();
+        let tasks_data = self
+            .tasks()
+            .iter::<TaskObject>()
+            .filter_map(Result::ok)
+            .map(|task_object| task_object.task_data())
+            .collect();
+        CollectionData { title, tasks_data }
+    }
+
+    pub fn from_collection_data(collection_data: CollectionData) -> Self {
+        let title = collection_data.title;
+        let tasks_to_extend: Vec<TaskObject> = collection_data
+            .tasks_data
+            .into_iter()
+            .map(TaskObject::from_task_data)
+            .collect();
+
+        let tasks = gio::ListStore::new::<TaskObject>();
+        tasks.extend_from_slice(&tasks_to_extend);
+
+        Self::new(&title, tasks)
+    }
+}
+```
+
+<details>
+<summary>Full Code</summary>
+
+```rust
+mod imp;
+
+use adw::prelude::*;
+use adw::subclass::prelude::*;
+use glib::Object;
+use gtk::{gio, glib};
+use serde::{Deserialize, Serialize};
+
+use crate::task_object::{TaskData, TaskObject};
+
+glib::wrapper! {
+    pub struct CollectionObject(ObjectSubclass<imp::CollectionObject>);
+}
+
+impl CollectionObject {
+    pub fn new(title: &str, tasks: gio::ListStore) -> Self {
+        Object::builder()
+            .property("title", title)
+            .property("tasks", tasks)
+            .build()
+    }
+
+    pub fn to_collection_data(&self) -> CollectionData {
+        let title = self.imp().title.borrow().clone();
+        let tasks_data = self
+            .tasks()
+            .iter::<TaskObject>()
+            .filter_map(Result::ok)
+            .map(|task_object| task_object.task_data())
+            .collect();
+        CollectionData { title, tasks_data }
+    }
+
+    pub fn from_collection_data(collection_data: CollectionData) -> Self {
+        let title = collection_data.title;
+        let tasks_to_extend: Vec<TaskObject> = collection_data
+            .tasks_data
+            .into_iter()
+            .map(TaskObject::from_task_data)
+            .collect();
+
+        let tasks = gio::ListStore::new::<TaskObject>();
+        tasks.extend_from_slice(&tasks_to_extend);
+
+        Self::new(&title, tasks)
+    }
+}
+
+#[derive(Default, Clone, Serialize, Deserialize)]
+pub struct CollectionData {
+    pub title: String,
+    pub tasks_data: Vec<TaskData>,
+}
+```
+
+</details>
+
