@@ -11,3 +11,8 @@
 ```bash
 cargo add libadwaita --rename adw --features v1_4
 ```
+
+The versions of the `gtk4` and `libadwaita` crates need to be synced. Just remember that when we update one of them to the newest version to update the other one as well.
+
+## **Let To-Do App use Libadwaita**
+
