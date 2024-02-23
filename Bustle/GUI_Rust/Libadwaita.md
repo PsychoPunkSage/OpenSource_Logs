@@ -1054,3 +1054,78 @@ Finally, we define the `set_task_list_visible` method.
 >> These collections will get their own sidebar on the left of the app. We will start by adding an empty sidebar without any functionality.
 
 There are a couple of steps we have to go through to get to this state. First, we have to replace `gtk::ApplicationWindow` with `adw::ApplicationWindow`. The main difference between those two is that `adw::ApplicationWindow` has no **titlebar area**. That comes in handy when we build up our interface with `adw::NavigationSplitView`. The `NavigationSplitView` adds a sidebar for the collection view to the left, while the task view occupies the space on the right. When using `adw::ApplicationWindow` the collection view and task view have their own `adw::HeaderBar` and the separator spans over the whole window.
+
+`Filesystem`: ...../todo/7/resources/window.ui
+
+```html
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <menu id="main-menu">
+    <!--Menu implementation-->      
+  </menu>
+  <template class="TodoWindow" parent="AdwApplicationWindow">
+    <property name="title" translatable="yes">To-Do</property>
+    <property name="width-request">360</property>
+    <property name="height-request">200</property>
+    <child>
+      <object class="AdwBreakpoint">
+        <condition>max-width: 500sp</condition>
+        <setter object="split_view" property="collapsed">True</setter>
+      </object>
+    </child>
+    <property name="content">
+      <object class="AdwNavigationSplitView" id="split_view">
+        <property name="min-sidebar-width">200</property>
+        <property name="sidebar">
+          <object class="AdwNavigationPage">
+            <!--Collection view implementation-->
+          </object>
+        </property>
+        <property name="content">
+          <object class="AdwNavigationPage">
+            <!--Task view implementation-->
+          </object>
+        </property>
+      </object>
+    </property>
+  </template>
+</interface>
+```
+
+`NavigationSplitView` also helps with making your app **adaptive** As soon as the requested size is too small to fit all children at the same time, the splitview collapses, and starts behaving like a `gtk::Stack`. This means that it only displays one of its children at a time. The adaptive behavior of the leaflet allows the To-Do app to work on smaller screen sizes (like e.g. phones) even with the added collection view.
+
+We add the necessary UI elements for the collection view, such as a header bar with a button to add a new collection, as well as the list box `collections_list` to display the collections later on. We also add the style **navigations-sidebar** to `collections_list`.
+
+`Filesystem`: ...../todo/7/resources/window.ui
+
+```html
+<object class="AdwNavigationPage">
+  <property name="title" bind-source="TodoWindow"
+    bind-property="title" bind-flags="sync-create" />
+  <property name="child">
+    <object class="AdwToolbarView">
+      <child type="top">
+        <object class="AdwHeaderBar">
+          <child type="start">
+            <object class="GtkToggleButton">
+              <property name="icon-name">list-add-symbolic</property>
+              <property name="tooltip-text" translatable="yes">New Collection</property>
+              <property name="action-name">win.new-collection</property>
+            </object>
+          </child>
+        </object>
+      </child>
+      <property name="content">
+        <object class="GtkScrolledWindow">
+          <property name="child">
+            <object class="GtkListBox" id="collections_list">
+              <style>
+                <class name="navigation-sidebar" />
+              </style>
+            </object>
+          </property>
+        </object>
+      </property>
+    </object>
+```
+
