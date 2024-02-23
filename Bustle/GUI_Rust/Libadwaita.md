@@ -2572,3 +2572,74 @@ We also adapt `restore_data`. Again, the heavy lifting comes from `CollectionObj
         }
     }
 ```
+
+`set_current_collection` assures that all elements accessing tasks refer to the task model of the current collection. We bind the `tasks_list` to the current collection and store the filter model. Whenever there are no tasks in our current collection we want to hide our tasks list. Otherwise, the list box will leave a bad-looking line behind. However, we don't want to accumulate signal handlers whenever we switch collections. This is why we store the `tasks_changed_handler_id` and disconnect the old handler as soon as we set a new collection. Finally, we select the collection row.
+
+`Filesystem`: ...../todo/8/window/mod.rs
+
+```rust
+    fn set_current_collection(&self, collection: CollectionObject) {
+        // Wrap model with filter and selection and pass it to the list box
+        let tasks = collection.tasks();
+        let filter_model = FilterListModel::new(Some(tasks.clone()), self.filter());
+        let selection_model = NoSelection::new(Some(filter_model.clone()));
+        self.imp().tasks_list.bind_model(
+            Some(&selection_model),
+            clone!(@weak self as window => @default-panic, move |obj| {
+                let task_object = obj
+                    .downcast_ref()
+                    .expect("The object should be of type `TaskObject`.");
+                let row = window.create_task_row(task_object);
+                row.upcast()
+            }),
+        );
+
+        // Store filter model
+        self.imp().current_filter_model.replace(Some(filter_model));
+
+        // If present, disconnect old `tasks_changed` handler
+        if let Some(handler_id) = self.imp().tasks_changed_handler_id.take() {
+            self.tasks().disconnect(handler_id);
+        }
+
+        // Assure that the task list is only visible when it is supposed to
+        self.set_task_list_visible(&tasks);
+        let tasks_changed_handler_id = tasks.connect_items_changed(
+            clone!(@weak self as window => move |tasks, _, _, _| {
+                window.set_task_list_visible(tasks);
+            }),
+        );
+        self.imp()
+            .tasks_changed_handler_id
+            .replace(Some(tasks_changed_handler_id));
+
+        // Set current tasks
+        self.imp().current_collection.replace(Some(collection));
+
+        self.select_collection_row();
+    }
+```
+
+Previously, we used the method `set_task_list_visible`. It assures that `tasks_list` is only visible if the number of tasks is greater than 0.
+
+`Filesystem`: ...../todo/8/window/mod.rs
+
+```rust
+    fn set_task_list_visible(&self, tasks: &gio::ListStore) {
+        self.imp().tasks_list.set_visible(tasks.n_items() > 0);
+    }
+```
+
+`select_collection_row` assures that the row for the current collection is selected in `collections_list`.
+
+`Filesystem`: ...../todo/8/window/mod.rs
+
+```rust
+    fn select_collection_row(&self) {
+        if let Some(index) = self.collections().find(&self.current_collection()) {
+            let row = self.imp().collections_list.row_at_index(index as i32);
+            self.imp().collections_list.select_row(row.as_ref());
+        }
+    }
+```
+
