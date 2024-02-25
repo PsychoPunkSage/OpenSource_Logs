@@ -122,8 +122,18 @@ impl Application {
     // Sets up keyboard shortcuts
     fn setup_accels(&self) {
         self.set_accels_for_action("app.quit", &["<Control>q"]);
-        // More shortcuts setup...
-    }
+        self.set_accels_for_action("app.new-window", &["<Control>n"]);
+        self.set_accels_for_action("window.close", &["<Control>w"]);
+
+        self.set_accels_for_action("win.statistics", &["F9"]);
+        self.set_accels_for_action("win.filter-services", &["<Control>f"]);
+        self.set_accels_for_action("win.record-session-bus", &["<Control>e"]);
+        self.set_accels_for_action("win.record-system-bus", &["<Control>y"]);
+        self.set_accels_for_action("win.record-address", &["<Control>a"]);
+        self.set_accels_for_action("win.open-log", &["<Control>o"]);
+
+        self.set_accels_for_action("win.save", &["<Control>s"]);
+        self.set_accels_for_action("win.save-dot", &["<Control><Alt>s"]);
 
     // Run the application
     pub fn run(&self) -> glib::ExitCode {
@@ -138,7 +148,7 @@ impl Application {
 // Implement Default trait for Application
 impl Default for Application {
     fn default() -> Self {
-        glib::Object::builder()
+        glib::Object::builder() //  creates a new builder for constructing instances of GObject
             .property("application-id", APP_ID)
             .property("resource-base-path", "/org/freedesktop/Bustle/")
             .property("flags", gio::ApplicationFlags::HANDLES_OPEN)
