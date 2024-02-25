@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="BustleAddressDialog" parent="AdwAlertDialog">
+    <property name="heading" translatable="yes">Record Address</property>
+    <property name="body" translatable="yes">For more information about addresses, see the &lt;a href="https://dbus.freedesktop.org/doc/dbus-specification.html#addresses"&gt;D-Bus specification&lt;/a&gt;.</property>
+    <property name="body-use-markup">True</property>
+    <property name="default-response">record</property>
+    <property name="close-response">cancel</property>
+    <responses>
+      <response id="cancel" translatable="yes">_Cancel</response>
+      <response id="record" translatable="yes" appearance="suggested">_Record</response>
+    </responses>
+    <property name="extra-child">
+      <object class="GtkListBox">
+        <style>
+          <class name="boxed-list"/>
+        </style>
+        <child>
+          <object class="AdwEntryRow" id="entry_row">
+            <property name="title" translatable="yes">Server Address</property>
+            <signal name="changed" handler="update_record_response_enabled" swapped="yes"/>
+          </object>
+        </child>
+      </object>
+    </property>
+  </template>
+</interface>

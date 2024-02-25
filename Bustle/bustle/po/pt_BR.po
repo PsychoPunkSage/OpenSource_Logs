@@ -1,0 +1,580 @@
+# Brazilian Portuguese translation for bustle.
+# Copyright (C) 2024 bustle's COPYRIGHT HOLDER
+# This file is distributed under the same license as the bustle package.
+# Rafael Fontenelle <rafaelff@gnome.org>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: bustle main\n"
+"Report-Msgid-Bugs-To: https://gitlab.gnome.org/World/bustle/issues\n"
+"POT-Creation-Date: 2024-02-01 06:38+0000\n"
+"PO-Revision-Date: 2024-02-01 14:58-0300\n"
+"Last-Translator: Rafael Fontenelle <rafaelff@gnome.org>\n"
+"Language-Team: Brazilian Portuguese <https://br.gnome.org/traducao>\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1)\n"
+"X-Generator: Gtranslator 45.3\n"
+
+#: data/org.freedesktop.Bustle.desktop.in.in:3
+#: data/org.freedesktop.Bustle.metainfo.xml.in.in:9
+msgid "Bustle"
+msgstr "Bustle"
+
+#: data/org.freedesktop.Bustle.desktop.in.in:4
+#: data/org.freedesktop.Bustle.metainfo.xml.in.in:10
+msgid "Visualize D-Bus activity"
+msgstr "Visualize atividade do D-Bus"
+
+#. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
+#: data/org.freedesktop.Bustle.desktop.in.in:10
+msgid "debug;profile;d-bus;dbus;sequence;monitor;"
+msgstr "depuração;perfil;d-bus;dbus;sequência;debug;profile;monitor;"
+
+#: data/org.freedesktop.Bustle.desktop.in.in:19
+msgid "New Window"
+msgstr "Nova janela"
+
+#: data/org.freedesktop.Bustle.gschema.xml.in:6
+msgid "Window width"
+msgstr "Largura da janela"
+
+#: data/org.freedesktop.Bustle.gschema.xml.in:10
+msgid "Window height"
+msgstr "Altura da janela"
+
+#: data/org.freedesktop.Bustle.gschema.xml.in:14
+msgid "Window maximized state"
+msgstr "Estado maximizado da janela"
+
+#. Translators: These are the application description paragraphs in the AppData file.
+#: data/org.freedesktop.Bustle.metainfo.xml.in.in:13
+msgid ""
+"Bustle draws sequence diagrams of D-Bus activity. It shows signal emissions, "
+"method calls and their corresponding returns, with time stamps for each "
+"individual event and the duration of each method call. This can help you "
+"check for unwanted D-Bus traffic, and pinpoint why your D-Bus-based "
+"application is not performing as well as you like. It also provides "
+"statistics like signal frequencies and average method call times."
+msgstr ""
+"Bustle desenha diagramas de sequência da atividade do D-Bus. Ele mostra "
+"emissões de sinais, chamadas de métodos e seus retornos correspondentes, com "
+"carimbos de data/hora para cada evento individual e a duração de cada "
+"chamada de método. Isso pode ajudá-lo a verificar tráfego indesejado de D-"
+"Bus e identificar por que seu aplicativo baseado em D-Bus não está "
+"funcionando tão bem quanto você gostaria. Ele também fornece estatísticas "
+"como frequências de sinal e tempos médios de chamada de método."
+
+#: data/org.freedesktop.Bustle.metainfo.xml.in.in:26
+msgid "Explore sequence diagrams of D-Bus activity"
+msgstr "Explore diagramas de sequência da atividade do D-Bus"
+
+#: data/org.freedesktop.Bustle.metainfo.xml.in.in:30
+msgid "See statistics summarizing the log"
+msgstr "Veja estatísticas resumindo o log"
+
+#: data/org.freedesktop.Bustle.metainfo.xml.in.in:34
+msgid "Relax with this soothing greyscale welcome page"
+msgstr "Relaxe com esta página de boas-vindas relaxante em tons de cinza"
+
+#. developer_name tag deprecated with Appstream 1.0
+#: data/org.freedesktop.Bustle.metainfo.xml.in.in:119 src/window.rs:411
+msgid "The Bustle developers"
+msgstr "Os desenvolvedores do Bustle"
+
+#: data/resources/ui/address_dialog.ui:5
+msgid "Record Address"
+msgstr "Gravar endereço"
+
+#: data/resources/ui/address_dialog.ui:6
+msgid ""
+"For more information about addresses, see the <a href=\"https://dbus."
+"freedesktop.org/doc/dbus-specification.html#addresses\">D-Bus specification</"
+"a>"
+msgstr ""
+"Para mais informações sobre endereços, veja a <a href=\"https://dbus."
+"freedesktop.org/doc/dbus-specification.html#addresses\">especificação do D-"
+"Bus</a>"
+
+#: data/resources/ui/address_dialog.ui:11
+msgid "_Cancel"
+msgstr "_Cancelar"
+
+#. This is a verb
+#: data/resources/ui/address_dialog.ui:12 data/resources/ui/window.ui:91
+#: data/resources/ui/window.ui:203
+msgid "_Record"
+msgstr "_Gravar"
+
+#: data/resources/ui/address_dialog.ui:18
+msgid "Server Address"
+msgstr "Endereço do servidor"
+
+#: data/resources/ui/details_view.ui:22
+msgid "Associated Message"
+msgstr "Mensagem associada"
+
+#: data/resources/ui/details_view.ui:38
+msgid "Message"
+msgstr "Mensagem"
+
+#: data/resources/ui/details_view.ui:41
+msgid "Type"
+msgstr "Tipo"
+
+#: data/resources/ui/details_view.ui:50
+msgid "Path"
+msgstr "Caminho"
+
+#: data/resources/ui/details_view.ui:59
+msgid "Interface"
+msgstr "Interface"
+
+#: data/resources/ui/details_view.ui:68
+msgid "Member"
+msgstr "Membro"
+
+#: data/resources/ui/details_view.ui:77
+msgid "Error Type"
+msgstr "Tipo de erro"
+
+#: data/resources/ui/details_view.ui:89
+msgid "Details"
+msgstr "Detalhes"
+
+#: data/resources/ui/details_view.ui:92
+msgid "Sender"
+msgstr "Remetente"
+
+#: data/resources/ui/details_view.ui:101
+msgid "Destination"
+msgstr "Destinatário"
+
+#: data/resources/ui/details_view.ui:110
+msgid "Component"
+msgstr "Componente"
+
+#: data/resources/ui/details_view.ui:125
+msgid "Body Size"
+msgstr "Tamanho do corpo"
+
+#: data/resources/ui/details_view.ui:135
+msgid "Response Time"
+msgstr "Tempo de resposta"
+
+#: data/resources/ui/details_view.ui:145
+msgid "Signature"
+msgstr "Assinatura"
+
+#: data/resources/ui/details_view.ui:154
+msgid "Flags"
+msgstr "Sinalizadores"
+
+#: data/resources/ui/details_view.ui:165
+msgid "Body"
+msgstr "Corpo"
+
+#: data/resources/ui/diagram_header.ui:20
+msgid "Expand"
+msgstr "Expandir"
+
+#: data/resources/ui/durations_page.ui:11 data/resources/ui/statistics.ui:45
+msgid "Durations"
+msgstr "Durações"
+
+#: data/resources/ui/durations_page.ui:12
+msgid "The total and mean time every method call took"
+msgstr "O tempo total e médio que cada chamada de método levou"
+
+#: data/resources/ui/durations_page.ui:16
+msgid "Method"
+msgstr "Método"
+
+#: data/resources/ui/durations_page.ui:45
+msgid "Total"
+msgstr "Total"
+
+#: data/resources/ui/durations_page.ui:76
+msgid "Calls"
+msgstr "Chamadas"
+
+#: data/resources/ui/durations_page.ui:110
+msgid "Mean"
+msgstr "Média"
+
+#: data/resources/ui/filter_pane.ui:51
+msgid "Reset All"
+msgstr "Redefinir tudo"
+
+#: data/resources/ui/frequencies_page.ui:11 data/resources/ui/statistics.ui:35
+msgid "Frequencies"
+msgstr "Frequências"
+
+#: data/resources/ui/frequencies_page.ui:12
+msgid "The frequencies of method calls and signals"
+msgstr "As frequências de sinais de chamadas de métodos"
+
+#: data/resources/ui/shortcuts.ui:11
+msgctxt "shortcut window"
+msgid "General"
+msgstr "Geral"
+
+#: data/resources/ui/shortcuts.ui:14
+msgctxt "shortcut window"
+msgid "Show Shortcuts"
+msgstr "Mostrar atalhos"
+
+#: data/resources/ui/shortcuts.ui:20
+msgctxt "shortcut window"
+msgid "New Window"
+msgstr "Nova janela"
+
+#: data/resources/ui/shortcuts.ui:26
+msgctxt "shortcut window"
+msgid "Quit"
+msgstr "Sai"
+
+#: data/resources/ui/shortcuts.ui:34
+msgctxt "shortcut window"
+msgid "Recording"
+msgstr "Gravação"
+
+#: data/resources/ui/shortcuts.ui:37
+msgctxt "shortcut window"
+msgid "Record Session Bus"
+msgstr "Grava o barramento da sessão"
+
+#: data/resources/ui/shortcuts.ui:43
+msgctxt "shortcut window"
+msgid "Record System Bus"
+msgstr "Grava o barramento do sistema"
+
+#: data/resources/ui/shortcuts.ui:49
+msgctxt "shortcut window"
+msgid "Record Address"
+msgstr "Grava um endereço"
+
+#: data/resources/ui/shortcuts.ui:55
+msgctxt "shortcut window"
+msgid "Open Log File"
+msgstr "Abri um arquivo de log"
+
+#: data/resources/ui/shortcuts.ui:63
+msgctxt "shortcut window"
+msgid "Diagram"
+msgstr "Diagrama"
+
+#: data/resources/ui/shortcuts.ui:66
+msgctxt "shortcut window"
+msgid "Save as PCAP File"
+msgstr "Salva como arquivo PCAP"
+
+#: data/resources/ui/shortcuts.ui:72
+msgctxt "shortcut window"
+msgid "Save as DOT Graph File"
+msgstr "Salva como arquivo de grafo DOT"
+
+#: data/resources/ui/shortcuts.ui:78
+msgctxt "shortcut window"
+msgid "Filter Services"
+msgstr "Filtra serviços"
+
+#: data/resources/ui/shortcuts.ui:84
+msgctxt "shortcut window"
+msgid "Statistics"
+msgstr "Estatísticas"
+
+#: data/resources/ui/sizes_page.ui:11 data/resources/ui/statistics.ui:55
+msgid "Sizes"
+msgstr "Tamanhos"
+
+#: data/resources/ui/sizes_page.ui:12
+msgid "The smallest, mean and largest size of every message"
+msgstr "O menor, médio e maior tamanho de cada mensagem"
+
+#: data/resources/ui/statistics.ui:4
+msgid "Statistics"
+msgstr "Estatísticas"
+
+#: data/resources/ui/window.ui:6
+msgid "New _Window"
+msgstr "Nova _janela"
+
+#: data/resources/ui/window.ui:10
+msgid "_Open"
+msgstr "_Abrir"
+
+#: data/resources/ui/window.ui:15
+msgid "Open Pair of Logs"
+msgstr "Abrir par de logs"
+
+#: data/resources/ui/window.ui:22
+msgid "Save As…"
+msgstr "Salvar como…"
+
+#: data/resources/ui/window.ui:25
+msgid "PCAP"
+msgstr "PCAP"
+
+#. Translators: Dot is a type of file, do not translate.
+#: data/resources/ui/window.ui:29 src/window.rs:561
+msgid "DOT Graph"
+msgstr "Grafo DOT"
+
+#: data/resources/ui/window.ui:35
+msgid "_Statistics"
+msgstr "_Estatísticas"
+
+#: data/resources/ui/window.ui:42
+msgid "_Keyboard Shortcuts"
+msgstr "Atalhos de _teclado"
+
+#: data/resources/ui/window.ui:46
+msgctxt "Translators: Do not translate Bustle, its the app's name"
+msgid "_About Bustle"
+msgstr "_Sobre o Bustle"
+
+#. Bus as in D-Bus
+#: data/resources/ui/window.ui:54
+msgid "Record Session Bus"
+msgstr "Gravar barramento de sessão"
+
+#. Bus as in D-Bus
+#: data/resources/ui/window.ui:58
+msgid "Record System Bus"
+msgstr "Gravar barramento de sistema"
+
+#. Bus as in D-Bus
+#: data/resources/ui/window.ui:62
+msgid "Record Address…"
+msgstr "Gravar endereço…"
+
+#: data/resources/ui/window.ui:104 data/resources/ui/window.ui:235
+msgid "Open Log File"
+msgstr "Abrir arquivo log"
+
+#: data/resources/ui/window.ui:112 data/resources/ui/window.ui:167
+#: data/resources/ui/window.ui:251
+msgid "Main Menu"
+msgstr "Menu principal"
+
+#: data/resources/ui/window.ui:119
+msgctxt "Translators: Do not translate Bustle, its the app's name"
+msgid "Welcome to Bustle"
+msgstr "Boas vindas ao Bustle"
+
+#. Translators: Do not localize D-Bus. It is a proper name
+#: data/resources/ui/window.ui:120
+msgid "Start recording D-Bus activity, you can also run the command"
+msgstr ""
+"Comece a gravar a atividade do D-Bus. Você também pode executar o comando"
+
+#: data/resources/ui/window.ui:140
+msgid "Copy"
+msgstr "Copiar"
+
+#: data/resources/ui/window.ui:174
+msgid "Loading"
+msgstr "Carregando"
+
+#. This is a verb
+#: data/resources/ui/window.ui:219
+msgid "_Stop"
+msgstr "_Parar"
+
+#: data/resources/ui/window.ui:241
+msgid "Filter Services"
+msgstr "Filtrar serviços"
+
+#: data/resources/ui/window.ui:257
+msgid "Details View"
+msgstr "Visão de detalhes"
+
+#: data/resources/ui/window.ui:267
+msgid "Please Hold"
+msgstr "Por favor, aguarde"
+
+#: data/resources/ui/window.ui:268
+msgid "Waiting for D-Bus Traffic…"
+msgstr "Aguardando pelo tráfego do D-Bus…"
+
+#: src/message.rs:193
+msgid "No Reply Expected"
+msgstr "Nenhuma resposta esperada"
+
+#: src/message.rs:194
+msgid "No Auto Start"
+msgstr "Sem autoinicialização"
+
+#: src/message.rs:196
+msgid "Allow Interactive Authentication"
+msgstr "Permitir autenticação interativa"
+
+#: src/message_tag.rs:110
+msgid "Accessibility"
+msgstr "Acessibilidade"
+
+#: src/message_tag.rs:111
+msgid "Bluetooth"
+msgstr "Bluetooth"
+
+#: src/message_tag.rs:112
+msgid "Flatpak"
+msgstr "Flatpak"
+
+#: src/message_tag.rs:113
+msgid "Geolocalization"
+msgstr "Geolocalização"
+
+#: src/message_tag.rs:114
+msgid "GTK"
+msgstr "GTK"
+
+#: src/message_tag.rs:115
+msgid "GVFS"
+msgstr "GVFS"
+
+#: src/message_tag.rs:116
+msgid "Input"
+msgstr "Entrada"
+
+#: src/message_tag.rs:117
+msgid "Login"
+msgstr "Login"
+
+#: src/message_tag.rs:118
+msgid "Network"
+msgstr "Rede"
+
+#: src/message_tag.rs:119
+msgid "Policy Control"
+msgstr "Controle de políticas"
+
+#: src/message_tag.rs:120
+msgid "Portals"
+msgstr "Portais"
+
+#: src/message_tag.rs:121
+msgid "Search Provider"
+msgstr "Provedor de pesquisa"
+
+#: src/message_tag.rs:122
+msgid "Session"
+msgstr "Sessão"
+
+#. TRANSLATORS As in the GNOME Shell
+#: src/message_tag.rs:124
+msgid "Shell"
+msgstr "Shell"
+
+#: src/message_tag.rs:125
+msgid "systemd"
+msgstr "systemd"
+
+#. TRANSLATORS As in the Tracker software. https://tracker.gnome.org/
+#: src/message_tag.rs:127
+msgid "Tracker"
+msgstr "Tracker"
+
+#: src/message_tag.rs:128
+msgid "Power"
+msgstr "Energia"
+
+#: src/message_tag.rs:129
+msgid "Unknown"
+msgstr "Desconhecido"
+
+#: src/message_type.rs:34
+msgid "Method Call"
+msgstr "Chamada de método"
+
+#: src/message_type.rs:35
+msgid "Method Return"
+msgstr "Retorno de método"
+
+#: src/message_type.rs:36
+msgid "Error"
+msgstr "Erro"
+
+#: src/message_type.rs:37
+msgid "Signal"
+msgstr "Sinal"
+
+#: src/window.rs:132
+msgid "Recording session bus…"
+msgstr "Gravando barramento de sessão…"
+
+#: src/window.rs:136
+msgid "Failed to record session bus"
+msgstr "Falha ao gravar barramento de sessão"
+
+#: src/window.rs:142
+msgid "Recording system bus…"
+msgstr "Gravando barramento de sistema…"
+
+#: src/window.rs:147
+msgid "Failed to record system bus"
+msgstr "Falha ao gravar barramento de sistema"
+
+#. Translators: Do NOT translate the contents between '{' and '}', this
+#. is a variable name.
+#: src/window.rs:161
+msgid "Recording {address}…"
+msgstr "Gravando {address}…"
+
+#: src/window.rs:170
+msgid "Failed to record address"
+msgstr "Falha ao gravar endereço"
+
+#: src/window.rs:187
+msgid "Failed to open file"
+msgstr "Falha ao abrir arquivo"
+
+#: src/window.rs:199
+msgid "Failed to save as PCAP"
+msgstr "Falha ao salvar como PCAP"
+
+#: src/window.rs:202
+msgid "Recording saved as PCAP"
+msgstr "Gravação salva como PCAP"
+
+#: src/window.rs:213
+msgid "Failed to save as DOT graph"
+msgstr "Falha ao salvar como grafo DOT"
+
+#: src/window.rs:216
+msgid "Recording saved as DOT graph"
+msgstr "Gravação salva como grafo DOT"
+
+#: src/window.rs:409
+msgid "translator-credits"
+msgstr "Rafael Fontenelle <rafaelff@gnome.org>"
+
+#. Translators: PCAP is a type of file, do not translate.
+#: src/window.rs:500 src/window.rs:524
+msgid "PCAP Files"
+msgstr "Arquivos PCAP"
+
+#: src/window.rs:507
+msgid "Open Log"
+msgstr "Abrir log"
+
+#: src/window.rs:531
+msgid "Save Log"
+msgstr "Salvar log"
+
+#: src/window.rs:568
+msgid "Save Log as DOT Graph File"
+msgstr "Salva o log como arquivo de grafo DOT"
+
+#. Translators: Do NOT translate the contents between '{' and '}', this is a
+#. variable name.
+#: src/window.rs:637
+msgid "Logged {n_messages} messages"
+msgstr "Registradas {n_messages} mensagens"
+
+#: src/window.rs:652
+msgid "Copied to clipboard"
+msgstr "Copiado para a área de transferências"

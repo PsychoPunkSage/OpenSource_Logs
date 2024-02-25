@@ -1,0 +1,75 @@
+/* ColorWidget */
+
+colorwidget {
+  border-radius: 50%;
+}
+
+/* DetailsView */
+
+.arguments-view textview,
+.arguments-view textview text {
+  background: none;
+}
+
+/* DiagramHeader */
+
+.diagram-header-arrow {
+  transition: -gtk-icon-transform 200ms ease-out;
+}
+
+.diagram-header-arrow:dir(ltr) {
+  -gtk-icon-transform: rotate(0.5turn);
+}
+
+.diagram-header-arrow:dir(rtl) {
+  -gtk-icon-transform: rotate(-0.5turn);
+}
+
+.diagram-header-arrow.expanded {
+  -gtk-icon-transform: rotate(0turn);
+}
+
+/* FilterPane */
+
+.filter-pane-row {
+  padding: 6px 12px;
+}
+
+/* ProgressCell */
+
+progress-cell progress {
+  background: @accent_bg_color;
+  border-radius: 3px;
+  border: 1px solid shade(@accent_bg_color, .75);
+  border-right: none;
+}
+
+progress-cell {
+  min-height: 18px;
+  min-width: 100px;
+}
+
+progress-cell progress:backdrop {
+  background: @borders;
+  border-color: shade(@borders, .9);
+}
+
+progress-cell label:backdrop.in-progress {
+  color: inherit;
+}
+
+progress-cell trough {
+  background: alpha(@borders, .5);
+  border: 1px solid @borders;
+  border-radius: 3px;
+}
+
+progress-cell label {
+  font-size: 0.9em;
+  padding: 1px 3px;
+  font-feature-settings: 'tnum';
+}
+
+progress-cell label.in-progress {
+  color: @accent_fg_color;
+}

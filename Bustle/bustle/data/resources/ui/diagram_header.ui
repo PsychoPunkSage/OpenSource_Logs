@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="BustleDiagramHeader">
+    <property name="overflow">hidden</property>
+    <child>
+      <object class="GtkGestureClick">
+        <signal name="released" handler="gesture_click_released" swapped="yes"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkImage" id="arrow">
+        <property name="margin-end">3</property>
+        <property name="margin-start">3</property>
+        <property name="margin-top">3</property>
+        <property name="margin-bottom">3</property>
+        <property name="halign">start</property>
+        <property name="valign">start</property>
+        <property name="icon-name">expander-arrow-symbolic</property>
+        <property name="accessible-role">presentation</property>
+        <property name="tooltip-text" translatable="yes">Expand</property>
+        <style>
+          <class name="diagram-header-arrow"/>
+          <class name="dim-label"/>
+        </style>
+      </object>
+    </child>
+  </template>
+</interface>

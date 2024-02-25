@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="BustleDurationsPage" parent="AdwBin">
+    <child>
+      <object class="GtkScrolledWindow">
+        <child>
+          <object class="GtkColumnView" id="column_view">
+            <property name="show-column-separators">True</property>
+            <property name="show-row-separators">True</property>
+            <accessibility>
+              <property name="label" translatable="yes">Durations</property>
+              <property name="description" translatable="yes">The total and mean time every method call took</property>
+            </accessibility>
+            <child>
+              <object class="GtkColumnViewColumn" id="method_column">
+                <property name="title" translatable="yes">Method</property>
+                <property name="expand">True</property>
+                <property name="factory">
+                  <object class="GtkBuilderListItemFactory">
+                    <property name="bytes"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="GtkListItem">
+    <property name="child">
+      <object class="GtkLabel">
+        <property name="halign">end</property>
+        <property name="use-markup">True</property>
+        <binding name="label">
+          <lookup name="method" type="BustleDurationItem">
+            <lookup name="item">GtkListItem</lookup>
+          </lookup>
+        </binding>
+      </object>
+    </property>
+  </template>
+</interface>
+]]>
+                    </property>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkColumnViewColumn" id="total_column">
+                <property name="title" translatable="yes">Total</property>
+                <property name="factory">
+                  <object class="GtkBuilderListItemFactory">
+                    <property name="bytes">
+                      <![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="GtkListItem">
+    <property name="child">
+      <object class="GtkInscription">
+        <property name="min-chars">12</property>
+        <binding name="text">
+          <closure type="gchararray" function="total_duration">
+            <lookup name="item">GtkListItem</lookup>
+          </closure>
+        </binding>
+        <style>
+          <class name="numeric" />
+        </style>
+      </object>
+    </property>
+  </template>
+</interface>
+]]>
+                    </property>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkColumnViewColumn" id="calls_column">
+                <property name="title" translatable="yes">Calls</property>
+                <property name="factory">
+                  <object class="GtkBuilderListItemFactory">
+                    <property name="bytes"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="GtkListItem">
+    <property name="child">
+      <object class="BustleProgressCell">
+        <binding name="text">
+          <lookup name="calls" type="BustleDurationItem">
+            <lookup name="item">GtkListItem</lookup>
+          </lookup>
+        </binding>
+        <binding name="fraction">
+          <closure type="gdouble" function="calls_fraction">
+            <lookup name="item">GtkListItem</lookup>
+          </closure>
+        </binding>
+        <accessibility>
+          <property name="label" translatable="yes">Calls</property>
+        </accessibility>
+      </object>
+    </property>
+  </template>
+</interface>
+]]>
+                    </property>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkColumnViewColumn" id="mean_column">
+                <property name="title" translatable="yes">Mean</property>
+                <property name="factory">
+                  <object class="GtkBuilderListItemFactory">
+                    <property name="bytes">
+                      <![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="GtkListItem">
+    <property name="child">
+      <object class="GtkInscription">
+        <property name="min-chars">12</property>
+        <binding name="text">
+          <closure type="gchararray" function="mean_duration">
+            <lookup name="item">GtkListItem</lookup>
+          </closure>
+        </binding>
+        <style>
+          <class name="numeric" />
+        </style>
+      </object>
+    </property>
+  </template>
+</interface>
+]]>
+                    </property>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <style>
+              <class name="data-table" />
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

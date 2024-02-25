@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/org/freedesktop/Bustle/">
+    <file compressed="true" preprocess="xml-stripblanks">icons/scalable/actions/expander-arrow-symbolic.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks">icons/scalable/status/dock-right-symbolic-rtl.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks">icons/scalable/status/dock-right-symbolic.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks">icons/scalable/status/funnel-symbolic.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks">icons/scalable/status/statistics-frequencies-symbolic.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks">icons/scalable/status/statistics-durations-symbolic.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks">icons/scalable/status/statistics-sizes-symbolic.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks" alias="gtk/help-overlay.ui">ui/shortcuts.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/address_dialog.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/details_view.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/diagram.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/diagram_header.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/diagram_row.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/diagram_row_tag.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/diagram_view.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/durations_page.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/filter_pane.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/filter_pane_bus_name_row.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/filter_pane_message_tag_row.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/frequencies_page.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/sizes_page.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/statistics.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/window.ui</file>
+    <file compressed="true">style.css</file>
+  </gresource>
+</gresources>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="BustleDiagramView">
+    <property name="overflow">hidden</property>
+    <child>
+      <object class="GtkListView" id="list_view">
+        <property name="factory">
+          <object class="GtkSignalListItemFactory">
+            <signal name="setup" handler="factory_setup" swapped="yes"/>
+            <signal name="teardown" handler="factory_teardown" swapped="yes"/>
+            <signal name="bind" handler="factory_bind" swapped="yes"/>
+            <signal name="unbind" handler="factory_unbind" swapped="yes"/>
+          </object>
+        </property>
+        <property name="model">
+          <object class="GtkSingleSelection" id="selection_model">
+            <property name="can-unselect">True</property>
+            <property name="autoselect">False</property>
+            <signal name="notify::selected-item" handler="selection_model_selected_item_notify" swapped="yes"/>
+          </object>
+        </property>
+        <style>
+          <class name="navigation-sidebar"/>
+        </style>
+      </object>
+    </child>
+  </template>
+</interface>

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="BustleSizesPage" parent="AdwBin">
+    <child>
+      <object class="GtkScrolledWindow">
+        <child>
+          <object class="GtkColumnView" id="column_view">
+            <property name="show-column-separators">True</property>
+            <property name="show-row-separators">True</property>
+            <accessibility>
+              <property name="label" translatable="yes">Sizes</property>
+              <property name="description" translatable="yes">The smallest, mean and largest size of every message</property>
+            </accessibility>
+            <child>
+              <object class="GtkColumnViewColumn" id="message_type_column">
+                <property name="title">Message Type</property>
+                <property name="factory">
+                  <object class="GtkBuilderListItemFactory">
+                    <property name="bytes"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="GtkListItem">
+    <property name="child">
+      <object class="GtkInscription">
+        <property name="min-chars">13</property>
+        <binding name="text">
+          <closure type="gchararray" function="message_type">
+            <lookup name="item">GtkListItem</lookup>
+          </closure>
+        </binding>
+      </object>
+    </property>
+  </template>
+</interface>
+]]>
+                    </property>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkColumnViewColumn" id="member_column">
+                <property name="title">Member</property>
+                <property name="expand">True</property>
+                <property name="factory">
+                  <object class="GtkBuilderListItemFactory">
+                    <property name="bytes"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="GtkListItem">
+    <property name="child">
+      <object class="GtkLabel">
+        <property name="halign">end</property>
+        <property name="use-markup">True</property>
+        <binding name="label">
+          <lookup name="member" type="BustleSizeItem">
+            <lookup name="item">GtkListItem</lookup>
+          </lookup>
+        </binding>
+      </object>
+    </property>
+  </template>
+</interface>
+]]>
+                    </property>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkColumnViewColumn" id="smallest_column">
+                <property name="title">Smallest</property>
+                <property name="factory">
+                  <object class="GtkBuilderListItemFactory">
+                    <property name="bytes"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="GtkListItem">
+    <property name="child">
+      <object class="GtkInscription">
+        <property name="min-chars">8</property>
+        <binding name="text">
+          <closure type="gchararray" function="smallest_bytes">
+            <lookup name="item">GtkListItem</lookup>
+          </closure>
+        </binding>
+        <style>
+          <class name="numeric" />
+        </style>
+      </object>
+    </property>
+  </template>
+</interface>
+]]>
+                    </property>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkColumnViewColumn" id="mean_column">
+                <property name="title">Mean</property>
+                <property name="factory">
+                  <object class="GtkBuilderListItemFactory">
+                    <property name="bytes"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="GtkListItem">
+    <property name="child">
+      <object class="GtkInscription">
+        <property name="min-chars">8</property>
+        <binding name="text">
+          <closure type="gchararray" function="mean_bytes">
+            <lookup name="item">GtkListItem</lookup>
+          </closure>
+        </binding>
+        <style>
+          <class name="numeric" />
+        </style>
+      </object>
+    </property>
+  </template>
+</interface>
+]]>
+                    </property>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkColumnViewColumn" id="largest_column">
+                <property name="title">Largest</property>
+                <property name="factory">
+                  <object class="GtkBuilderListItemFactory">
+                    <property name="bytes"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="GtkListItem">
+    <property name="child">
+      <object class="GtkInscription">
+        <property name="min-chars">8</property>
+        <binding name="text">
+          <closure type="gchararray" function="largest_bytes">
+            <lookup name="item">GtkListItem</lookup>
+          </closure>
+        </binding>
+        <style>
+          <class name="numeric" />
+        </style>
+      </object>
+    </property>
+  </template>
+</interface>
+]]>
+                    </property>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <style>
+              <class name="data-table"/>
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

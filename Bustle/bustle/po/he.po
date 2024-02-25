@@ -1,0 +1,578 @@
+# Hebrew translation for bustle.
+# Copyright (C) 2024 bustle's COPYRIGHT HOLDER
+# This file is distributed under the same license as the bustle package.
+# Yaron Shahrabani <sh.yaron@gmail.com>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: bustle main\n"
+"Report-Msgid-Bugs-To: https://gitlab.gnome.org/World/bustle/issues\n"
+"POT-Creation-Date: 2024-01-31 16:52+0000\n"
+"PO-Revision-Date: 2024-02-01 08:38+0200\n"
+"Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
+"Language-Team: Hebrew <he@li.org>\n"
+"Language: he\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.4.1\n"
+
+#: data/org.freedesktop.Bustle.desktop.in.in:3
+#: data/org.freedesktop.Bustle.metainfo.xml.in.in:9
+msgid "Bustle"
+msgstr "Bustle"
+
+#: data/org.freedesktop.Bustle.desktop.in.in:4
+#: data/org.freedesktop.Bustle.metainfo.xml.in.in:10
+msgid "Visualize D-Bus activity"
+msgstr "המחשת הפעילות של D-Bus"
+
+#. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
+#: data/org.freedesktop.Bustle.desktop.in.in:10
+msgid "debug;profile;d-bus;dbus;sequence;monitor;"
+msgstr ""
+"ניפוי שגיאות;פרופיל;דיבאס;די-באס;די-בס;d-bus;רצף;תרשים הרצף;מעקב;צג;מוניטור;"
+"אפיק המערכת;אפיק נתונים;אפיק ההפעלה;אפיק הפעלה;אפיק מערכת;אפיק;באס;בס;באסטל;"
+
+#: data/org.freedesktop.Bustle.desktop.in.in:19
+msgid "New Window"
+msgstr "חלון חדש"
+
+#: data/org.freedesktop.Bustle.gschema.xml.in:6
+msgid "Window width"
+msgstr "רוחב חלון"
+
+#: data/org.freedesktop.Bustle.gschema.xml.in:10
+msgid "Window height"
+msgstr "גובה חלון"
+
+#: data/org.freedesktop.Bustle.gschema.xml.in:14
+msgid "Window maximized state"
+msgstr "חלון במצב מוגדל"
+
+#. Translators: These are the application description paragraphs in the AppData file.
+#: data/org.freedesktop.Bustle.metainfo.xml.in.in:13
+msgid ""
+"Bustle draws sequence diagrams of D-Bus activity. It shows signal emissions, "
+"method calls and their corresponding returns, with time stamps for each "
+"individual event and the duration of each method call. This can help you "
+"check for unwanted D-Bus traffic, and pinpoint why your D-Bus-based "
+"application is not performing as well as you like. It also provides "
+"statistics like signal frequencies and average method call times."
+msgstr ""
+"היישום Bustle מצייר תרשימי רצף של פעילות D-Bus. הוא מציג פליטות של אותות, "
+"קריאות לשיטות והערכים שחוזרים מהן, עם חותמת זמן לכל אירוע ואירוע והמשך של כל "
+"קריאה לשיטה. הניתוח הזה יכול לסייע לך לבדוק אם מתקיימת תעבורת D-Bus לא רצויה "
+"ולהצביע על הסיבה לכך שהיישום מבוסס ה־D-Bus שלך לא מתפקד כמו שציפית. היישום "
+"מספק גם סטטיסטיקה כגון תדירות האותו ואת משך הזמן הממוצע לקריאות לשיטות."
+
+#: data/org.freedesktop.Bustle.metainfo.xml.in.in:26
+msgid "Explore sequence diagrams of D-Bus activity"
+msgstr "חקירת תרשימי רצף של פעילות D-Bus"
+
+#: data/org.freedesktop.Bustle.metainfo.xml.in.in:30
+msgid "See statistics summarizing the log"
+msgstr "הצגת סטטיסטיקה שמסכמת את היומן"
+
+#: data/org.freedesktop.Bustle.metainfo.xml.in.in:34
+msgid "Relax with this soothing greyscale welcome page"
+msgstr "אפשר לנשום לרווחה מול מסך קבלת הפנים הזה בגווני אפור"
+
+#. developer_name tag deprecated with Appstream 1.0
+#: data/org.freedesktop.Bustle.metainfo.xml.in.in:119 src/window.rs:411
+msgid "The Bustle developers"
+msgstr "מפתחי Bustle"
+
+#: data/resources/ui/address_dialog.ui:5
+msgid "Record Address"
+msgstr "הקלטת כתובת"
+
+#: data/resources/ui/address_dialog.ui:6
+msgid ""
+"For more information about addresses, see the <a href=\"https://dbus."
+"freedesktop.org/doc/dbus-specification.html#addresses\">D-Bus specification</"
+"a>"
+msgstr ""
+"ב<a href=\"https://dbus.freedesktop.org/doc/dbus-specification."
+"html#addresses\">מפרט של D-Bus</a> יש מידע נוסף על כתובות"
+
+#: data/resources/ui/address_dialog.ui:11
+msgid "_Cancel"
+msgstr "_ביטול"
+
+#. This is a verb
+#: data/resources/ui/address_dialog.ui:12 data/resources/ui/window.ui:91
+#: data/resources/ui/window.ui:203
+msgid "_Record"
+msgstr "ה_קלטה"
+
+#: data/resources/ui/address_dialog.ui:18
+msgid "Server Address"
+msgstr "כתובת שרת"
+
+#: data/resources/ui/details_view.ui:22
+msgid "Associated Message"
+msgstr "הודעה משויכת"
+
+#: data/resources/ui/details_view.ui:38
+msgid "Message"
+msgstr "הודעה"
+
+#: data/resources/ui/details_view.ui:41
+msgid "Type"
+msgstr "סוג"
+
+#: data/resources/ui/details_view.ui:50
+msgid "Path"
+msgstr "נתיב"
+
+#: data/resources/ui/details_view.ui:59
+msgid "Interface"
+msgstr "מנשק"
+
+#: data/resources/ui/details_view.ui:68
+msgid "Member"
+msgstr "חבר"
+
+#: data/resources/ui/details_view.ui:77
+msgid "Error Type"
+msgstr "סוג שגיאה"
+
+#: data/resources/ui/details_view.ui:89
+msgid "Details"
+msgstr "פרטים"
+
+#: data/resources/ui/details_view.ui:92
+msgid "Sender"
+msgstr "מוען"
+
+#: data/resources/ui/details_view.ui:101
+msgid "Destination"
+msgstr "יעד"
+
+#: data/resources/ui/details_view.ui:110
+msgid "Component"
+msgstr "רכיב"
+
+#: data/resources/ui/details_view.ui:125
+msgid "Body Size"
+msgstr "גודל מסר"
+
+#: data/resources/ui/details_view.ui:135
+msgid "Response Time"
+msgstr "זמן תגובה"
+
+#: data/resources/ui/details_view.ui:145
+msgid "Signature"
+msgstr "חתימה"
+
+#: data/resources/ui/details_view.ui:154
+msgid "Flags"
+msgstr "דגלונים"
+
+#: data/resources/ui/details_view.ui:165
+msgid "Body"
+msgstr "מסר"
+
+#: data/resources/ui/diagram_header.ui:20
+msgid "Expand"
+msgstr "הרחבה"
+
+#: data/resources/ui/durations_page.ui:11 data/resources/ui/statistics.ui:45
+msgid "Durations"
+msgstr "פרקי זמן"
+
+#: data/resources/ui/durations_page.ui:12
+msgid "The total and mean time every method call took"
+msgstr "הזמן הכולל והממוצע שלקח לכל קריאה לשיטה"
+
+#: data/resources/ui/durations_page.ui:16
+msgid "Method"
+msgstr "שיטה"
+
+#: data/resources/ui/durations_page.ui:45
+msgid "Total"
+msgstr "סך הכול"
+
+#: data/resources/ui/durations_page.ui:76
+msgid "Calls"
+msgstr "קריאות"
+
+#: data/resources/ui/durations_page.ui:110
+msgid "Mean"
+msgstr "ממוצע"
+
+#: data/resources/ui/filter_pane.ui:51
+msgid "Reset All"
+msgstr "איפוס של הכול"
+
+#: data/resources/ui/frequencies_page.ui:11 data/resources/ui/statistics.ui:35
+msgid "Frequencies"
+msgstr "תדירויות"
+
+#: data/resources/ui/frequencies_page.ui:12
+msgid "The frequencies of method calls and signals"
+msgstr "תדירויות שיטות הקריאה והאותות"
+
+#: data/resources/ui/shortcuts.ui:11
+msgctxt "shortcut window"
+msgid "General"
+msgstr "כללי"
+
+#: data/resources/ui/shortcuts.ui:14
+msgctxt "shortcut window"
+msgid "Show Shortcuts"
+msgstr "הצגת קיצורי מקלדת"
+
+#: data/resources/ui/shortcuts.ui:20
+msgctxt "shortcut window"
+msgid "New Window"
+msgstr "חלון חדש"
+
+#: data/resources/ui/shortcuts.ui:26
+msgctxt "shortcut window"
+msgid "Quit"
+msgstr "יציאה"
+
+#: data/resources/ui/shortcuts.ui:34
+msgctxt "shortcut window"
+msgid "Recording"
+msgstr "הקלטה"
+
+#: data/resources/ui/shortcuts.ui:37
+msgctxt "shortcut window"
+msgid "Record Session Bus"
+msgstr "הקלטת אפיק הפעלה"
+
+#: data/resources/ui/shortcuts.ui:43
+msgctxt "shortcut window"
+msgid "Record System Bus"
+msgstr "הקלטת אפיק מערכת"
+
+#: data/resources/ui/shortcuts.ui:49
+msgctxt "shortcut window"
+msgid "Record Address"
+msgstr "הקלטת כתובת"
+
+#: data/resources/ui/shortcuts.ui:55
+msgctxt "shortcut window"
+msgid "Open Log File"
+msgstr "פתיחת קובץ יומן"
+
+#: data/resources/ui/shortcuts.ui:63
+msgctxt "shortcut window"
+msgid "Diagram"
+msgstr "תרשים"
+
+#: data/resources/ui/shortcuts.ui:66
+msgctxt "shortcut window"
+msgid "Save as PCAP File"
+msgstr "שמירה כקובץ PCAP"
+
+#: data/resources/ui/shortcuts.ui:72
+msgctxt "shortcut window"
+msgid "Save as DOT Graph File"
+msgstr "שמירה כקובץ תרשים DOT"
+
+#: data/resources/ui/shortcuts.ui:78
+msgctxt "shortcut window"
+msgid "Filter Services"
+msgstr "סינון שירותים"
+
+#: data/resources/ui/shortcuts.ui:84
+msgctxt "shortcut window"
+msgid "Statistics"
+msgstr "סטטיסטיקה"
+
+#: data/resources/ui/sizes_page.ui:11 data/resources/ui/statistics.ui:55
+msgid "Sizes"
+msgstr "גדלים"
+
+#: data/resources/ui/sizes_page.ui:12
+msgid "The smallest, mean and largest size of every message"
+msgstr "הגודל הקטן ביותר, הממוצע והגדול ביותר של כל הודעה"
+
+#: data/resources/ui/statistics.ui:4
+msgid "Statistics"
+msgstr "סטטיסטיקה"
+
+#: data/resources/ui/window.ui:6
+msgid "New _Window"
+msgstr "חלון _חדש"
+
+#: data/resources/ui/window.ui:10
+msgid "_Open"
+msgstr "_פתיחה"
+
+#: data/resources/ui/window.ui:15
+msgid "Open Pair of Logs"
+msgstr "פתיחת צמד יומנים"
+
+#: data/resources/ui/window.ui:22
+msgid "Save As…"
+msgstr "שמירה בשם…"
+
+#: data/resources/ui/window.ui:25
+msgid "PCAP"
+msgstr "PCAP"
+
+#. Translators: Dot is a type of file, do not translate.
+#: data/resources/ui/window.ui:29 src/window.rs:561
+msgid "DOT Graph"
+msgstr "תרשים DOT"
+
+#: data/resources/ui/window.ui:35
+msgid "_Statistics"
+msgstr "_סטטיסטיקה"
+
+#: data/resources/ui/window.ui:42
+msgid "_Keyboard Shortcuts"
+msgstr "_קיצורי מקלדת"
+
+#: data/resources/ui/window.ui:46
+msgctxt "Translators: Do not translate Bustle, its the app's name"
+msgid "_About Bustle"
+msgstr "_על Bustle"
+
+#. Bus as in D-Bus
+#: data/resources/ui/window.ui:54
+msgid "Record Session Bus"
+msgstr "הקלטת אפיק ההפעלה"
+
+#. Bus as in D-Bus
+#: data/resources/ui/window.ui:58
+msgid "Record System Bus"
+msgstr "הקלטת אפיק מערכת"
+
+#. Bus as in D-Bus
+#: data/resources/ui/window.ui:62
+msgid "Record Address…"
+msgstr "הקלטת כתובת…"
+
+#: data/resources/ui/window.ui:104 data/resources/ui/window.ui:235
+msgid "Open Log File"
+msgstr "פתיחת קובץ יומן"
+
+#: data/resources/ui/window.ui:112 data/resources/ui/window.ui:167
+#: data/resources/ui/window.ui:251
+msgid "Main Menu"
+msgstr "תפריט ראשי"
+
+#: data/resources/ui/window.ui:119
+msgctxt "Translators: Do not translate Bustle, its the app's name"
+msgid "Welcome to Bustle"
+msgstr "ברוך בואך ל־Bustle"
+
+#. Translators: Do not localize D-Bus. It is a proper name
+#: data/resources/ui/window.ui:120
+msgid "Start recording D-Bus activity, you can also run the command"
+msgstr "אפשר להתחיל להקליט את הפעילות של D-Bus, אפשר גם להריץ את הפקודה"
+
+#: data/resources/ui/window.ui:140
+msgid "Copy"
+msgstr "העתקה"
+
+#: data/resources/ui/window.ui:174
+msgid "Loading"
+msgstr "טעינה"
+
+#. This is a verb
+#: data/resources/ui/window.ui:219
+msgid "_Stop"
+msgstr "_עצירה"
+
+#: data/resources/ui/window.ui:241
+msgid "Filter Services"
+msgstr "סינון שירותים"
+
+#: data/resources/ui/window.ui:257
+msgid "Details View"
+msgstr "תצוגה מפורטת"
+
+#: data/resources/ui/window.ui:267
+msgid "Please Hold"
+msgstr "נא להמתין"
+
+#: data/resources/ui/window.ui:268
+msgid "Waiting for D-Bus Traffic…"
+msgstr "בהמתנה לתעבורת D-Bus…"
+
+#: src/message.rs:193
+msgid "No Reply Expected"
+msgstr "לא הייתה ציפייה לתגובה"
+
+#: src/message.rs:194
+msgid "No Auto Start"
+msgstr "אין התחלה אוטומטית"
+
+#: src/message.rs:196
+msgid "Allow Interactive Authentication"
+msgstr "לאפשר אימות אינטראקטיבי"
+
+#: src/message_tag.rs:110
+msgid "Accessibility"
+msgstr "נגישות"
+
+#: src/message_tag.rs:111
+msgid "Bluetooth"
+msgstr "בלוטות׳"
+
+#: src/message_tag.rs:112
+msgid "Flatpak"
+msgstr "Flatpak"
+
+#: src/message_tag.rs:113
+msgid "Geolocalization"
+msgstr "מיקום גאוגרפי"
+
+#: src/message_tag.rs:114
+msgid "GTK"
+msgstr "GTK"
+
+#: src/message_tag.rs:115
+msgid "GVFS"
+msgstr "GVFS"
+
+#: src/message_tag.rs:116
+msgid "Input"
+msgstr "קלט"
+
+#: src/message_tag.rs:117
+msgid "Login"
+msgstr "כניסה"
+
+#: src/message_tag.rs:118
+msgid "Network"
+msgstr "רשת"
+
+#: src/message_tag.rs:119
+msgid "Policy Control"
+msgstr "בקרת מדיניות"
+
+#: src/message_tag.rs:120
+msgid "Portals"
+msgstr "שערים"
+
+#: src/message_tag.rs:121
+msgid "Search Provider"
+msgstr "ספק חיפוש"
+
+#: src/message_tag.rs:122
+msgid "Session"
+msgstr "הפעלה"
+
+#. TRANSLATORS As in the GNOME Shell
+#: src/message_tag.rs:124
+msgid "Shell"
+msgstr "מעטפת"
+
+#: src/message_tag.rs:125
+msgid "systemd"
+msgstr "systemd"
+
+#. TRANSLATORS As in the Tracker software. https://tracker.gnome.org/
+#: src/message_tag.rs:127
+msgid "Tracker"
+msgstr "עוקב"
+
+#: src/message_tag.rs:128
+msgid "Power"
+msgstr "חשמל"
+
+#: src/message_tag.rs:129
+msgid "Unknown"
+msgstr "לא ידוע"
+
+#: src/message_type.rs:34
+msgid "Method Call"
+msgstr "קריאה לשיטה"
+
+#: src/message_type.rs:35
+msgid "Method Return"
+msgstr "החזרה משיטה"
+
+#: src/message_type.rs:36
+msgid "Error"
+msgstr "שגיאה"
+
+#: src/message_type.rs:37
+msgid "Signal"
+msgstr "אות"
+
+#: src/window.rs:132
+msgid "Recording session bus…"
+msgstr "אפיק ההפעלה מוקלט…"
+
+#: src/window.rs:136
+msgid "Failed to record session bus"
+msgstr "הקלטת אפיק ההפעלה נכשלה"
+
+#: src/window.rs:142
+msgid "Recording system bus…"
+msgstr "אפיק המערכת מוקלט…"
+
+#: src/window.rs:147
+msgid "Failed to record system bus"
+msgstr "הקלטת אפיק המערכת נכשלה"
+
+#. Translators: Do NOT translate the contents between '{' and '}', this
+#. is a variable name.
+#: src/window.rs:161
+msgid "Recording {address}…"
+msgstr "מתבצעת הקלטה של {address}…"
+
+#: src/window.rs:170
+msgid "Failed to record address"
+msgstr "הקלטת הכתובת נכשלה"
+
+#: src/window.rs:187
+msgid "Failed to open file"
+msgstr "פתיחת הקובץ נכשלה"
+
+#: src/window.rs:199
+msgid "Failed to save as PCAP"
+msgstr "השמירה כ־PCAP נכשלה"
+
+#: src/window.rs:202
+msgid "Recording saved as PCAP"
+msgstr "ההקלטה נשמרה כ־PCAP"
+
+#: src/window.rs:213
+msgid "Failed to save as DOT graph"
+msgstr "השמירה כתרשים DOT נכשלה"
+
+#: src/window.rs:216
+msgid "Recording saved as DOT graph"
+msgstr "ההקלטה נשמרה כתרשים DOT"
+
+#: src/window.rs:409
+msgid "translator-credits"
+msgstr "ירון שהרבני <sh.yaron@gmail.com>"
+
+#. Translators: PCAP is a type of file, do not translate.
+#: src/window.rs:500 src/window.rs:524
+msgid "PCAP Files"
+msgstr "קובצי PCAP"
+
+#: src/window.rs:507
+msgid "Open Log"
+msgstr "פתיחת היומן"
+
+#: src/window.rs:531
+msgid "Save Log"
+msgstr "שמירת היומן"
+
+#: src/window.rs:568
+msgid "Save Log as DOT Graph File"
+msgstr "שמירת היומן כקובץ תרשים DOT"
+
+#. Translators: Do NOT translate the contents between '{' and '}', this is a
+#. variable name.
+#: src/window.rs:637
+msgid "Logged {n_messages} messages"
+msgstr "תועדו {n_messages} הודעות"
+
+#: src/window.rs:652
+msgid "Copied to clipboard"
+msgstr "הועתק ללוח הגזירים"

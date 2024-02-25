@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="BustleDiagramRowTag">
+    <property name="layout-manager">
+      <object class="GtkBoxLayout">
+        <property name="orientation">horizontal</property>
+        <property name="spacing">6</property>
+      </object>
+    </property>
+    <child>
+      <object class="BustleColorWidget" id="color">
+        <property name="halign">center</property>
+        <property name="valign">center</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkInscription" id="label">
+        <property name="xalign">0</property>
+        <property name="text-overflow">ellipsize-end</property>
+        <property name="nat-chars">15</property>
+        <style>
+          <class name="caption"/>
+        </style>
+      </object>
+    </child>
+  </template>
+</interface>

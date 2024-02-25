@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="BustleDetailsView">
+    <property name="layout-manager">
+      <object class="GtkBinLayout"/>
+    </property>
+    <child>
+      <object class="GtkScrolledWindow" id="scrolled_window">
+        <property name="hscrollbar-policy">never</property>
+        <property name="child">
+          <object class="GtkBox">
+            <property name="margin-start">18</property>
+            <property name="margin-end">18</property>
+            <property name="margin-top">18</property>
+            <property name="margin-bottom">18</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">18</property>
+            <child>
+              <object class="AdwPreferencesGroup" id="associated_message_group">
+                <child>
+                  <object class="AdwActionRow">
+                    <property name="title" translatable="yes">Associated Message</property>
+                    <property name="activatable">True</property>
+                    <signal name="activated" handler="associated_message_activated" swapped="yes"/>
+                    <child type="suffix">
+                      <object class="GtkImage">
+                        <property name="valign">center</property>
+                        <property name="icon-name">go-next-symbolic</property>
+                        <property name="accessible-role">presentation</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="AdwPreferencesGroup">
+                <property name="title" translatable="yes">Message</property>
+                <child>
+                  <object class="AdwActionRow" id="type_row">
+                    <property name="title" translatable="yes">Type</property>
+                    <property name="subtitle-selectable">True</property>
+                    <style>
+                      <class name="property"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="path_row">
+                    <property name="title" translatable="yes">Path</property>
+                    <property name="subtitle-selectable">True</property>
+                    <style>
+                      <class name="property"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="interface_row">
+                    <property name="title" translatable="yes">Interface</property>
+                    <property name="subtitle-selectable">True</property>
+                    <style>
+                      <class name="property"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="member_row">
+                    <property name="title" translatable="yes">Member</property>
+                    <property name="subtitle-selectable">True</property>
+                    <style>
+                      <class name="property"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="error_row">
+                    <property name="title" translatable="yes">Error Type</property>
+                    <property name="visible">False</property>
+                    <property name="subtitle-selectable">True</property>
+                    <style>
+                      <class name="property"/>
+                    </style>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="AdwPreferencesGroup">
+                <property name="title" translatable="yes">Details</property>
+                <child>
+                  <object class="AdwActionRow" id="sender_row">
+                    <property name="title" translatable="yes">Sender</property>
+                    <property name="subtitle-selectable">True</property>
+                    <style>
+                      <class name="property"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="destination_row">
+                    <property name="title" translatable="yes">Destination</property>
+                    <property name="subtitle-selectable">True</property>
+                    <style>
+                      <class name="property"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="component_row">
+                    <property name="title" translatable="yes">Component</property>
+                    <property name="subtitle-selectable">True</property>
+                    <child type="suffix">
+                      <object class="BustleColorWidget" id="component_color">
+                        <property name="halign">center</property>
+                        <property name="valign">center</property>
+                      </object>
+                    </child>
+                    <style>
+                      <class name="property"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="size_row">
+                    <property name="title" translatable="yes">Body Size</property>
+                    <property name="subtitle-selectable">True</property>
+                    <style>
+                      <class name="property"/>
+                      <class name="numeric"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="response_time_row">
+                    <property name="title" translatable="yes">Response Time</property>
+                    <property name="subtitle-selectable">True</property>
+                    <style>
+                      <class name="property"/>
+                      <class name="numeric"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="signature_row">
+                    <property name="title" translatable="yes">Signature</property>
+                    <property name="subtitle-selectable">True</property>
+                    <style>
+                      <class name="property"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="flags_row">
+                    <property name="title" translatable="yes">Flags</property>
+                    <property name="subtitle-selectable">True</property>
+                    <style>
+                      <class name="property"/>
+                    </style>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="AdwPreferencesGroup" id="body_group">
+                <property name="title" translatable="yes">Body</property>
+                <child>
+                  <object class="GtkScrolledWindow">
+                    <property name="min-content-height">180</property>
+                    <property name="overflow">hidden</property>
+                    <property name="child">
+                      <object class="GtkTextView">
+                        <property name="top-margin">12</property>
+                        <property name="bottom-margin">12</property>
+                        <property name="left-margin">12</property>
+                        <property name="right-margin">12</property>
+                        <property name="editable">False</property>
+                        <property name="cursor-visible">False</property>
+                        <property name="wrap-mode">word</property>
+                        <property name="buffer">
+                          <object class="GtkTextBuffer" id="arguments_text_buffer"/>
+                        </property>
+                        <accessibility>
+                          <relation name="labelled-by">body_group</relation>
+                        </accessibility>
+                      </object>
+                    </property>
+                    <style>
+                      <class name="card"/>
+                      <class name="arguments-view"/>
+                    </style>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </property>
+      </object>
+    </child>
+  </template>
+</interface>
