@@ -16,54 +16,72 @@ use crate::{
 };
 
 mod imp {
+    // Import necessary standard library and external dependencies
     use std::{
         cell::RefCell,
         collections::{HashMap, HashSet},
         marker::PhantomData,
     };
 
+    // Import the IndexSet data structure from the indexmap crate
     use indexmap::IndexSet;
 
+    // Import the parent module
     use super::*;
 
+    // Define the internal struct `FilteredMessageModel` with its properties
     #[derive(Default, glib::Properties)]
     #[properties(wrapper_type = super::FilteredMessageModel)]
     pub struct FilteredMessageModel {
+        // A PhantomData field to hold the type information for `has_filter`
         #[property(get = Self::has_filter)]
         pub(super) has_filter: PhantomData<bool>,
 
+        // The inner filter list model
         pub(super) inner: gtk::FilterListModel,
+        // A RefCell to hold the index set of messages in the inner model
         pub(super) inner_index: RefCell<IndexSet<Message>>,
 
+        // The filtered bus name model
         pub(super) filtered_bus_names: FilteredBusNameModel,
 
-        // These maps to the index on where name filter is stored in `inner_filter`
+        // A RefCell to hold the indices of message tag filters
         pub(super) message_tag_filter_indices: RefCell<HashMap<MessageTag, u32>>,
+        // A RefCell to hold the indices of bus name filters
         pub(super) bus_name_filter_indices: RefCell<HashMap<BusName<'static>, u32>>,
 
+        // A RefCell to hold the set of used bus names
         pub(super) used_bus_names: RefCell<HashSet<BusName<'static>>>,
     }
 
+    // Implement GObject subclassing for `FilteredMessageModel`
     #[glib::object_subclass]
     impl ObjectSubclass for FilteredMessageModel {
+        // Define the name, type, and interfaces for the subclass
         const NAME: &'static str = "BustleFilteredMessageModel";
         type Type = super::FilteredMessageModel;
         type Interfaces = (gio::ListModel,);
     }
 
+    // Implement object properties and methods for `FilteredMessageModel`
     #[glib::derived_properties]
     impl ObjectImpl for FilteredMessageModel {
+        // Define behavior when the object is constructed
         fn constructed(&self) {
+            // Call the constructed method of the parent object
             self.parent_constructed();
 
+            // Clone a weak reference to the object for use in closures
             let obj = self.obj();
 
+            // Create a custom filter for bus names
             let bus_names_filter =
                 gtk::CustomFilter::new(clone!(@weak obj => @default-panic, move |bus_name_item| {
                     let bus_name_item = bus_name_item.downcast_ref::<BusNameItem>().unwrap();
                     obj.bus_names_filter_func(bus_name_item)
                 }));
 
+            // Connect signals to update the inner index and used names
             self.inner.connect_items_changed(
                 clone!(@weak obj, @weak bus_names_filter => move |_, position, removed, added| {
                     obj.update_inner_index(position, removed, added);
@@ -73,35 +91,45 @@ mod imp {
                 }),
             );
 
+            // Set the filter for filtered bus names
             self.filtered_bus_names.set_filter(Some(&bus_names_filter));
 
+            // Create an every filter for message filtering
             let filter = gtk::EveryFilter::new();
             filter.append(gtk::CustomFilter::new(|message| {
                 let message = message.downcast_ref::<Message>().unwrap();
 
-                // TODO: define the exact rules and document why are these filtered out
+                // Filter out messages related to DBusProxy
                 message.destination().as_deref() != DBusProxy::DESTINATION
                     && message.sender().as_deref() != DBusProxy::DESTINATION
             }));
+
+            // Set the filter for the inner model
             self.inner.set_filter(Some(&filter));
         }
     }
 
+    // Implement ListModel methods for `FilteredMessageModel`
     impl ListModelImpl for FilteredMessageModel {
+        // Define the type of items in the model
         fn item_type(&self) -> glib::Type {
             Message::static_type()
         }
 
+        // Get the number of items in the model
         fn n_items(&self) -> u32 {
             self.inner.n_items()
         }
 
+        // Get an item from the model at a given position
         fn item(&self, position: u32) -> Option<glib::Object> {
             self.inner.item(position)
         }
     }
 
+    // Implement additional methods for `FilteredMessageModel`
     impl FilteredMessageModel {
+        // Check if any filter is applied
         fn has_filter(&self) -> bool {
             self.message_tag_filter_indices.borrow().len() != 0
                 || self.bus_name_filter_indices.borrow().len() != 0
