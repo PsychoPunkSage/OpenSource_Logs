@@ -144,6 +144,18 @@ glib::wrapper! {
 
 impl FilteredMessageModel {
     /// This also resets the filters
+
+    /// Sets the message list for the filtered message model, clearing existing filters.
+    ///
+    /// # Arguments
+    ///
+    /// * `message_list` - An optional reference to a `MessageList`.
+    ///
+    /// # Remarks
+    ///
+    /// This method first clears any existing filters, then sets the model for the inner list
+    /// (`inner`). Additionally, it sets the bus name list for the filtered bus names model
+    /// (`filtered_bus_names`).
     pub fn set_message_list(&self, message_list: Option<&MessageList>) {
         self.clear_filters();
 
@@ -156,11 +168,17 @@ impl FilteredMessageModel {
             .set_bus_name_list(message_list.map(|l| l.bus_names()));
     }
 
+    /// Gets the message list associated with the filtered message model.
+    ///
+    /// # Returns
+    ///
+    /// An optional `MessageList`.
     pub fn message_list(&self) -> Option<MessageList> {
         self.imp()
             .inner
-            .model()
-            .map(|model| model.downcast().unwrap())
+            .model() // retrieves the model associated with the inner field, which is expected to contain messages.
+            .map(|model| model.downcast().unwrap()) // Maps the result of the `model` method call to an `Option<MessageList>`.
+                                                    // If the model is not `None`, it tries to downcast it to a `MessageList`.
     }
 
     pub fn get_index_of(&self, message: &Message) -> Option<usize> {
@@ -207,21 +225,24 @@ impl FilteredMessageModel {
 
     /// Removes the filter that filters out messages with the given tag
     pub fn remove_message_tag_filter(&self, message_tag: MessageTag) -> bool {
+        // Attempt to remove the index of the message tag from the message tag filter indices
         let ret = if let Some(index) = self
             .imp()
             .message_tag_filter_indices
             .borrow_mut()
             .remove(&message_tag)
         {
+            // If the index was found and removed, remove the corresponding filter from the inner filter
             self.inner_filter().remove(index);
-            true
+            true // Return true indicating successful removal
         } else {
-            false
+            false // Return false indicating the filter was not found
         };
 
+        // Notify listeners that the filter has been updated
         self.notify_has_filter();
 
-        ret
+        ret // Return the result of the removal operation
     }
 
     /// Adds filter that filters out messages relevant to `BusNameItem` with
@@ -229,20 +250,27 @@ impl FilteredMessageModel {
     ///
     /// Returns an error if self has no `message_list`
     pub fn add_bus_name_filter(&self, name: &BusName<'_>) -> Result<()> {
+        // Retrieve the `BusNameItem` corresponding to the provided `name` from the message list.
+        // If the message list is not provided, return an error.
         let bus_name_item = self
             .message_list()
             .context("Message list was not sent")?
             .bus_names()
             .get(name)
             .unwrap();
+
+        // Create a custom filter that filters out messages based on the provided `name`.
         let custom_filter = gtk::CustomFilter::new(move |message| {
             let message = message.downcast_ref::<Message>().unwrap();
             let name = bus_name_item.name();
             !message.sender().is_some_and(|sender| *name == sender)
                 && !message.destination().is_some_and(|destination| {
+                    // If the destination is a Unique name, it is not filtered out.
                     *name == destination
                         || match destination {
                             BusName::Unique(_) => false,
+                            // If the destination is a WellKnown name, check if the BusNameItem's
+                            // WellKnown names contain the destination name.
                             BusName::WellKnown(wk_name) => bus_name_item
                                 .wk_names(message.receive_index().into())
                                 .contains(&wk_name),
@@ -250,15 +278,22 @@ impl FilteredMessageModel {
                 })
         });
 
+        // Get the inner filter and append the custom filter to it.
         let inner_filter = self.inner_filter();
         let index = inner_filter.n_items();
         inner_filter.append(custom_filter);
+
+        // Update the bus name filter indices with the provided `name`.
         let prev_value = self
             .imp()
             .bus_name_filter_indices
             .borrow_mut()
             .insert(name.to_owned(), index);
+
+        // Ensure that the previous value for the index was not already set.
         debug_assert!(prev_value.is_none());
+
+        // Ensure that the index is not already present in the message tag filter indices.
         debug_assert!(self
             .imp()
             .message_tag_filter_indices
@@ -266,6 +301,7 @@ impl FilteredMessageModel {
             .values()
             .all(|i| { *i != index }));
 
+        // Notify that a filter has been added.
         self.notify_has_filter();
 
         Ok(())
@@ -276,8 +312,10 @@ impl FilteredMessageModel {
     ///
     /// Returns true if the filter existed and removed
     pub fn remove_bus_name_filter(&self, name: &BusName<'static>) -> bool {
+        // Try to remove the filter for the given `BusName`
         let ret = if let Some(index) = self.imp().bus_name_filter_indices.borrow_mut().remove(name)
         {
+            // If the filter was found and removed, also remove it from the inner filter
             self.inner_filter().remove(index);
             true
         } else {
@@ -292,16 +330,20 @@ impl FilteredMessageModel {
     pub fn clear_filters(&self) {
         let imp = self.imp();
 
+        // Take ownership of the message tag and bus name filter indices
         let message_tag_filter_indices = imp.message_tag_filter_indices.take();
         let bus_name_filter_indices = imp.bus_name_filter_indices.take();
+
+        // Collect all filter indices into a vector
         let mut indices = message_tag_filter_indices
             .values()
             .chain(bus_name_filter_indices.values())
             .collect::<Vec<_>>();
 
+        // Sort indices to ensure proper removal order
         let inner_filter = self.inner_filter();
 
-        // Remove last indices first to not disrupt the indices
+        // Remove filters from the inner filter in reverse order to avoid index disruption
         indices.sort();
         for index in indices.iter().rev() {
             inner_filter.remove(**index);
