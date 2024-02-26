@@ -114,15 +114,23 @@ impl MessageList {
     }
 
     pub async fn save_as_dot(&self, dest: &gio::File) -> Result<()> {
+        // Create a buffer to store DOT data
         let mut buffer = Vec::new();
+        // Create a HashMap to track unique combinations of sender and destination
         let mut combinations = HashMap::new();
 
+        // Write the start of the DOT file
         writeln!(&mut buffer, "digraph bustle {{")?;
+        // Iterate over each message in the inner list
         for message in self.imp().inner.borrow().iter() {
+            // Get the sender and destination display names from the message
             let sender = message.sender_display();
             let destination = message.destination_display();
+            // Check if the combination of sender and destination has been encountered before
             match combinations.entry((sender, destination)) {
+                // If the combination exists, skip to the next iteration
                 Entry::Occupied(_) => continue,
+                // If the combination is new, add it to the HashMap and write it to the buffer
                 Entry::Vacant(entry) => {
                     let (sender, destination) = entry.key();
                     writeln!(&mut buffer, "\t\"{sender}\" -> \"{destination}\";")?;
@@ -130,8 +138,10 @@ impl MessageList {
                 }
             }
         }
+        // Write the end of the DOT file
         writeln!(&mut buffer, "}}")?;
 
+        // Replace the contents of the destination file with the DOT data
         dest.replace_contents_future(
             buffer,
             None,
@@ -145,14 +155,20 @@ impl MessageList {
     }
 
     pub async fn load_from_file(path: impl AsRef<Path>) -> Result<Self> {
+        // Convert the path to an owned PathBuf
         let path = path.as_ref().to_owned();
+        // Spawn a blocking task to read the file and parse its contents
         let events = RUNTIME
             .spawn_blocking(move || {
+                // Open the file
                 let file = File::open(&path)
                     .with_context(|| format!("Failed to open file at `{}`", path.display()))?;
+                // Create a reader for the pcap file
                 let mut reader = PcapReader::new(file).context("Failed to create reader")?;
 
+                // Read the header of the pcap file
                 let header = reader.header();
+                // Check if the datalink type is compatible with dbus
                 if header.datalink != pcap_file::DataLink::DBUS {
                     bail!("Invalid datalink type `{:?}`", header.datalink)
                 }
@@ -160,7 +176,9 @@ impl MessageList {
                 tracing::debug!(?path, ?header, "Loaded PCAP file");
 
                 let mut events = Vec::new();
+                // Iterate over each packet in the pcap file
                 while let Some(packet) = reader.next_packet() {
+                    // Parse the packet into an event
                     let packet = packet.context("Failed to get packet")?;
                     let event = Event::from_packet(packet)
                         .context("Failed to construct event from packet")?;
@@ -192,9 +210,13 @@ impl MessageList {
     }
 
     fn push_inner(&self, message: Message) {
+        // Get the current position (index) of the message in the model.
         let position = self.n_items();
+
+        // Set the receive index of the message to its position in the model.
         message.set_receive_index(position);
 
+        // Get a reference to the implementation of the filtered message model.
         let imp = self.imp();
 
         if message.message_type().is_method_return() {
