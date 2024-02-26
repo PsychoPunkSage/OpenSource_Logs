@@ -17,10 +17,15 @@ use crate::{
 mod imp {
     use std::cell::RefCell;
 
+    // Import the items from the parent module (`super`), which in this case is the outer module
+    // where `imp` is defined.
     use super::*;
 
+    // Define a new struct named `MessageList`.
     #[derive(Debug, Default)]
     pub struct MessageList {
+        // Define a field named `inner` of type `RefCell<Vec<Message>>`. `RefCell` allows interior
+        // mutability, enabling shared mutable access to the vector of `Message` instances.
         pub(super) inner: RefCell<Vec<Message>>,
         pub(super) bus_names: BusNameList,
     }
@@ -35,15 +40,19 @@ mod imp {
     impl ObjectImpl for MessageList {}
 
     impl ListModelImpl for MessageList {
+        // Define a method to retrieve the type of items in the list model.
         fn item_type(&self) -> glib::Type {
             Message::static_type()
         }
 
+        // Define a method to get the number of items in the list model.
         fn n_items(&self) -> u32 {
             self.inner.borrow().len() as u32
         }
 
         fn item(&self, position: u32) -> Option<glib::Object> {
+            // Borrow the inner vector, attempt to get the item at the specified position, map
+            // it to an `glib::Object`, and then clone it.
             self.inner
                 .borrow()
                 .get(position as usize)
@@ -60,6 +69,7 @@ glib::wrapper! {
 
 impl MessageList {
     pub async fn save_to_file(&self, path: impl AsRef<Path>) -> Result<()> {
+        // Retrieve events from the inner model and convert them to `Event` instances.
         let events = self
             .imp()
             .inner
@@ -69,16 +79,22 @@ impl MessageList {
             .collect::<Vec<_>>();
 
         let path = path.as_ref().to_owned();
+
+        // Asynchronously spawn a blocking task to write events to the file.
         RUNTIME
             .spawn_blocking(move || {
+                // Create a PCAP header with default values.
                 let header = PcapHeader {
                     datalink: pcap_file::DataLink::DBUS,
                     ..Default::default()
                 };
+
+                // Create the file and initialize a PCAP writer
                 let file = File::create(path).context("Failed to create file")?;
                 let mut writer = PcapWriter::with_header(BufWriter::new(file), header)
                     .context("Failed to create writer")?;
 
+                // Write each event as a PCAP packet to the file.
                 for event in events {
                     let message_bytes = event.message.data();
                     writer
