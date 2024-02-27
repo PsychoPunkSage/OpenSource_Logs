@@ -80,7 +80,12 @@
       <object class="AdwToastOverlay" id="toast_overlay">
         <property name="child">
           <object class="GtkStack" id="main_stack">
+          <!-- Change -->
+          <property name="view">tab_view</property>
+          <!-- Change -->
+          <property name="child">
             <property name="transition-type">crossfade</property>
+    <!-- MARKER -->
             <child>
               <object class="AdwToolbarView" id="empty_page">
                 <child type="top">
