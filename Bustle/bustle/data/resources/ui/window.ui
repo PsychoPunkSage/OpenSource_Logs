@@ -79,14 +79,15 @@
     <property name="content">
       <object class="AdwToastOverlay" id="toast_overlay">
         <property name="child">
-          <object class="GtkStack" id="main_stack">
-          <!-- Change -->
-          <property name="view">tab_view</property>
-          <!-- Change -->
-          <property name="child">
+          <!-- <object class="GtkStack" id="main_stack"> -->
+          <object class="AdwTabOverview">
+            <!-- Change -->
+            <property name="view">tab_view</property>
+            <!-- Change -->
             <property name="transition-type">crossfade</property>
     <!-- MARKER -->
-            <child>
+            <property name="child">
+              <child>
               <object class="AdwToolbarView" id="empty_page">
                 <child type="top">
                   <object class="AdwHeaderBar">
@@ -102,13 +103,22 @@
                         </style>
                       </object>
                     </child>
-                    <child>
+                    <child type="end">
                       <object class="GtkButton">
                         <property name="icon-name">folder-symbolic</property>
                         <property name="action-name">win.open-log</property>
                         <property name="tooltip-text" translatable="yes">Open Log File</property>
                       </object>
                     </child>
+                    <!-- Change >> -->
+                    <child>
+                      <object class="GtkButton">
+                        <property name="tooltip-text" translatable="yes">New Document</property>
+                        <property name="icon-name">tab-new-symbolic</property>
+                        <property name="action-name">win.new-document</property>
+                      </object>
+                    </child>
+                    <!-- << Change -->
                     <child type="end">
                       <object class="GtkMenuButton">
                         <property name="icon-name">open-menu-symbolic</property>
@@ -158,8 +168,8 @@
                   </object>
                 </property>
               </object>
-            </child>
-            <child>
+              </child>
+              <child>
               <object class="AdwToolbarView" id="loading_page">
                 <child type="top">
                   <object class="AdwHeaderBar">
@@ -189,8 +199,8 @@
                   </object>
                 </property>
               </object>
-            </child>
-            <child>
+              </child>
+              <child>
               <object class="AdwToolbarView" id="diagram_page">
                 <property name="top-bar-style">raised</property>
                 <child type="top">
@@ -313,7 +323,21 @@
                   </object>
                 </property>
               </object>
-            </child>
+              </child>
+              <!-- Change >> -->
+              <child type="top">
+                  <object class="AdwTabBar">
+                    <property name="view">tab_view</property>
+                  </object>
+              </child>
+              <property name="content">
+                  <object class="DaggerDragOverlay" id="drag_overlay">
+                    <property name="child">
+                      <object class="AdwTabView" id="tab_view"/>
+                    </property>
+                  </object>
+              </property>
+              <!-- << Change -->
           </object>
         </property>
       </object>
