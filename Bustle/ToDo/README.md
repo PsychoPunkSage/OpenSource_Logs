@@ -4,7 +4,7 @@
 
 > This mockup can be described by the following composite template.
 
-Filename: 1/resources/window.ui
+`Filename`: 1/resources/window.ui
 <details>
 <summary>COde</summary>
 
@@ -51,7 +51,7 @@ Filename: 1/resources/window.ui
 
 In order to use the composite template, we create a custom widget. The `parent` is `gtk::ApplicationWindow`, so we inherit from it. As usual, we have to list all ancestors and interfaces apart from `GObject` and `GInitiallyUnowned`.
 
-Filename: 1/window/mod.rs
+`Filename`: 1/window/mod.rs
 <details>
 <summary>COde</summary>
 
@@ -68,7 +68,7 @@ glib::wrapper! {
 
 Then we initialize the composite template for `imp::Window`. We store references to the entry, the list view as well as the list model. This will come in handy when we later add methods to our window. After that, we add the typical boilerplate for initializing composite templates. We only have to assure that the `class` attribute of the template in `window.ui` matches `NAME`.
 
-Filename: 1/window/imp.rs
+`Filename`: 1/window/imp.rs
 <details>
 <summary>COde</summary>
 
@@ -103,3 +103,63 @@ impl ObjectSubclass for Window {
 ```
 
 </details><br>
+
+`Filename`: 1/main.rs
+<details>
+<summary>COde</summary>
+
+```rust
+fmod task_object;
+mod task_row;
+mod window;
+
+use gtk::prelude::*;
+use gtk::{gio, glib, Application};
+use window::Window;
+
+fn main() -> glib::ExitCode {
+    // Register and include resources
+    gio::resources_register_include!("todo_1.gresource")
+        .expect("Failed to register resources.");
+
+    // Create a new application
+    let app = Application::builder()
+        .application_id("org.gtk_rs.Todo1")
+        .build();
+
+    // Connect to "activate" signal of `app`
+    app.connect_activate(build_ui);
+
+    // Run the application
+    app.run()
+}
+
+fn build_ui(app: &Application) {
+    // Create a new custom window and present it
+    let window = Window::new(app);
+    window.present();
+}
+```
+
+</details><br>
+
+Finally, we specify our resources...
+
+`Filename`: 1/resources/resources.gresource.xml
+<details>
+<summary>COde</summary>
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/org/gtk_rs/Todo1/">
+    <file compressed="true" preprocess="xml-stripblanks">task_row.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">window.ui</file>
+  </gresource>
+</gresources>
+```
+
+</details><br>
+
+## **Task Object**
+
