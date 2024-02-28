@@ -11,3 +11,4 @@ src/config.rs
 vendor
 .vscode
 .flatpak-builder/
+cargo.lock
