@@ -190,3 +190,403 @@ impl TaskObject {
 ```
 
 </details><br>
+
+the state is stored in a struct rather than in individual members of `imp::TaskObject`. This will be very convenient when saving the state in one of the following chapters.
+
+`Filename`: 1/task_object/mod.rs
+<details>
+<summary>COde</summary>
+
+```rust
+#[derive(Default)]
+pub struct TaskData {
+    pub completed: bool,
+    pub content: String,
+}
+```
+
+</details><br>
+
+We are going to expose `completed` and `content` as properties. Since the data is now inside a struct rather than individual member variables we have to add more annotations. For each property we additionally specify the name, the type and which member variable of `TaskData` we want to access.
+
+`Filename`: 1/task_object/imp.rs
+<details>
+<summary>COde</summary>
+
+```rust
+// Object holding the state
+#[derive(Properties, Default)]
+#[properties(wrapper_type = super::TaskObject)]
+pub struct TaskObject {
+    #[property(name = "completed", get, set, type = bool, member = completed)]
+    #[property(name = "content", get, set, type = String, member = content)]
+    pub data: RefCell<TaskData>,
+}
+
+// The central trait for subclassing a GObject
+#[glib::object_subclass]
+impl ObjectSubclass for TaskObject {
+    const NAME: &'static str = "TodoTaskObject";
+    type Type = super::TaskObject;
+}
+
+// Trait shared by all GObjects
+#[glib::derived_properties]
+impl ObjectImpl for TaskObject {}
+```
+
+</details><br>
+
+## **Task Row**
+
+>> Let's move on to the individual tasks.
+
+`Filename`: 1/resources/task_row.ui
+<details>
+<summary>COde</summary>
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="TodoTaskRow" parent="GtkBox">
+    <child>
+      <object class="GtkCheckButton" id="completed_button">
+        <property name="margin-top">12</property>
+        <property name="margin-bottom">12</property>
+        <property name="margin-start">12</property>
+        <property name="margin-end">12</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkLabel" id="content_label">
+        <property name="margin-top">12</property>
+        <property name="margin-bottom">12</property>
+        <property name="margin-start">12</property>
+        <property name="margin-end">12</property>
+      </object>
+    </child>
+  </template>
+</interface>
+```
+
+</details><br>
+
+* In the code, we derive `TaskRow` from `gtk::Box`
+
+`Filename`: 1/task_row/mod.rs
+<details>
+<summary>COde</summary>
+
+```rust
+glib::wrapper! {
+    pub struct TaskRow(ObjectSubclass<imp::TaskRow>)
+    @extends gtk::Box, gtk::Widget,
+    @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Orientable;
+}
+```
+
+</details><br>
+
+In `imp::TaskRow`, we hold references to `completed_button` and `content_label`. We also store a mutable vector of bindings. Why we need that will become clear as soon as we get to bind the state of `TaskObject` to the corresponding `TaskRow`.
+
+`Filename`: 1/task_row/imp.rs
+<details>
+<summary>COde</summary>
+
+```rust
+// Object holding the state
+#[derive(Default, CompositeTemplate)]
+#[template(resource = "/org/gtk_rs/Todo1/task_row.ui")]
+pub struct TaskRow {
+    #[template_child]
+    pub completed_button: TemplateChild<CheckButton>,
+    #[template_child]
+    pub content_label: TemplateChild<Label>,
+    // Vector holding the bindings to properties of `TaskObject`
+    pub bindings: RefCell<Vec<Binding>>,
+}
+
+// The central trait for subclassing a GObject
+#[glib::object_subclass]
+impl ObjectSubclass for TaskRow {
+    // `NAME` needs to match `class` attribute of template
+    const NAME: &'static str = "TodoTaskRow";
+    type Type = super::TaskRow;
+    type ParentType = gtk::Box;
+
+    fn class_init(klass: &mut Self::Class) {
+        klass.bind_template();
+    }
+
+    fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
+        obj.init_template();
+    }
+}
+```
+
+</details><br>
+
+Now we can bring everything together. We override the `imp::Window::constructed` in order to set up window contents at the time of its construction.
+
+`Filename`: 1/window/imp.rs
+<details>
+<summary>COde</summary>
+
+```rust
+// Trait shared by all GObjects
+impl ObjectImpl for Window {
+    fn constructed(&self) {
+        // Call "constructed" on parent
+        self.parent_constructed();
+
+        // Setup
+        let obj = self.obj();
+        obj.setup_tasks();
+        obj.setup_callbacks();
+        obj.setup_factory();
+    }
+}
+```
+
+</details><br>
+
+Since we need to access the list model quite often, we add the convenience method `Window::model` for that. In `Window::setup_tasks` we create a new model. Then we store a reference to the model in `imp::Window` as well as in `gtk::ListView`.
+
+`Filename`: 1/window/mod.rs
+<details>
+<summary>COde</summary>
+
+```rust
+    fn tasks(&self) -> gio::ListStore {
+        // Get state
+        self.imp()
+            .tasks
+            .borrow()
+            .clone()
+            .expect("Could not get current tasks.")
+    }
+
+    fn setup_tasks(&self) {
+        // Create new model
+        let model = gio::ListStore::new::<TaskObject>();
+
+        // Get state and set model
+        self.imp().tasks.replace(Some(model));
+
+        // Wrap model with selection and pass it to the list view
+        let selection_model = NoSelection::new(Some(self.tasks()));
+        self.imp().tasks_list.set_model(Some(&selection_model));
+    }
+```
+
+</details><br>
+
+We also create a method `new_task` which takes the content of the entry, clears the entry and uses the content to create a new task.
+
+`Filename`: 1/window/mod.rs
+<details>
+<summary>COde</summary>
+
+```rust
+    fn new_task(&self) {
+        // Get content from entry and clear it
+        let buffer = self.imp().entry.buffer();
+        let content = buffer.text().to_string();
+        if content.is_empty() {
+            return;
+        }
+        buffer.set_text("");
+
+        // Add new task to model
+        let task = TaskObject::new(false, content);
+        self.tasks().append(&task);
+    }
+```
+
+</details><br>
+
+In `Window::setup_callbacks` we connect to the "activate" signal of the entry. This signal is triggered when we press the enter key in the entry. Then a new `TaskObject` with the content will be created and appended to the model. Finally, the entry will be cleared.
+
+`Filename`: 1/window/mod.rs
+<details>
+<summary>COde</summary>
+
+```rust
+    fn new_task(&self) {
+        // Get content from entry and clear it
+        let buffer = self.imp().entry.buffer();
+        let content = buffer.text().to_string();
+        if content.is_empty() {
+            return;
+        }
+        buffer.set_text("");
+
+        // Add new task to model
+        let task = TaskObject::new(false, content);
+        self.tasks().append(&task);
+    }
+```
+
+</details><br>
+
+In `Window::setup_callbacks` we connect to the "activate" signal of the entry. This signal is triggered when we press the enter key in the entry. Then a new `TaskObject` with the content will be created and appended to the model. Finally, the entry will be cleared.
+
+`Filename`: 1/window/mod.rs
+<details>
+<summary>COde</summary>
+
+```rust
+    fn setup_callbacks(&self) {
+        // Setup callback for activation of the entry
+        self.imp()
+            .entry
+            .connect_activate(clone!(@weak self as window => move |_| {
+                window.new_task();
+            }));
+
+        // Setup callback for clicking (and the releasing) the icon of the entry
+        self.imp().entry.connect_icon_release(
+            clone!(@weak self as window => move |_,_| {
+                window.new_task();
+            }),
+        );
+    }
+```
+
+</details><br>
+
+The list elements for the `gtk::ListView` are produced by a factory. Before we move on to the implementation, let's take a step back and think about which behavior we expect here. `content_label` of `TaskRow` should follow `content` of `TaskObject`. We also want `completed_button` of `TaskRow` follow `completed` of `TaskObject`. This could be achieved with expressions similar to what we did in the lists chapter.
+
+However, if we toggle the state of `completed_button` of `TaskRow`, `completed` of `TaskObject` should change too. Unfortunately, expressions cannot handle bidirectional relationships. This means we have to use property bindings. We will need to unbind them manually when they are no longer needed.
+
+We will create empty `TaskRow` objects in the "setup" step in `Window::setup_factory` and deal with binding in the "bind" and "unbind" steps.
+
+`Filename`: 1/window/mod.rs
+<details>
+<summary>COde</summary>
+
+```rust
+    fn setup_factory(&self) {
+        // Create a new factory
+        let factory = SignalListItemFactory::new();
+
+        // Create an empty `TaskRow` during setup
+        factory.connect_setup(move |_, list_item| {
+            // Create `TaskRow`
+            let task_row = TaskRow::new();
+            list_item
+                .downcast_ref::<ListItem>()
+                .expect("Needs to be ListItem")
+                .set_child(Some(&task_row));
+        });
+
+        // Tell factory how to bind `TaskRow` to a `TaskObject`
+        factory.connect_bind(move |_, list_item| {
+            // Get `TaskObject` from `ListItem`
+            let task_object = list_item
+                .downcast_ref::<ListItem>()
+                .expect("Needs to be ListItem")
+                .item()
+                .and_downcast::<TaskObject>()
+                .expect("The item has to be an `TaskObject`.");
+
+            // Get `TaskRow` from `ListItem`
+            let task_row = list_item
+                .downcast_ref::<ListItem>()
+                .expect("Needs to be ListItem")
+                .child()
+                .and_downcast::<TaskRow>()
+                .expect("The child has to be a `TaskRow`.");
+
+            task_row.bind(&task_object);
+        });
+
+        // Tell factory how to unbind `TaskRow` from `TaskObject`
+        factory.connect_unbind(move |_, list_item| {
+            // Get `TaskRow` from `ListItem`
+            let task_row = list_item
+                .downcast_ref::<ListItem>()
+                .expect("Needs to be ListItem")
+                .child()
+                .and_downcast::<TaskRow>()
+                .expect("The child has to be a `TaskRow`.");
+
+            task_row.unbind();
+        });
+
+        // Set the factory of the list view
+        self.imp().tasks_list.set_factory(Some(&factory));
+    }
+```
+
+</details><br>
+
+Binding properties in `TaskRow::bind` works just like in former chapters. The only difference is that we store the bindings in a vector. This is necessary because a `TaskRow` will be reused as you scroll through the list. That means that over time a TaskRow will need to bound to a new `TaskObject` and has to be unbound from the old one. Unbinding will only work if it can access the stored `glib::Binding`.
+
+`Filename`: 1/task_row/mod.rs
+<details>
+<summary>COde</summary>
+
+```rust
+    pub fn bind(&self, task_object: &TaskObject) {
+        // Get state
+        let completed_button = self.imp().completed_button.get();
+        let content_label = self.imp().content_label.get();
+        let mut bindings = self.imp().bindings.borrow_mut();
+
+        // Bind `task_object.completed` to `task_row.completed_button.active`
+        let completed_button_binding = task_object
+            .bind_property("completed", &completed_button, "active")
+            .bidirectional()
+            .sync_create()
+            .build();
+        // Save binding
+        bindings.push(completed_button_binding);
+
+        // Bind `task_object.content` to `task_row.content_label.label`
+        let content_label_binding = task_object
+            .bind_property("content", &content_label, "label")
+            .sync_create()
+            .build();
+        // Save binding
+        bindings.push(content_label_binding);
+
+        // Bind `task_object.completed` to `task_row.content_label.attributes`
+        let content_label_binding = task_object
+            .bind_property("completed", &content_label, "attributes")
+            .sync_create()
+            .transform_to(|_, active| {
+                let attribute_list = AttrList::new();
+                if active {
+                    // If "active" is true, content of the label will be strikethrough
+                    let attribute = AttrInt::new_strikethrough(true);
+                    attribute_list.insert(attribute);
+                }
+                Some(attribute_list.to_value())
+            })
+            .build();
+        // Save binding
+        bindings.push(content_label_binding);
+    }
+```
+
+</details><br>
+
+`TaskRow::unbind` takes care of the cleanup. It iterates through the vector and unbinds each binding. In the end, it clears the vector.
+
+`Filename`: 1/task_row/mod.rs
+<details>
+<summary>COde</summary>
+
+```rust
+    pub fn unbind(&self) {
+        // Unbind all stored bindings
+        for binding in self.imp().bindings.borrow_mut().drain(..) {
+            binding.unbind();
+        }
+    }
+```
+
+</details><br>
+
+That was it, we created a basic To-Do app! We will extend it with additional functionality

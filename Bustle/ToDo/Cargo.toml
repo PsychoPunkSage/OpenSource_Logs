@@ -63,30 +63,30 @@ xshell = "0.2"
 name = "todo_1"
 path = "1/main.rs"
 
-[[bin]]
-name = "todo_2"
-path = "2/main.rs"
+# [[bin]]
+# name = "todo_2"
+# path = "2/main.rs"
 
-[[bin]]
-name = "todo_3"
-path = "3/main.rs"
+# [[bin]]
+# name = "todo_3"
+# path = "3/main.rs"
 
-[[bin]]
-name = "todo_4"
-path = "4/main.rs"
+# [[bin]]
+# name = "todo_4"
+# path = "4/main.rs"
 
-[[bin]]
-name = "todo_5"
-path = "5/main.rs"
+# [[bin]]
+# name = "todo_5"
+# path = "5/main.rs"
 
-[[bin]]
-name = "todo_6"
-path = "6/main.rs"
+# [[bin]]
+# name = "todo_6"
+# path = "6/main.rs"
 
-[[bin]]
-name = "todo_7"
-path = "7/main.rs"
+# [[bin]]
+# name = "todo_7"
+# path = "7/main.rs"
 
-[[bin]]
-name = "todo_8"
-path = "8/main.rs"
+# [[bin]]
+# name = "todo_8"
+# path = "8/main.rs"
