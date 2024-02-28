@@ -163,3 +163,30 @@ Finally, we specify our resources...
 
 ## **Task Object**
 
+>> The main user interface is done, but the entry does not react to input yet. Also, where would the input go? We haven't even set up the list model yet.
+
+we start out by creating a custom GObject. This object will store the state of the task consisting of:
+
+* a boolean describing whether the task is completed or not, and
+* a string holding the task name.
+
+`Filename`: 1/task_object/mod.rs
+<details>
+<summary>COde</summary>
+
+```rust
+glib::wrapper! {
+    pub struct TaskObject(ObjectSubclass<imp::TaskObject>);
+}
+
+impl TaskObject {
+    pub fn new(completed: bool, content: String) -> Self {
+        Object::builder()
+            .property("completed", completed)
+            .property("content", content)
+            .build()
+    }
+}
+```
+
+</details><br>

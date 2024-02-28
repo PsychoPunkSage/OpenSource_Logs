@@ -21,71 +21,42 @@ tokio = { version = "1.33.0", features = ["rt-multi-thread"] }
 walkdir = "2.3"
 xshell = "0.2"
 
-# actions
-[[bin]]
-name = "actions_1"
-path = "actions/1/main.rs"
+# # css
+# [[bin]]
+# name = "css_1"
+# path = "css/1/main.rs"
 
-[[bin]]
-name = "actions_2"
-path = "actions/2/main.rs"
+# [[bin]]
+# name = "css_2"
+# path = "css/2/main.rs"
 
-[[bin]]
-name = "actions_3"
-path = "actions/3/main.rs"
+# [[bin]]
+# name = "css_3"
+# path = "css/3/main.rs"
 
-[[bin]]
-name = "actions_4"
-path = "actions/4/main.rs"
+# [[bin]]
+# name = "css_4"
+# path = "css/4/main.rs"
 
-[[bin]]
-name = "actions_5"
-path = "actions/5/main.rs"
+# [[bin]]
+# name = "css_5"
+# path = "css/5/main.rs"
 
-[[bin]]
-name = "actions_6"
-path = "actions/6/main.rs"
+# [[bin]]
+# name = "css_6"
+# path = "css/6/main.rs"
 
-[[bin]]
-name = "actions_7"
-path = "actions/7/main.rs"
+# [[bin]]
+# name = "css_7"
+# path = "css/7/main.rs"
 
-# css
-[[bin]]
-name = "css_1"
-path = "css/1/main.rs"
+# [[bin]]
+# name = "css_8"
+# path = "css/8/main.rs"
 
-[[bin]]
-name = "css_2"
-path = "css/2/main.rs"
-
-[[bin]]
-name = "css_3"
-path = "css/3/main.rs"
-
-[[bin]]
-name = "css_4"
-path = "css/4/main.rs"
-
-[[bin]]
-name = "css_5"
-path = "css/5/main.rs"
-
-[[bin]]
-name = "css_6"
-path = "css/6/main.rs"
-
-[[bin]]
-name = "css_7"
-path = "css/7/main.rs"
-
-[[bin]]
-name = "css_8"
-path = "css/8/main.rs"
-
-[[bin]]
-name = "css_9"
-path = "css/9/main.rs"
+# [[bin]]
+# name = "css_9"
+# path = "css/9/main.rs"
 
 # todo
 [[bin]]
