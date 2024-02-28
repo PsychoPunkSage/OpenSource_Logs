@@ -100,7 +100,6 @@ impl ObjectSubclass for Window {
         obj.init_template();
     }
 }
-
 ```
 
 </details><br>
