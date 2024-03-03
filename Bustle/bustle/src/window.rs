@@ -506,7 +506,7 @@ impl Window {
     //     self.action_set_enabled("win.save-document", can_save);
     //     self.action_set_enabled("win.save-document-as", can_save);
     // }
-    
+
     fn save_window_size(&self) -> Result<(), glib::BoolError> {
         let imp = self.imp();
 
@@ -722,6 +722,10 @@ impl Window {
         Ok(())
     }
 
+    // @new
+    // pub fn add_message_toast(&self, message: &str) {
+    //     self.add_toast(adw::Toast::new(message));
+    // }
     fn add_message_toast(&self, message: &str) {
         let toast = adw::Toast::new(message);
         self.imp().toast_overlay.add_toast(toast);
