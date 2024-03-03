@@ -241,7 +241,7 @@ mod imp {
             //         }
             //     }
             // });
-            
+
             klass.install_action_async("win.save", None, |window, _, _| async move {
                 if let Err(err) = window.save().await {
                     tracing::error!("Could not save: {err:?}");
@@ -322,9 +322,19 @@ glib::wrapper! {
 }
 
 impl Window {
-    fn new(app: &Application) -> Self {
-        glib::Object::builder().property("application", app).build()
+    // @Original
+    // fn new(app: &Application) -> Self {
+    //     glib::Object::builder().property("application", app).build()
+    // }
+
+    // @new
+    pub fn new(app: &Application) -> Self {
+        let this = glib::Object::builder().property("application", app).build();
+        let group = gtk::WindowGroup::new();
+        group.add_window(&this);
+        this
     }
+
 
     pub fn with_group(app: &Application) -> Self {
         let window = Self::new(app);
