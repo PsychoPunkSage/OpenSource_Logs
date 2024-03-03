@@ -378,9 +378,9 @@ impl Window {
 
         match view {
             View::EmptyState => imp.main_stack.set_visible_child(&*imp.empty_page),
-            View::Loading => imp.main_stack.set_visible_child(&*imp.loading_page),
+            View::Loading => imp.tab_view.set_visible_child(&*imp.loading_page),
             View::Diagram => {
-                imp.main_stack.set_visible_child(&*imp.diagram_page);
+                imp.tab_view.set_visible_child(&*imp.diagram_page);
             }
         }
 
