@@ -303,20 +303,24 @@ mod imp {
             }
         }
 
+        // @NOT_NEEDED
         fn is_busy(&self) -> bool {
             let document = self.obj().document();
 
             document.is_loading() || document.is_busy()
         }
 
+        // @NOT_NEEDED
         fn is_modified(&self) -> bool {
             self.obj().document().is_modified()
         }
 
+        // @NOT_NEEDED
         fn can_save(&self) -> bool {
             !self.obj().document().is_loading()
         }
 
+        // @NOT_NEEDED
         fn can_export(&self) -> bool {
             self.graph_view.is_graph_loaded()
         }
