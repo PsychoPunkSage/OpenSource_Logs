@@ -85,7 +85,7 @@
             <property name="view">tab_view</property>
             <!-- Change -->
             <property name="transition-type">crossfade</property>
-    <!-- MARKER -->
+            <!-- MARKER -->
             <property name="child">
               <child>
               <object class="AdwToolbarView" id="empty_page">
