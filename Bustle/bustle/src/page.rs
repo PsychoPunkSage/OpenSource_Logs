@@ -29,6 +29,7 @@ mod imp {
         marker::PhantomData,
     };
 
+    // @NOT_NEEDED
     use crate::{error_gutter_renderer::ErrorGutterRenderer, graph_view::GraphView};
 
     use super::*;
@@ -56,18 +57,25 @@ mod imp {
         pub(super) go_to_error_revealer: TemplateChild<gtk::Revealer>,
         #[template_child]
         pub(super) view: TemplateChild<gtk_source::View>,
+        // @NOT_NEEDED
         #[template_child]
         pub(super) graph_view: TemplateChild<GraphView>,
+        // @NOT_NEEDED
         #[template_child]
         pub(super) engine_drop_down: TemplateChild<gtk::DropDown>,
+        // @NOT_NEEDED
         #[template_child]
         pub(super) zoom_level_button: TemplateChild<gtk::Button>,
+        // @NOT_NEEDED
         #[template_child]
         pub(super) spinner_revealer: TemplateChild<gtk::Revealer>,
 
+        // @NOT_NEEDED
         pub(super) error_gutter_renderer: ErrorGutterRenderer,
+        // @NOT_NEEDED
         pub(super) line_with_error: Cell<Option<u32>>,
 
+        // @NOT_NEEDED
         pub(super) document_binding_group: glib::BindingGroup,
         pub(super) document_signal_group: OnceCell<glib::SignalGroup>,
 
