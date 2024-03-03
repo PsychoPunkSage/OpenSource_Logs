@@ -85,7 +85,10 @@ mod imp {
         fn default() -> Self {
             Self {
                 toast_overlay: TemplateChild::default(),
+                tab_view: TemplateChild::default(),
+                // To be commented ------------------------------------------------
                 main_stack: TemplateChild::default(),
+                // ----------------------------------------------------------------
                 empty_page: TemplateChild::default(),
                 empty_status_page: TemplateChild::default(),
                 loading_page: TemplateChild::default(),
