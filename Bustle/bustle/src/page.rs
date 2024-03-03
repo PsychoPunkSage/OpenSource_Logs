@@ -85,7 +85,7 @@ mod imp {
 
     #[glib::object_subclass]
     impl ObjectSubclass for Page {
-        const NAME: &'static str = "DaggerPage";
+        const NAME: &'static str = "BustlePage"; // ****
         type Type = super::Page;
         type ParentType = gtk::Widget;
 
@@ -100,37 +100,41 @@ mod imp {
                 imp.view.scroll_to_iter(&mut iter, 0.0, true, 0.0, 0.5);
             });
 
-            klass.install_action_async("page.zoom-graph-in", None, |obj, _, _| async move {
-                if let Err(err) = obj.imp().graph_view.zoom_in().await {
-                    tracing::error!("Failed to zoom in: {:?}", err);
-                }
-            });
+            // @NOT_NEEDED
+            // klass.install_action_async("page.zoom-graph-in", None, |obj, _, _| async move {
+            //     if let Err(err) = obj.imp().graph_view.zoom_in().await {
+            //         tracing::error!("Failed to zoom in: {:?}", err);
+            //     }
+            // });
 
-            klass.install_action_async("page.zoom-graph-out", None, |obj, _, _| async move {
-                if let Err(err) = obj.imp().graph_view.zoom_out().await {
-                    tracing::error!("Failed to zoom out: {:?}", err);
-                }
-            });
+            // @NOT_NEEDED
+            // klass.install_action_async("page.zoom-graph-out", None, |obj, _, _| async move {
+            //     if let Err(err) = obj.imp().graph_view.zoom_out().await {
+            //         tracing::error!("Failed to zoom out: {:?}", err);
+            //     }
+            // });
 
-            klass.install_action_async("page.reset-graph-zoom", None, |obj, _, _| async move {
-                if let Err(err) = obj.imp().graph_view.reset_zoom().await {
-                    tracing::error!("Failed to reset zoom: {:?}", err);
-                }
-            });
+            // @NOT_NEEDED
+            // klass.install_action_async("page.reset-graph-zoom", None, |obj, _, _| async move {
+            //     if let Err(err) = obj.imp().graph_view.reset_zoom().await {
+            //         tracing::error!("Failed to reset zoom: {:?}", err);
+            //     }
+            // });
 
-            klass.install_action_async("page.show-in-files", Some("s"), |obj, _, arg| async move {
-                let uri = arg.unwrap().get::<String>().unwrap();
+            // @NOT_NEEDED
+            // klass.install_action_async("page.show-in-files", Some("s"), |obj, _, arg| async move {
+            //     let uri = arg.unwrap().get::<String>().unwrap();
 
-                let file = gio::File::for_uri(&uri);
-                let file_launcher = gtk::FileLauncher::new(Some(&file));
-                if let Err(err) = file_launcher
-                    .open_containing_folder_future(Some(&obj.window()))
-                    .await
-                {
-                    tracing::error!("Failed to show in Files: {:?}", err);
-                    obj.add_message_toast(&gettext("Failed to show in Files"));
-                }
-            });
+            //     let file = gio::File::for_uri(&uri);
+            //     let file_launcher = gtk::FileLauncher::new(Some(&file));
+            //     if let Err(err) = file_launcher
+            //         .open_containing_folder_future(Some(&obj.window()))
+            //         .await
+            //     {
+            //         tracing::error!("Failed to show in Files: {:?}", err);
+            //         obj.add_message_toast(&gettext("Failed to show in Files"));
+            //     }
+            // });
         }
 
         fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
