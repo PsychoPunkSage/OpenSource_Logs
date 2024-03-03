@@ -196,58 +196,73 @@ mod imp {
                 .set(document_signal_group)
                 .unwrap();
 
+                // @NOT_NEEDED
             self.engine_drop_down.set_expression(Some(
                 &gtk::ClosureExpression::new::<glib::GString>(
                     &[] as &[gtk::Expression],
                     closure!(|list_item: adw::EnumListItem| list_item.name()),
                 ),
             ));
+
+            // @NOT_NEEDED
             self.engine_drop_down
                 .set_model(Some(&adw::EnumListModel::new(Engine::static_type())));
+            // @NOT_NEEDED
             self.engine_drop_down
                 .connect_selected_notify(clone!(@weak obj => move |_| {
                     obj.queue_draw_graph();
                 }));
 
+            // @NOT_NEEDED
             let gutter = ViewExt::gutter(&*self.view, gtk::TextWindowType::Left);
+            // @NOT_NEEDED
             let was_inserted = gutter.insert(&self.error_gutter_renderer, 0);
             debug_assert!(was_inserted);
 
+            // @NOT_NEEDED
             self.go_to_error_revealer
                 .connect_child_revealed_notify(clone!(@weak obj => move |_| {
                     obj.update_go_to_error_revealer_can_target();
                 }));
+            // @NOT_NEEDED
             self.error_gutter_renderer
                 .connect_has_visible_errors_notify(clone!(@weak obj => move |_| {
                     obj.update_go_to_error_revealer_reveal_child();
                 }));
 
+            // @NOT_NEEDED
             self.graph_view
                 .connect_is_graph_loaded_notify(clone!(@weak obj => move |_| {
                     obj.notify_can_export();
                 }));
+            // @NOT_NEEDED
             self.graph_view
                 .connect_error(clone!(@weak obj => move |_, message| {
                     obj.handle_graph_view_error(message);
                 }));
+            // @NOT_NEEDED
             self.graph_view
                 .connect_is_rendering_notify(clone!(@weak obj => move |graph_view| {
                     if !graph_view.is_rendering() {
                         obj.imp().spinner_revealer.set_reveal_child(false);
                     }
                 }));
+            // @NOT_NEEDED
             self.graph_view
                 .connect_zoom_level_notify(clone!(@weak obj => move |_| {
                     obj.update_zoom_level_button();
                 }));
+            // @NOT_NEEDED
             self.graph_view
                 .connect_can_zoom_in_notify(clone!(@weak obj => move |_| {
                     obj.update_zoom_in_action();
                 }));
+            // @NOT_NEEDED
             self.graph_view
                 .connect_can_zoom_out_notify(clone!(@weak obj => move |_| {
                     obj.update_zoom_out_action();
                 }));
+            // @NOT_NEEDED
             self.graph_view
                 .connect_can_reset_zoom_notify(clone!(@weak obj => move |_| {
                     obj.update_reset_zoom_action();
@@ -262,6 +277,7 @@ mod imp {
 
             obj.set_document(&Document::draft());
 
+            // @NOT_NEEDED - Something else is required...
             obj.update_go_to_error_revealer_reveal_child();
             obj.update_go_to_error_revealer_can_target();
             obj.update_zoom_level_button();
