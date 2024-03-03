@@ -196,6 +196,52 @@ mod imp {
                 }
             });
 
+            // @new
+            // klass.install_action_async("win.new-document", None, |window, _, _| async move {
+            //     if window
+            //         .handle_unsaved_changes(&window.document())
+            //         .await
+            //         .is_err()
+            //     {
+            //         return;
+            //     }
+
+            //     window.set_document(&Document::draft());
+            //     window.add_new_page();
+            // });
+
+            // @new
+            // klass.install_action_async("win.save-document", None, |obj, _, _| async move {
+            //     if let Err(err) = obj.save_document(&obj.document()).await {
+            //         let page = obj.selected_page().unwrap();
+            //         if let Err(err) = page.save_document().await {
+            //             if !err
+            //                 .downcast_ref::<glib::Error>()
+            //                 .is_some_and(|error| error.matches(gtk::DialogError::Dismissed))
+            //             {
+            //                 tracing::error!("Failed to save document: {:?}", err);
+            //                 obj.add_message_toast(&gettext("Failed to save document"));
+            //             }
+            //         }
+            //     }
+            // });
+
+            // @new
+            // klass.install_action_async("win.save-document-as", None, |obj, _, _| async move {
+            //     if let Err(err) = obj.save_document_as(&obj.document()).await {
+            //         let page = obj.selected_page().unwrap();
+            //         if let Err(err) = page.save_document_as().await {
+            //             if !err
+            //                 .downcast_ref::<glib::Error>()
+            //                 .is_some_and(|error| error.matches(gtk::DialogError::Dismissed))
+            //             {
+            //                 tracing::error!("Failed to save document as: {:?}", err);
+            //                 obj.add_message_toast(&gettext("Failed to save document as"));
+            //             }
+            //         }
+            //     }
+            // });
+            
             klass.install_action_async("win.save", None, |window, _, _| async move {
                 if let Err(err) = window.save().await {
                     tracing::error!("Could not save: {err:?}");
