@@ -42,7 +42,11 @@ mod imp {
         #[template_child]
         pub(super) toast_overlay: TemplateChild<adw::ToastOverlay>,
         #[template_child]
+        pub(super) tab_view: TemplateChild<adw::TabView>,
+        // To be commented ------------------------------------------------
+        #[template_child]
         pub(super) main_stack: TemplateChild<gtk::Stack>,
+        // ----------------------------------------------------------------
         #[template_child]
         pub(super) empty_page: TemplateChild<adw::ToolbarView>,
         #[template_child]
