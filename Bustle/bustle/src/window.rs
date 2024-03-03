@@ -432,6 +432,81 @@ impl Window {
         }
     }
 
+    // @new
+    // fn add_new_page(&self) -> Page {
+    //     let imp = self.imp();
+    //     let page = Page::new();
+
+    //     let tab_page = imp.tab_view.add_page(&page, None);
+    //     page.bind_property("title", &tab_page, "title")
+    //         .sync_create()
+    //         .build();
+    //     page.bind_property("is-busy", &tab_page, "loading")
+    //         .sync_create()
+    //         .build();
+    //     page.bind_property("is-modified", &tab_page, "icon")
+    //         .sync_create()
+    //         .transform_to(|_, is_modified: bool| {
+    //             let icon = if is_modified {
+    //                 Some(gio::ThemedIcon::new("document-modified-symbolic"))
+    //             } else {
+    //                 None
+    //             };
+    //             Some(icon)
+    //         })
+    //         .build();
+    //     page
+    // }
+
+    // @new
+    // fn bind_page(&self, page: Option<&Page>) {
+    //     let imp = self.imp();
+
+    //     let page_signal_group = imp.page_signal_group.get().unwrap();
+    //     page_signal_group.set_target(page);
+
+    //     tracing::debug!(uri = %file.uri(), "Graph exported");
+    //     self.update_title();
+    //     self.update_is_modified();   ???
+    //     self.update_save_action();   ???
+    //     self.update_export_graph_action();   ???
+    // }
+
+    // @new
+    // fn selected_page(&self) -> Option<Page> {
+    //     self.imp()
+    //         .tab_view
+    //         .selected_page()
+    //         .map(|tab_page| tab_page.child().downcast().unwrap())
+    // }
+
+    // @new
+    // fn update_title(&self) {
+    //     let imp = self.imp();
+    //     let title = self
+    //         .selected_page()
+    //         .map(|page| page.title())
+    //         .unwrap_or_default();
+    //     imp.document_title_label.set_text(&title);
+    // }
+
+    // @new
+    // fn update_is_modified(&self) {
+    //     let imp = self.imp();
+    //     let is_modified = self
+    //         .selected_page()
+    //         .map(|page| page.is_modified())
+    //         .unwrap_or_default();
+    //     imp.document_modified_status.set_visible(is_modified);
+    // }
+
+    // @new - ????
+    // fn update_save_action(&self) {
+    //     let can_save = self.selected_page().is_some_and(|page| page.can_save());
+    //     self.action_set_enabled("win.save-document", can_save);
+    //     self.action_set_enabled("win.save-document-as", can_save);
+    // }
+    
     fn save_window_size(&self) -> Result<(), glib::BoolError> {
         let imp = self.imp();
 
