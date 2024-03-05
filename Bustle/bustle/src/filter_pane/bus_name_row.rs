@@ -50,26 +50,27 @@ mod imp {
     #[glib::derived_properties]
     impl ObjectImpl for BusNameRow {
         fn constructed(&self) {
+            // ensures that the parent object's construction process is completed before continuing
             self.parent_constructed();
 
             let obj = self.obj();
             let bus_name_item = obj.bus_name_item();
 
-            self.title.set_label(bus_name_item.name());
+            self.title.set_label(bus_name_item.name()); // sets the label of the title widget of the BusNameRow to the name of the associated BusNameItem.
             let subtitle_text = bus_name_item
                 .wk_names(LookupPoint::Last)
                 .iter()
-                .filter_map(|n| n.split('.').last())
+                .filter_map(|n| n.split('.').last()) // filtering out the last part of each name
                 .collect::<Vec<_>>()
                 .join(", ");
-            self.subtitle.set_label(&subtitle_text);
-            self.subtitle.set_visible(!subtitle_text.is_empty());
+            self.subtitle.set_label(&subtitle_text); // sets the label of the subtitle widget of the BusNameRow to the constructed subtitle text.
+            self.subtitle.set_visible(!subtitle_text.is_empty()); // sets the visibility of the subtitle widget based on whether the subtitle text is empty or not.
 
-            let handler_id =
-                self.check_button
-                    .connect_active_notify(clone!(@weak obj => move |_| {
-                        obj.notify_is_active();
-                    }));
+            let handler_id = self.check_button.connect_active_notify(
+                clone!(@weak obj => move |_| { // `connect_active_notify` is used to connect a callback function to a signal, specifically the active property change signal of the check_button.
+                    obj.notify_is_active();
+                }),
+            );
             self.check_button_active_notify_handler_id
                 .set(handler_id)
                 .unwrap();

@@ -98,6 +98,7 @@ mod imp {
                 return;
             }
 
+            // `set_model` ::> filter_list_model
             self.inner.set_model(bus_name_list);
             obj.notify_bus_name_list();
         }
