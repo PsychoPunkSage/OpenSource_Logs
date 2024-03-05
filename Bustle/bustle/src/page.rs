@@ -485,6 +485,7 @@ impl Page {
         self.imp().view.buffer().downcast().unwrap()
     }
 
+    // @NOT_NEEDED
     fn selected_engine(&self) -> Engine {
         let imp = self.imp();
         let selected_item = imp
@@ -496,6 +497,7 @@ impl Page {
         Engine::try_from(selected_item.value()).unwrap()
     }
 
+    // @NOT_NEEDED
     fn queue_draw_graph(&self) {
         let imp = self.imp();
 
@@ -511,6 +513,7 @@ impl Page {
         imp.spinner_revealer.set_reveal_child(true);
     }
 
+    // @NOT_NEEDED
     async fn start_draw_graph_loop(&self) {
         let imp = self.imp();
 
@@ -541,6 +544,7 @@ impl Page {
         }
     }
 
+    // @NOT_NEEDED
     fn handle_document_text_changed(&self) {
         let imp = self.imp();
 
@@ -552,6 +556,7 @@ impl Page {
         self.queue_draw_graph();
     }
 
+    // @NOT_NEEDED
     fn handle_graph_view_error(&self, message: &str) {
         let imp = self.imp();
 
@@ -576,6 +581,7 @@ impl Page {
 
     /// Returns `Ok` if unsaved changes are handled and can proceed, `Err` if
     /// the next operation should be aborted.
+    // @NOT_NEEDED
     async fn handle_unsaved_changes(&self, document: &Document) -> Result<()> {
         if !document.is_modified() {
             return Ok(());
@@ -599,6 +605,7 @@ impl Page {
 
     /// Returns `Ok` if unsaved changes are handled and can proceed, `Err` if
     /// the next operation should be aborted.
+    // @NOT_NEEDED
     async fn present_save_changes_dialog(&self, document: &Document) -> Result<()> {
         const CANCEL_RESPONSE_ID: &str = "cancel";
         const DISCARD_RESPONSE_ID: &str = "discard";
@@ -647,6 +654,7 @@ impl Page {
         }
     }
 
+    // @NOT_NEEDED
     fn update_go_to_error_revealer_reveal_child(&self) {
         let imp = self.imp();
 
@@ -655,6 +663,7 @@ impl Page {
         );
     }
 
+    // @NOT_NEEDED
     fn update_go_to_error_revealer_can_target(&self) {
         let imp = self.imp();
 
@@ -662,6 +671,7 @@ impl Page {
             .set_can_target(imp.go_to_error_revealer.is_child_revealed());
     }
 
+    // @NOT_NEEDED
     fn update_zoom_level_button(&self) {
         let imp = self.imp();
 
@@ -670,18 +680,21 @@ impl Page {
             .set_label(&format!("{:.0}%", zoom_level * 100.0));
     }
 
+    // @NOT_NEEDED
     fn update_zoom_in_action(&self) {
         let imp = self.imp();
 
         self.action_set_enabled("page.zoom-graph-in", imp.graph_view.can_zoom_in());
     }
 
+    // @NOT_NEEDED
     fn update_zoom_out_action(&self) {
         let imp = self.imp();
 
         self.action_set_enabled("page.zoom-graph-out", imp.graph_view.can_zoom_out());
     }
 
+    // @NOT_NEEDED
     fn update_reset_zoom_action(&self) {
         let imp = self.imp();
 

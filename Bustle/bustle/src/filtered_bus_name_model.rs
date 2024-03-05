@@ -31,6 +31,7 @@ mod imp {
     }
 
     // Implement the ObjectSubclass trait for FilteredBusNameModel
+    // sets up the necessary information for registering FilteredBusNameModel as a GObject subclass with specific characteristics and interfaces.
     #[glib::object_subclass]
     impl ObjectSubclass for FilteredBusNameModel {
         const NAME: &'static str = "BustleFilteredBusNameModel";
@@ -39,6 +40,7 @@ mod imp {
     }
 
     // Implement methods for FilteredBusNameModel
+    // enhances the behavior of the `FilteredBusNameModel` type by connecting it to a signal handler that updates the model when its items are changed.
     #[glib::derived_properties]
     impl ObjectImpl for FilteredBusNameModel {
         // Handle the constructed signal
@@ -57,6 +59,18 @@ mod imp {
     }
 
     // Implement ListModelImpl trait for FilteredBusNameModel
+
+    /*
+    Abstraction: A ListModel provides an abstraction over the data, allowing for separation of concerns between the data source and the UI components that display it. This separation makes the code more modular and easier to maintain.
+
+    Lazy Loading: ListModel implementations can support lazy loading of data, which means that only the items that are currently    visible in the UI need to be loaded into memory. This can significantly improve performance, especially when dealing with large datasets.
+
+    Dynamic Updates: ListModel implementations can handle dynamic updates to the underlying data source, such as additions, deletions,  or modifications of items. This allows the UI to automatically reflect changes in the data without manual intervention.
+
+    Customization: ListModel implementations can be customized to provide additional functionalities specific to the application's  requirements, such as filtering, sorting, or grouping of data.
+
+    Integration with GUI Frameworks: Many GUI frameworks provide built-in support for ListModel interfaces, making it easier to     integrate with UI components such as list views, tables, or grids.
+    */
     impl ListModelImpl for FilteredBusNameModel {
         // Return the item type
         fn item_type(&self) -> glib::Type {
