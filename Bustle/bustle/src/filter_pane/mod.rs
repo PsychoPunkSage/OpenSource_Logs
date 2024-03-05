@@ -42,10 +42,12 @@ mod imp {
         type Type = super::FilterPane;
         type ParentType = gtk::Widget;
 
+        // initialize the class structure of a GObject subclass
         fn class_init(klass: &mut Self::Class) {
-            klass.bind_template();
-            klass.bind_template_instance_callbacks();
+            klass.bind_template(); // binds the class to its corresponding Glade template, allowing the class to instantiate itself from a Glade UI file
+            klass.bind_template_instance_callbacks(); // binds callbacks defined in the Glade UI file to methods of the class instance.
 
+            // filter-pane.reset-all ::> in `filter_pane.ui`
             klass.install_action("filter-pane.reset-all", None, |obj, _, _| {
                 obj.model().clear_filters();
                 obj.reset_rows();
@@ -64,11 +66,19 @@ mod imp {
 
             let obj = self.obj();
 
+            // `ListBox` is a widget commonly used in graphical user interfaces (GUIs) to display a list of items to the user
             self.message_tag_list_box.bind_model(
-                Some(&adw::EnumListModel::new(MessageTag::static_type())),
+                // starts the process of binding a model to a list box named message_tag_list_box.
+                // ``EnumListModel``::> type of model in GTK, used specifically for displaying enumerated (enum) types in list-based widgets like ListBox.
+                Some(&adw::EnumListModel::new(MessageTag::static_type())), // `EnumListModel` is created with the type MessageTag::static_type(), and a reference to it is wrapped in ``Some``.
+                // Specifies a closure that will be called to create each item in the list box.
+                // The` @default-panic` tells it to panic if the weak reference is None.
                 clone!(@weak obj => @default-panic, move |item| {
+                    // attempts to downcast the item received in the closure to an EnumListItem
                     let enum_list_item = item.downcast_ref::<adw::EnumListItem>().unwrap();
+                    // the value stored in the EnumListItem is converted into a MessageTag. This is marked as unsafe because it involves interacting with raw pointers.
                     let message_tag = unsafe { MessageTag::from_glib(enum_list_item.value()) };
+                    // upcast() is used to convert it into a glib::Object.
                     obj.create_message_tag_row(message_tag).upcast()
                 }),
             );
