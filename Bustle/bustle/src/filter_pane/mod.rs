@@ -148,7 +148,7 @@ impl FilterPane {
             if row.is_active() {
                 // attempts to remove the message_tag filter from the model.
                 let was_removed = model.remove_message_tag_filter(message_tag);
-                debug_assert!(was_removed); // This line asserts (in debug mode) that the `was_removed` variable is true.
+                debug_assert!(was_removed);
                 println!("create_message_tag_row >> was_removed {:?}", was_removed);
             } else {
                 model.add_message_tag_filter(message_tag);
