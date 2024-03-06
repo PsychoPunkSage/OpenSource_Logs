@@ -85,7 +85,7 @@ mod imp {
 
     #[glib::object_subclass]
     impl ObjectSubclass for Page {
-        const NAME: &'static str = "BustlePage"; // ****
+        const NAME: &'static str = "BustlePage"; // Change the App name...
         type Type = super::Page;
         type ParentType = gtk::Widget;
 
