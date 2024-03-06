@@ -109,7 +109,7 @@ mod imp {
             - Inside the closure, the `reset_rows` method of the obj object is called to reset the rows.
             - `bind_model` method of the `bus_name_list_box` of the imp object is called to bind the `filtered_bus_names` to the `bus_name_list_box`.
             */
-            // @Checkpoint
+            // @Checkpoint.... need for BUS_name filter.
             model.filtered_bus_names().connect_bus_name_list_notify(
                 clone!(@weak obj => move |filtered_bus_names| {
                     obj.reset_rows();
