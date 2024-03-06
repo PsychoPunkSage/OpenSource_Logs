@@ -97,8 +97,8 @@ mod imp {
 
             /*
             - Establishes a connection between the `has_filter_notify` signal of the `model` object and a closure.
-            When the `has_filter_notify` signal is emitted, the closure is invoked. Inside the closure, the `action_set_enabled` method of the obj object is called,
-            enabling or disabling the "filter-pane.reset-all" action based on whether the model has a filter.
+            - When the `has_filter_notify` signal is emitted, the closure is invoked. Inside the closure, the `action_set_enabled` method of the obj object is called,
+            - enabling or disabling the "filter-pane.reset-all" action based on whether the model has a filter.
             */
             model.connect_has_filter_notify(clone!(@weak obj => move |model| {
                 obj.action_set_enabled("filter-pane.reset-all", model.has_filter());
