@@ -49,7 +49,7 @@ mod imp {
     #[glib::derived_properties]
     impl ObjectImpl for MessageTagRow {
         fn constructed(&self) {
-            // ensures that the parent object's construction process is completed before continuing
+            // ensures that the parent object's construction process is completed before continuing...
             self.parent_constructed();
 
             let obj = self.obj();
