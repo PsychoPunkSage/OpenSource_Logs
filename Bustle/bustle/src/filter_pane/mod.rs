@@ -138,14 +138,18 @@ impl FilterPane {
     fn create_message_tag_row(&self, message_tag: MessageTag) -> MessageTagRow {
         // creates a new MessageTagRow object
         let row = MessageTagRow::new(&message_tag);
+        println!("create_message_tag_row >> row {:?}", row);
         // connects a signal handler to the is_active property of the MessageTagRow object
         row.connect_is_active_notify(clone!(@weak self as obj => move |row| {
             let model = obj.model();
+            println!("create_message_tag_row >> model {:?}", model);
             let message_tag = row.message_tag();
+            println!("create_message_tag_row >> message_tag {:?}", message_tag);
             if row.is_active() {
                 // attempts to remove the message_tag filter from the model.
                 let was_removed = model.remove_message_tag_filter(message_tag);
                 debug_assert!(was_removed); // This line asserts (in debug mode) that the `was_removed` variable is true.
+                println!("create_message_tag_row >> was_removed {:?}", was_removed);
             } else {
                 model.add_message_tag_filter(message_tag);
             }
@@ -156,13 +160,18 @@ impl FilterPane {
     // @Checkpoint.... ways to add the tag.
     fn create_bus_name_row(&self, bus_name_item: &BusNameItem) -> BusNameRow {
         let row = BusNameRow::new(bus_name_item);
+        println!("create_bus_name_row >> row {:?}", row);
         row.connect_is_active_notify(clone!(@weak self as obj => move |row| {
             let model = obj.model();
+            println!("create_bus_name_row >> model {:?}", model);
             let bus_name_item = row.bus_name_item();
+            println!("create_bus_name_row >> bus_name_item {:?}", bus_name_item);
             let name = bus_name_item.name();
+            println!("create_bus_name_row >> name {:?}", name);
             if row.is_active() {
                 let was_removed = model.remove_bus_name_filter(name);
                 debug_assert!(was_removed);
+                println!("create_bus_name_row >> was_removed {:?}", was_removed);
             } else {
                 model.add_bus_name_filter(name).unwrap();
             }
@@ -170,7 +179,7 @@ impl FilterPane {
         row
     }
 
-    // Resets the Checkboxes
+    // Resets the Checkboxes <NO CHANGES REQUIRED>
     fn reset_rows(&self) {
         let imp = self.imp();
 
