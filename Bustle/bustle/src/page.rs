@@ -16,7 +16,7 @@ use crate::{
     utils, window::Window,
 };
 
-// ????
+// ???? -> Not needed here
 // const DRAW_GRAPH_PRIORITY: glib::Priority = glib::Priority::DEFAULT_IDLE;
 // const DRAW_GRAPH_INTERVAL: Duration = Duration::from_secs(1);
 
@@ -196,7 +196,7 @@ mod imp {
                 .set(document_signal_group)
                 .unwrap();
 
-                // @NOT_NEEDED
+            // @NOT_NEEDED
             self.engine_drop_down.set_expression(Some(
                 &gtk::ClosureExpression::new::<glib::GString>(
                     &[] as &[gtk::Expression],
