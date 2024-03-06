@@ -503,7 +503,7 @@ impl Page {
 
         imp.queued_draw_graph.set(true);
 
-        // If we're not rendering a graph, skip the timeout.
+        // If we're not rendering a graph, skip the timeout....
         if !imp.graph_view.is_rendering() {
             if let Some(cancellable) = imp.draw_graph_timeout_cancellable.take() {
                 cancellable.cancel();
