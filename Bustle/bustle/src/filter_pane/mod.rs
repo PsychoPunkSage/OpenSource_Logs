@@ -95,10 +95,20 @@ mod imp {
         fn set_model(&self, model: FilteredMessageModel) {
             let obj = self.obj();
 
+            /*
+            - Establishes a connection between the `has_filter_notify` signal of the `model` object and a closure.
+            When the `has_filter_notify` signal is emitted, the closure is invoked. Inside the closure, the `action_set_enabled` method of the obj object is called,
+            enabling or disabling the "filter-pane.reset-all" action based on whether the model has a filter.
+            */
             model.connect_has_filter_notify(clone!(@weak obj => move |model| {
                 obj.action_set_enabled("filter-pane.reset-all", model.has_filter());
             }));
 
+            /*
+            - connects the `bus_name_list_notify` signal of the `filtered_bus_names` object to a closure. When the signal is emitted, the closure is executed
+            - Inside the closure, the `reset_rows` method of the obj object is called to reset the rows.
+            - `bind_model` method of the `bus_name_list_box` of the imp object is called to bind the `filtered_bus_names` to the `bus_name_list_box`.
+            */
             model.filtered_bus_names().connect_bus_name_list_notify(
                 clone!(@weak obj => move |filtered_bus_names| {
                     obj.reset_rows();
@@ -124,13 +134,16 @@ glib::wrapper! {
 
 impl FilterPane {
     fn create_message_tag_row(&self, message_tag: MessageTag) -> MessageTagRow {
+        // creates a new MessageTagRow object
         let row = MessageTagRow::new(&message_tag);
+        // connects a signal handler to the is_active property of the MessageTagRow object
         row.connect_is_active_notify(clone!(@weak self as obj => move |row| {
             let model = obj.model();
             let message_tag = row.message_tag();
             if row.is_active() {
+                // attempts to remove the message_tag filter from the model.
                 let was_removed = model.remove_message_tag_filter(message_tag);
-                debug_assert!(was_removed);
+                debug_assert!(was_removed); // This line asserts (in debug mode) that the `was_removed` variable is true.
             } else {
                 model.add_message_tag_filter(message_tag);
             }
@@ -154,6 +167,7 @@ impl FilterPane {
         row
     }
 
+    // Resets the Checkboxes
     fn reset_rows(&self) {
         let imp = self.imp();
 
