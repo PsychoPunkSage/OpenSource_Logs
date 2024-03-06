@@ -157,7 +157,7 @@ impl FilterPane {
         row
     }
 
-    // @Checkpoint
+    // @Checkpoint.... ways to add the tag.
     fn create_bus_name_row(&self, bus_name_item: &BusNameItem) -> BusNameRow {
         let row = BusNameRow::new(bus_name_item);
         println!("create_bus_name_row >> row {:?}", row);
