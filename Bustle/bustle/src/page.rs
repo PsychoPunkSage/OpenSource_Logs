@@ -464,7 +464,7 @@ impl Page {
         self.window().add_message_toast(message);
     }
 
-    // MUST BE MODIFIED
+    // MUST BE MODIFIED *****
     fn set_document(&self, document: &Document) {
         let imp = self.imp();
 
