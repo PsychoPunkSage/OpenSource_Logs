@@ -66,6 +66,27 @@ mod imp {
 
             let obj = self.obj();
 
+            let filter_model =
+                gtk::FilterListModel::new(adw::EnumListModel::new(MessageTag::static_type()));
+
+            filter_model.set_custom_filter(Some(Box::new(move |item| {
+                let enum_list_item = item.downcast_ref::<adw::EnumListItem>().unwrap();
+                let message_tag = unsafe { MessageTag::from_glib(enum_list_item.value()) };
+                // Check if the message tag is used in the system bus
+                let is_tag_used = is_tag_used_in_system_bus(message_tag);
+                // Return true to include the item in the filtered model if the tag is used
+                is_tag_used
+            })));
+
+            self.message_tag_list_box.bind_model(
+                Some(&filter_model.upcast::<gio::ListModel>()),
+                clone!(@weak obj => @default-panic, move |item| {
+                    let enum_list_item = item.downcast_ref::<adw::EnumListItem>().unwrap();
+                    let message_tag = unsafe { MessageTag::from_glib(enum_list_item.value()) };
+                    obj.create_message_tag_row(message_tag).upcast()
+                }),
+            );
+
             // `ListBox` is a widget commonly used in graphical user interfaces (GUIs) to display a list of items to the user
             self.message_tag_list_box.bind_model(
                 // starts the process of binding a model to a list box named message_tag_list_box.
@@ -76,8 +97,10 @@ mod imp {
                 clone!(@weak obj => @default-panic, move |item| {
                     // attempts to downcast the item received in the closure to an EnumListItem
                     let enum_list_item = item.downcast_ref::<adw::EnumListItem>().unwrap();
+                    println!("parent_constructed >> enum_list_item ::: {:?}", enum_list_item);
                     // the value stored in the EnumListItem is converted into a MessageTag. This is marked as unsafe because it involves interacting with raw pointers.
                     let message_tag = unsafe { MessageTag::from_glib(enum_list_item.value()) };
+                    println!("parent_constructed >> message_tag ::: {:?}", message_tag);
                     // upcast() is used to convert it into a glib::Object.
                     obj.create_message_tag_row(message_tag).upcast()
                 }),
