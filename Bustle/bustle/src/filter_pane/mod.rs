@@ -67,22 +67,6 @@ mod imp {
         }
     }
 
-    fn custom_filter_list_model(item: &glib::Object) -> bool {
-        // Implement your filtering logic here
-        // Return true to include the item, false to exclude it
-        true
-    }
-
-    // #[derive(Default)]
-    // struct CustomFilterListModel {}
-
-    // impl Filter for CustomFilterListModel {
-    //     fn filter(&self, item: &glib::Object) -> bool {
-    //         let fmm = FilteredMessageModel::default();
-    //         fmm.dbus_bus_name_exists_in_dbus()
-    //     }
-    // }
-
     #[glib::derived_properties]
     impl ObjectImpl for FilterPane {
         fn constructed(&self) {
