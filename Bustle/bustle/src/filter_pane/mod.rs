@@ -115,23 +115,23 @@ mod imp {
 
             // @ORIGINAL
             // `ListBox` is a widget commonly used in graphical user interfaces (GUIs) to display a list of items to the user
-            self.message_tag_list_box.bind_model(
-                // starts the process of binding a model to a list box named message_tag_list_box.
-                // ``EnumListModel``::> type of model in GTK, used specifically for displaying enumerated (enum) types in list-based widgets like ListBox.
-                Some(&adw::EnumListModel::new(MessageTag::static_type())), // `EnumListModel` is created with the type MessageTag::static_type(), and a reference to it is wrapped in ``Some``.
-                // Specifies a closure that will be called to create each item in the list box.
-                // The` @default-panic` tells it to panic if the weak reference is None.
-                clone!(@weak obj => @default-panic, move |item| {
-                    // attempts to downcast the item received in the closure to an EnumListItem
-                    let enum_list_item = item.downcast_ref::<adw::EnumListItem>().unwrap();
-                    println!("parent_constructed >> enum_list_item ::: {:?}", enum_list_item);
-                    // the value stored in the EnumListItem is converted into a MessageTag. This is marked as unsafe because it involves interacting with raw pointers.
-                    let message_tag = unsafe { MessageTag::from_glib(enum_list_item.value()) };
-                    println!("parent_constructed >> message_tag ::: {:?}", message_tag);
-                    // upcast() is used to convert it into a glib::Object.
-                    obj.create_message_tag_row(message_tag).upcast()
-                }),
-            );
+            // self.message_tag_list_box.bind_model(
+            //     // starts the process of binding a model to a list box named message_tag_list_box.
+            //     // ``EnumListModel``::> type of model in GTK, used specifically for displaying enumerated (enum) types in list-based widgets like ListBox.
+            //     Some(&adw::EnumListModel::new(MessageTag::static_type())), // `EnumListModel` is created with the type MessageTag::static_type(), and a reference to it is wrapped in ``Some``.
+            //     // Specifies a closure that will be called to create each item in the list box.
+            //     // The` @default-panic` tells it to panic if the weak reference is None.
+            //     clone!(@weak obj => @default-panic, move |item| {
+            //         // attempts to downcast the item received in the closure to an EnumListItem
+            //         let enum_list_item = item.downcast_ref::<adw::EnumListItem>().unwrap();
+            //         println!("parent_constructed >> enum_list_item ::: {:?}", enum_list_item);
+            //         // the value stored in the EnumListItem is converted into a MessageTag. This is marked as unsafe because it involves interacting with raw pointers.
+            //         let message_tag = unsafe { MessageTag::from_glib(enum_list_item.value()) };
+            //         println!("parent_constructed >> message_tag ::: {:?}", message_tag);
+            //         // upcast() is used to convert it into a glib::Object.
+            //         obj.create_message_tag_row(message_tag).upcast()
+            //     }),
+            // );
         }
 
         fn dispose(&self) {
