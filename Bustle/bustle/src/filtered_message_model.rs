@@ -423,6 +423,7 @@ impl FilteredMessageModel {
 
         // @ Check if the value is present in the MessageTag_Enum or not..
         let message_list = self.message_list().unwrap();
+        let vector = message_list.imp().inner;
         let message_tag = self
             .imp()
             .message_tag_filter_indices
@@ -430,6 +431,7 @@ impl FilteredMessageModel {
             .keys()
             .map(|tag| tag.clone())
             .collect::<Vec<MessageTag>>();
+
         println!("MessageTags: {:?}", message_tag);
         println!("MessageList: {:?}", message_list);
         // match message_tag {
