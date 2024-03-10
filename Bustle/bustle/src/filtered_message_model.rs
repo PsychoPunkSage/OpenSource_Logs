@@ -400,9 +400,6 @@ impl FilteredMessageModel {
     }
 
     fn update_used_names(&self, _position: u32, _removed: u32, _added: u32) {
-        // TODO optimize by considering only what actually changed instead of computing
-        // everytime the message list changes
-
         let used_sender_names = self
             .iter()
             .filter_map(|message| message.sender().map(|s| BusName::from(s.to_owned())));
