@@ -423,7 +423,7 @@ impl FilteredMessageModel {
 
         // @ Check if the value is present in the MessageTag_Enum or not..
         let message_list = self.message_list().unwrap();
-        let vector = message_list.imp().inner;
+        let vector = message_list.imp().inner().borrow();
         let message_tag = self
             .imp()
             .message_tag_filter_indices
