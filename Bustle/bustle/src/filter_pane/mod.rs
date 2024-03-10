@@ -14,6 +14,7 @@ use crate::{
     bus_name_item::BusNameItem,
     filter_pane::{bus_name_row::BusNameRow, message_tag_row::MessageTagRow},
     filtered_message_model::FilteredMessageModel,
+    // message::Message,
     message_tag::MessageTag,
 };
 
@@ -90,10 +91,9 @@ mod imp {
             let obj = self.obj();
 
             let message_tag_filter =
-                gtk::CustomFilter::new(clone!(@weak obj => @default-panic, move |object| {
-                    let object = object.downcast_ref::<MessageTag>().unwrap();
-                    // Function to check if a message signal is present in dbus
-                    obj.dbus_message_signal_exists_in_dbus(object)
+                gtk::CustomFilter::new(clone!(@weak obj => @default-panic, move | object | {
+                    // let message = object.downcast_ref::<Message>();
+                    FilteredMessageModel::dbus_message_signal_exists_in_dbus()
                 }));
 
             let filter_model = FilterListModel::new(

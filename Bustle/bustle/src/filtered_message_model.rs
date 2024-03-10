@@ -109,6 +109,13 @@ mod imp {
 
             // Set the filter for the inner model
             self.inner.set_filter(Some(&filter));
+
+            // Create a custom filter for message tags
+            // let message_tag_filter = gtk::CustomFilter::new(|message| {
+            //     let message = message.downcast_ref::<Message>().unwrap();
+            //     // Function to check if a message signal is present in dbus
+            //     obj.dbus_message_signal_exists_in_dbus(message)
+            // });
         }
     }
 
@@ -405,6 +412,15 @@ impl FilteredMessageModel {
         self.imp()
             .used_bus_names
             .replace(used_sender_names.chain(used_destination_names).collect());
+    }
+
+    pub fn dbus_message_signal_exists_in_dbus() -> bool {
+        // Implement the logic to check if a message signal is present in dbus
+        // For example:
+        // Check if the message tag exists in the dbus signals
+        // Your implementation may vary based on the actual requirements and structure of your application
+        // For now, let's return true as a placeholder
+        false
     }
 }
 // ********** @CheckPoint **********
