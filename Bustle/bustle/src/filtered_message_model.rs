@@ -422,9 +422,7 @@ impl FilteredMessageModel {
         // For now, let's return true as a placeholder
 
         // @ Check if the value is present in the MessageTag_Enum or not..
-        // let Some(message_list) = self.message_list(){
-        //     message_list
-        // };
+        let message_list = self.message_list().unwrap();
         let message_tag = self
             .imp()
             .message_tag_filter_indices
