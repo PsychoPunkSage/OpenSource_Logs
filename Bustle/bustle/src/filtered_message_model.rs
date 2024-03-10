@@ -415,7 +415,6 @@ impl FilteredMessageModel {
     }
 
     pub fn dbus_message_signal_exists_in_dbus(&self) -> bool {
-        // @ Check if the value is present in the MessageTag_Enum or not..
         let message_list = self.message_list().unwrap();
         let vector = *message_list.imp().inner().borrow();
         let last_elements_tag = vector.last().unwrap().message_tag();
@@ -434,29 +433,3 @@ impl FilteredMessageModel {
         false
     }
 }
-// ********** @CheckPoint **********
-// pub fn dbus_bus_name_exists_in_dbus(self, bus_name: &str) -> bool {
-//     // Retrieve the message list from the filtered message model
-//     let message_list = self.message_list();
-
-//     // Check if the message list is available
-//     if let Some(message_list) = message_list {
-//         // Iterate over each message in the message list
-//         for message in message_list.iter() {
-//             // Check if the sender or destination of the message matches the given bus name
-//             if let Some(sender) = message.sender() {
-//                 if sender == bus_name {
-//                     return true; // Found a match, return true
-//                 }
-//             }
-//             if let Some(destination) = message.destination() {
-//                 if destination == bus_name {
-//                     return true; // Found a match, return true
-//                 }
-//             }
-//         }
-//     }
-
-//     false // No match found, return false
-// }
-// }
