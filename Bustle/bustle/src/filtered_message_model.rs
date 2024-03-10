@@ -414,12 +414,32 @@ impl FilteredMessageModel {
             .replace(used_sender_names.chain(used_destination_names).collect());
     }
 
-    pub fn dbus_message_signal_exists_in_dbus() -> bool {
+    pub fn dbus_message_signal_exists_in_dbus(&self) -> bool {
         // Implement the logic to check if a message signal is present in dbus
         // For example:
         // Check if the message tag exists in the dbus signals
         // Your implementation may vary based on the actual requirements and structure of your application
         // For now, let's return true as a placeholder
+
+        // @ Check if the value is present in the MessageTag_Enum or not..
+        // let Some(message_list) = self.message_list(){
+        //     message_list
+        // };
+        let message_tag = self
+            .imp()
+            .message_tag_filter_indices
+            .borrow()
+            .keys()
+            .map(|tag| tag.clone())
+            .collect::<Vec<MessageTag>>();
+        println!("MessageTags: {:?}", message_tag);
+        println!("MessageList: {:?}", message_list);
+        // match message_tag {
+        //     "Accessibility" | "Bluetooth" | "Flatpak" | "Geoclue" | "Gtk" | "Gvfs" | "IBus"
+        //     | "Logind" | "NetworkManager" | "PolicyKit" | "Portals" | "SearchProvider"
+        //     | "SessionManager" | "Shell" | "Systemd" | "Tracker" | "UPower" | "Unknown" => true,
+        //     _ => false,
+        // }
         false
     }
 }

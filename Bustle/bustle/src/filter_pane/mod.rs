@@ -93,7 +93,19 @@ mod imp {
             let message_tag_filter =
                 gtk::CustomFilter::new(clone!(@weak obj => @default-panic, move | object | {
                     // let message = object.downcast_ref::<Message>();
-                    FilteredMessageModel::dbus_message_signal_exists_in_dbus()
+                    // println!("mod.rs >> contructed() >> obj {:?}", object);
+                    // let message_tag = MessageTag::Gtk;
+
+                    // if let Some(filtered_message_model_ref) = self.get() {
+                    //     // Call the function with a reference to the extracted value
+                    //     FilteredMessageModel::dbus_message_signal_exists_in_dbus(filtered_message_model_ref)
+                    // } else {
+                    //     println!("Issue in FilterPane >> mod.rs >> ObjectImpl >> constructed >> message_tag_filter");
+                    //     false
+                    // }
+
+                    // FilteredMessageModel::dbus_message_signal_exists_in_dbus()
+                    false
                 }));
 
             let filter_model = FilterListModel::new(
