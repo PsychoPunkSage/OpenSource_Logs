@@ -5,8 +5,10 @@ use gtk::{
     glib::{self, clone, translate::FromGlib},
     prelude::*,
     subclass::prelude::*,
-    FilterListModel,
+    // FilterListModel,
 };
+
+// use gtk::Filter;
 
 use crate::{
     bus_name_item::BusNameItem,
@@ -17,6 +19,10 @@ use crate::{
 
 mod imp {
     use std::cell::OnceCell;
+
+    // use crate::filtered_message_model;
+
+    use gtk::FilterListModel;
 
     use super::*;
 
@@ -63,7 +69,18 @@ mod imp {
     fn custom_filter_list_model(item: &glib::Object) -> bool {
         // Implement your filtering logic here
         // Return true to include the item, false to exclude it
+        true
     }
+
+    // #[derive(Default)]
+    // struct CustomFilterListModel {}
+
+    // impl Filter for CustomFilterListModel {
+    //     fn filter(&self, item: &glib::Object) -> bool {
+    //         let fmm = FilteredMessageModel::default();
+    //         fmm.dbus_bus_name_exists_in_dbus()
+    //     }
+    // }
 
     #[glib::derived_properties]
     impl ObjectImpl for FilterPane {
@@ -72,9 +89,16 @@ mod imp {
 
             let obj = self.obj();
 
+            let message_tag_filter =
+                gtk::CustomFilter::new(clone!(@weak obj => @default-panic, move |object| {
+                    let object = object.downcast_ref::<MessageTag>().unwrap();
+                    // Function to check if a message signal is present in dbus
+                    obj.dbus_message_signal_exists_in_dbus(object)
+                }));
+
             let filter_model = FilterListModel::new(
                 Some(adw::EnumListModel::new(MessageTag::static_type())),
-                Some(&custom_filter_list_model),
+                Some(message_tag_filter),
             );
 
             self.message_tag_list_box.bind_model(
@@ -87,24 +111,24 @@ mod imp {
             );
 
             // @ORIGINAL
-            // // `ListBox` is a widget commonly used in graphical user interfaces (GUIs) to display a list of items to the user
-            // self.message_tag_list_box.bind_model(
-            //     // starts the process of binding a model to a list box named message_tag_list_box.
-            //     // ``EnumListModel``::> type of model in GTK, used specifically for displaying enumerated (enum) types in list-based widgets like ListBox.
-            //     Some(&adw::EnumListModel::new(MessageTag::static_type())), // `EnumListModel` is created with the type MessageTag::static_type(), and a reference to it is wrapped in ``Some``.
-            //     // Specifies a closure that will be called to create each item in the list box.
-            //     // The` @default-panic` tells it to panic if the weak reference is None.
-            //     clone!(@weak obj => @default-panic, move |item| {
-            //         // attempts to downcast the item received in the closure to an EnumListItem
-            //         let enum_list_item = item.downcast_ref::<adw::EnumListItem>().unwrap();
-            //         println!("parent_constructed >> enum_list_item ::: {:?}", enum_list_item);
-            //         // the value stored in the EnumListItem is converted into a MessageTag. This is marked as unsafe because it involves interacting with raw pointers.
-            //         let message_tag = unsafe { MessageTag::from_glib(enum_list_item.value()) };
-            //         println!("parent_constructed >> message_tag ::: {:?}", message_tag);
-            //         // upcast() is used to convert it into a glib::Object.
-            //         obj.create_message_tag_row(message_tag).upcast()
-            //     }),
-            // );
+            // `ListBox` is a widget commonly used in graphical user interfaces (GUIs) to display a list of items to the user
+            self.message_tag_list_box.bind_model(
+                // starts the process of binding a model to a list box named message_tag_list_box.
+                // ``EnumListModel``::> type of model in GTK, used specifically for displaying enumerated (enum) types in list-based widgets like ListBox.
+                Some(&adw::EnumListModel::new(MessageTag::static_type())), // `EnumListModel` is created with the type MessageTag::static_type(), and a reference to it is wrapped in ``Some``.
+                // Specifies a closure that will be called to create each item in the list box.
+                // The` @default-panic` tells it to panic if the weak reference is None.
+                clone!(@weak obj => @default-panic, move |item| {
+                    // attempts to downcast the item received in the closure to an EnumListItem
+                    let enum_list_item = item.downcast_ref::<adw::EnumListItem>().unwrap();
+                    println!("parent_constructed >> enum_list_item ::: {:?}", enum_list_item);
+                    // the value stored in the EnumListItem is converted into a MessageTag. This is marked as unsafe because it involves interacting with raw pointers.
+                    let message_tag = unsafe { MessageTag::from_glib(enum_list_item.value()) };
+                    println!("parent_constructed >> message_tag ::: {:?}", message_tag);
+                    // upcast() is used to convert it into a glib::Object.
+                    obj.create_message_tag_row(message_tag).upcast()
+                }),
+            );
         }
 
         fn dispose(&self) {
