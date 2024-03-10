@@ -424,8 +424,9 @@ impl FilteredMessageModel {
         // @ Check if the value is present in the MessageTag_Enum or not..
         let message_list = self.message_list().unwrap();
         let vector = *message_list.imp().inner().borrow();
+        let last_elements_tag = vector.last().unwrap().message_tag();
 
-        let message_tag = self
+        let message_tags = self
             .imp()
             .message_tag_filter_indices
             .borrow()
@@ -433,8 +434,12 @@ impl FilteredMessageModel {
             .map(|tag| tag.clone())
             .collect::<Vec<MessageTag>>();
 
-        println!("MessageTags: {:?}", message_tag);
-        println!("MessageList: {:?}", message_list);
+        if let Some(found_tag) = message_tags.iter().find(|&tag| *tag == last_elements_tag) {
+            return true;
+        }
+
+        // println!("MessageTags: {:?}", message_tag);
+        // println!("MessageList: {:?}", message_list);
         // match message_tag {
         //     "Accessibility" | "Bluetooth" | "Flatpak" | "Geoclue" | "Gtk" | "Gvfs" | "IBus"
         //     | "Logind" | "NetworkManager" | "PolicyKit" | "Portals" | "SearchProvider"
