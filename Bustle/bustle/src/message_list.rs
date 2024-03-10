@@ -60,6 +60,12 @@ mod imp {
                 .cloned()
         }
     }
+    impl MessageList {
+        // Public method to access the inner field
+        pub fn inner(&self) -> RefCell<Vec<Message>> {
+            self.inner
+        }
+    }
 }
 
 glib::wrapper! {
