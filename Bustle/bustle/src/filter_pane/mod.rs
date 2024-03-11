@@ -172,7 +172,6 @@ glib::wrapper! {
 }
 
 impl FilterPane {
-    // @Checkpoint.... ways to add the tag.
     fn create_message_tag_row(&self, message_tag: MessageTag) -> MessageTagRow {
         // creates a new MessageTagRow object
         let row = MessageTagRow::new(&message_tag);
