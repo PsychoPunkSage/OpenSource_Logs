@@ -14,7 +14,7 @@ use crate::{
     bus_name_item::BusNameItem,
     filter_pane::{bus_name_row::BusNameRow, message_tag_row::MessageTagRow},
     filtered_message_model::FilteredMessageModel,
-    // message::Message,
+    message::Message,
     message_tag::MessageTag,
 };
 
@@ -73,24 +73,26 @@ mod imp {
             self.parent_constructed();
 
             let obj = self.obj();
+            let model_ref = self.model.clone();
 
-            let message_tag_filter =
-                gtk::CustomFilter::new(clone!(@weak obj => @default-panic, move | object | {
+            let message_tag_filter = gtk::CustomFilter::new(
+                clone!(@weak obj => @default-panic, move | object | {
                     /*
                     Changes Required::
                     > use the `_object`
                     > downcast it to a `Message` and use it to check against `dbus_message_signal_exists_in_dbus`
                      */
-                    // if let Some(fmm) = self.model.get() {
-                    //     let message_list = fmm.message_list().unwrap();
-                    //     let vector = *message_list.imp().inner().borrow();
-                    //     let last_elements_tag = vector.last().unwrap().message_tag();
-                    //     FilteredMessageModel::dbus_message_signal_exists_in_dbus(fmm, last_elements_tag)
-                    // } else {
-                    //     false
-                    // }
-                    false
-                }));
+                    let message = object.downcast_ref::<Message>().unwrap();
+                    if let Some(fmm) = model_ref.get() {
+                        // let message_list = fmm.message_list().unwrap();
+                        // let vector = *message_list.imp().inner().borrow();
+                        // let last_elements_tag = vector.last().unwrap().message_tag();
+                        FilteredMessageModel::dbus_message_signal_exists_in_dbus(fmm, message.message_tag())
+                    } else {
+                        false
+                    }
+                }),
+            );
 
             let filter_model = FilterListModel::new(
                 Some(adw::EnumListModel::new(MessageTag::static_type())),
