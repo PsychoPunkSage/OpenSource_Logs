@@ -79,6 +79,7 @@ mod imp {
                     /*
                     Changes Required::
                     > use the `_object`
+                    > downcast it to a `Message` and use it to check against `dbus_message_signal_exists_in_dbus`
                      */
                     if let Some(model_ref) = self.model.get() {
                         FilteredMessageModel::dbus_message_signal_exists_in_dbus(model_ref)
