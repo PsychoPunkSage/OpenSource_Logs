@@ -78,6 +78,7 @@ mod imp {
                 gtk::CustomFilter::new(clone!(@weak obj => @default-panic, move | _object | {
                     /*
                     Changes Required::
+                    > use the `_object`
                      */
                     if let Some(model_ref) = self.model.get() {
                         FilteredMessageModel::dbus_message_signal_exists_in_dbus(model_ref)
