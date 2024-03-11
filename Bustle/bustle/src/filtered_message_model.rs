@@ -411,6 +411,9 @@ impl FilteredMessageModel {
             .replace(used_sender_names.chain(used_destination_names).collect());
     }
 
+    /*
+    Chnages Required::>
+    */
     pub fn dbus_message_signal_exists_in_dbus(&self) -> bool {
         let message_list = self.message_list().unwrap();
         let vector = *message_list.imp().inner().borrow();
