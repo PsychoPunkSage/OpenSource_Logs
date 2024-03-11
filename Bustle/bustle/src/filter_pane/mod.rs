@@ -53,7 +53,7 @@ mod imp {
         // initialize the class structure of a GObject subclass
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template(); // binds the class to its corresponding Glade template, allowing the class to instantiate itself from a Glade UI file...
-            klass.bind_template_instance_callbacks(); // binds callbacks defined in the Glade UI file to methods of the class instance.
+            klass.bind_template_instance_callbacks(); // binds callbacks defined in the Glade UI file to methods of the class instance.....
 
             // filter-pane.reset-all ::> in `filter_pane.ui`
             klass.install_action("filter-pane.reset-all", None, |obj, _, _| {
