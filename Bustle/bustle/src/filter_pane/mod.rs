@@ -75,17 +75,21 @@ mod imp {
             let obj = self.obj();
 
             let message_tag_filter =
-                gtk::CustomFilter::new(clone!(@weak obj => @default-panic, move | _object | {
+                gtk::CustomFilter::new(clone!(@weak obj => @default-panic, move | object | {
                     /*
                     Changes Required::
                     > use the `_object`
                     > downcast it to a `Message` and use it to check against `dbus_message_signal_exists_in_dbus`
                      */
-                    if let Some(model_ref) = self.model.get() {
-                        FilteredMessageModel::dbus_message_signal_exists_in_dbus(model_ref)
-                    } else {
-                        false
-                    }
+                    // if let Some(fmm) = self.model.get() {
+                    //     let message_list = fmm.message_list().unwrap();
+                    //     let vector = *message_list.imp().inner().borrow();
+                    //     let last_elements_tag = vector.last().unwrap().message_tag();
+                    //     FilteredMessageModel::dbus_message_signal_exists_in_dbus(fmm, last_elements_tag)
+                    // } else {
+                    //     false
+                    // }
+                    false
                 }));
 
             let filter_model = FilterListModel::new(

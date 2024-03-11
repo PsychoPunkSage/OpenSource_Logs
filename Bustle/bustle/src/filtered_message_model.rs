@@ -417,10 +417,11 @@ impl FilteredMessageModel {
     ==> Need to emit Signals.
     ==> Something like `self.emit_by_name::<()>("<signal name>");`
     */
-    pub fn dbus_message_signal_exists_in_dbus(&self) -> bool {
-        let message_list = self.message_list().unwrap();
-        let vector = *message_list.imp().inner().borrow();
-        let last_elements_tag = vector.last().unwrap().message_tag();
+    pub fn dbus_message_signal_exists_in_dbus(&self, last_tag: MessageTag) -> bool {
+        // let message_list = self.message_list().unwrap();
+        // let vector = *message_list.imp().inner().borrow();
+        // let last_elements_tag = vector.last().unwrap().message_tag();
+        let last_elements_tag = last_tag;
 
         let message_tags = self
             .imp()
@@ -435,4 +436,23 @@ impl FilteredMessageModel {
         }
         false
     }
+
+    // pub fn dbus_message_signal_exists_in_dbus2(&self) -> bool {
+    //     let message_list = self.message_list().unwrap();
+    //     let vector = *message_list.imp().inner().borrow();
+    //     let last_elements_tag = vector.last().unwrap().message_tag();
+
+    //     let message_tags = self
+    //         .imp()
+    //         .message_tag_filter_indices
+    //         .borrow()
+    //         .keys()
+    //         .map(|tag| tag.clone())
+    //         .collect::<Vec<MessageTag>>();
+
+    //     if let Some(found_tag) = message_tags.iter().find(|&tag| *tag == last_elements_tag) {
+    //         return true;
+    //     }
+    //     false
+    // }
 }
