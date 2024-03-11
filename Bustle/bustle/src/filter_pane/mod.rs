@@ -76,6 +76,9 @@ mod imp {
 
             let message_tag_filter =
                 gtk::CustomFilter::new(clone!(@weak obj => @default-panic, move | _object | {
+                    /*
+                    Changes Required::
+                     */
                     if let Some(model_ref) = self.model.get() {
                         FilteredMessageModel::dbus_message_signal_exists_in_dbus(model_ref)
                     } else {
