@@ -215,7 +215,6 @@ impl FilterPane {
         row
     }
 
-    // Resets the Checkboxes <NO CHANGES REQUIRED>
     fn reset_rows(&self) {
         let imp = self.imp();
 
