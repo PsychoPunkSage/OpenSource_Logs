@@ -137,7 +137,7 @@ mod imp {
         }
     }
 
-    // Implement additional methods for `FilteredMessageModel`
+    // Implementing additional methods for `FilteredMessageModel`
     impl FilteredMessageModel {
         // Check if any filter is applied
         fn has_filter(&self) -> bool {
