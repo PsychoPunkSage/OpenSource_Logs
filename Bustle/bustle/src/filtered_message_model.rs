@@ -422,7 +422,6 @@ impl FilteredMessageModel {
         // let active_tags: Vec<MessageTag> = Vec::new();
         // let last_elements_tag = last_tag;
         self.dbus_message_signal_exists_in_dbus(tag)
-        // false
     }
 
     pub fn dbus_message_signal_exists_in_dbus(&self, check_tag: MessageTag) -> bool {
