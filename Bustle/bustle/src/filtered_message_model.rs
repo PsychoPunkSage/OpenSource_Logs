@@ -119,7 +119,7 @@ mod imp {
         }
     }
 
-    // Implement ListModel methods for `FilteredMessageModel`
+    // Implementing ListModel methods for `FilteredMessageModel`
     impl ListModelImpl for FilteredMessageModel {
         // Define the type of items in the model
         fn item_type(&self) -> glib::Type {
