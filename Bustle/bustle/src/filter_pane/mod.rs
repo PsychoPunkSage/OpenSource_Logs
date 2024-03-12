@@ -5,7 +5,6 @@ use gtk::{
     glib::{self, clone, translate::FromGlib},
     prelude::*,
     subclass::prelude::*,
-    // FilterListModel,
 };
 
 // use gtk::Filter;
@@ -20,8 +19,6 @@ use crate::{
 
 mod imp {
     use std::cell::OnceCell;
-
-    // use crate::filtered_message_model;
 
     use gtk::FilterListModel;
 
