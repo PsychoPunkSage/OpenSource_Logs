@@ -428,6 +428,7 @@ impl FilteredMessageModel {
     pub fn dbus_message_signal_exists_in_dbus(&self, check_tag: MessageTag) -> bool {
         let message_list = self.message_list().unwrap();
         let vector = *message_list.imp().inner().borrow();
+        // Making a Vector of <MessageTag> out off Vector<Message>
         let message_tags: Vec<MessageTag> = vector
             .iter()
             .map(|message| {
