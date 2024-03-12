@@ -89,9 +89,6 @@ mod imp {
 
                     // WAY-1
                     if let Some(fmm) = model_ref.get() {
-                        // let message_list = fmm.message_list().unwrap();
-                        // let vector = *message_list.imp().inner().borrow();
-                        // let last_elements_tag = vector.last().unwrap().message_tag();
                         FilteredMessageModel::dbus_message_signal_exists_in_dbus(fmm, message_tag)
                     } else {
                         false
