@@ -418,28 +418,14 @@ impl FilteredMessageModel {
     ==> Something like `self.emit_by_name::<()>("<signal name>");`
     */
 
-    pub fn dbus_message_signal_exists_in_dbus(&self, last_tag: MessageTag) -> bool {
+    pub fn dbus_message_signal_exists_in_dbus_proxy(tag: MessageTag) -> bool {
         // let active_tags: Vec<MessageTag> = Vec::new();
-        let last_elements_tag = last_tag;
-
-        let message_tags = self
-            .imp()
-            .message_tag_filter_indices
-            .borrow()
-            .keys()
-            .map(|tag| tag.clone())
-            .collect::<Vec<MessageTag>>();
-
-        if let Some(found_tag) = message_tags.iter().find(|&tag| *tag == last_elements_tag) {
-            // if let Some(_) = active_tags.iter().find(|&tag| *tag == last_elements_tag) {
-            //     return false;
-            // }
-            return true;
-        }
-        false
+        // let last_elements_tag = last_tag;
+        self.dbus_message_signal_exists_in_dbus(tag)
+        // false
     }
 
-    fn dbus_message_signal_exists_in_dbus_proxy(&self, check_tag: MessageTag) -> bool {
+    pub fn dbus_message_signal_exists_in_dbus(&self, check_tag: MessageTag) -> bool {
         let message_list = self.message_list().unwrap();
         let vector = *message_list.imp().inner().borrow();
         let message_tags: Vec<MessageTag> = vector
