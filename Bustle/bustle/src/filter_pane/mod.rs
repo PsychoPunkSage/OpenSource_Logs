@@ -77,11 +77,6 @@ mod imp {
 
             let message_tag_filter =
                 gtk::CustomFilter::new(clone!(@weak obj => @default-panic, move | object | {
-                    /*
-                    Changes Required::
-                    > use the `_object`
-                    > downcast it to a `Message` and use it to check against `dbus_message_signal_exists_in_dbus`
-                     */
                     let item = object.downcast_ref::<adw::EnumListItem>().unwrap();
                     println!("UNKNOWN: {:?}", item);
                     println!("UNKNOWN: {}", item);
