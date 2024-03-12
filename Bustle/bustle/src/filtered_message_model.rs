@@ -419,10 +419,6 @@ impl FilteredMessageModel {
     */
 
     pub fn dbus_message_signal_exists_in_dbus(&self, last_tag: MessageTag) -> bool {
-        // let message_list = self.message_list().unwrap();
-        // let vector = *message_list.imp().inner().borrow();
-        // let last_elements_tag = vector.last().unwrap().message_tag();
-
         // let active_tags: Vec<MessageTag> = Vec::new();
         let last_elements_tag = last_tag;
 
@@ -438,6 +434,25 @@ impl FilteredMessageModel {
             // if let Some(_) = active_tags.iter().find(|&tag| *tag == last_elements_tag) {
             //     return false;
             // }
+            return true;
+        }
+        false
+    }
+
+    fn dbus_message_signal_exists_in_dbus_proxy(&self, check_tag: MessageTag) -> bool {
+        let message_list = self.message_list().unwrap();
+        let vector = *message_list.imp().inner().borrow();
+        let message_tags: Vec<MessageTag> = vector
+            .iter()
+            .map(|message| {
+                // Extract the MessageTag from each Message
+                message.message_tag()
+            })
+            .collect();
+
+        let last_elements_tag = check_tag;
+
+        if let Some(found_tag) = message_tags.iter().find(|&tag| *tag == last_elements_tag) {
             return true;
         }
         false
