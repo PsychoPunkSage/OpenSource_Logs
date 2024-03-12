@@ -14,7 +14,7 @@ use crate::{
     bus_name_item::BusNameItem,
     filter_pane::{bus_name_row::BusNameRow, message_tag_row::MessageTagRow},
     filtered_message_model::FilteredMessageModel,
-    message::Message,
+    // message::Message,
     message_tag::MessageTag,
 };
 
