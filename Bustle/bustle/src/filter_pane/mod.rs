@@ -82,8 +82,10 @@ mod imp {
 
                     // WAY-1
                     if let Some(fmm) = model_ref.get() {
+                        println!("Entered Here CHECK!!!");
                         FilteredMessageModel::dbus_message_signal_exists_in_dbus(fmm, message_tag)
                     } else {
+                        println!("Entered Here!!");
                         false
                     }
 
