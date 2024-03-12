@@ -75,31 +75,31 @@ mod imp {
             let obj = self.obj();
             let model_ref = self.model.clone();
 
-            let message_tag_filter = gtk::CustomFilter::new(
-                clone!(@weak obj => @default-panic, move | object | {
+            let message_tag_filter =
+                gtk::CustomFilter::new(clone!(@weak obj => @default-panic, move | object | {
                     /*
                     Changes Required::
                     > use the `_object`
                     > downcast it to a `Message` and use it to check against `dbus_message_signal_exists_in_dbus`
                      */
-                    let unknown = object.downcast_ref::<adw::EnumListItem>().unwrap();
-                    println!("UNKNOWN: {:?}", unknown);
-                    println!("UNKNOWN: {}", unknown);
+                    let item = object.downcast_ref::<adw::EnumListItem>().unwrap();
+                    println!("UNKNOWN: {:?}", item);
+                    println!("UNKNOWN: {}", item);
+                    let message_tag = unsafe { MessageTag::from_glib(item.value()) };
 
                     // WAY-1
                     if let Some(fmm) = model_ref.get() {
                         // let message_list = fmm.message_list().unwrap();
                         // let vector = *message_list.imp().inner().borrow();
                         // let last_elements_tag = vector.last().unwrap().message_tag();
-                        FilteredMessageModel::dbus_message_signal_exists_in_dbus(fmm, message.message_tag())
+                        FilteredMessageModel::dbus_message_signal_exists_in_dbus(fmm, message_tag)
                     } else {
                         false
                     }
 
                     // WAY-2
-                    false
-                }),
-            );
+                    // false
+                }));
 
             let filter_model = FilterListModel::new(
                 Some(adw::EnumListModel::new(MessageTag::static_type())),

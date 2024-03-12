@@ -418,10 +418,11 @@ impl FilteredMessageModel {
     ==> Something like `self.emit_by_name::<()>("<signal name>");`
     */
 
-    // let message_list = self.message_list().unwrap();
-    // let vector = *message_list.imp().inner().borrow();
-    // let last_elements_tag = vector.last().unwrap().message_tag();
     pub fn dbus_message_signal_exists_in_dbus(&self, last_tag: MessageTag) -> bool {
+        // let message_list = self.message_list().unwrap();
+        // let vector = *message_list.imp().inner().borrow();
+        // let last_elements_tag = vector.last().unwrap().message_tag();
+
         // let active_tags: Vec<MessageTag> = Vec::new();
         let last_elements_tag = last_tag;
 
