@@ -70,6 +70,7 @@ mod imp {
             self.parent_constructed();
 
             let obj = self.obj();
+            // Need this to send the reference out of the scope
             let model_ref = self.model.clone();
 
             let message_tag_filter =
