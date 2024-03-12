@@ -82,7 +82,11 @@ mod imp {
                     > use the `_object`
                     > downcast it to a `Message` and use it to check against `dbus_message_signal_exists_in_dbus`
                      */
-                    let message = object.downcast_ref::<Message>().unwrap();
+                    let unknown = object.downcast_ref::<adw::EnumListItem>().unwrap();
+                    println!("UNKNOWN: {:?}", unknown);
+                    println!("UNKNOWN: {}", unknown);
+
+                    // WAY-1
                     if let Some(fmm) = model_ref.get() {
                         // let message_list = fmm.message_list().unwrap();
                         // let vector = *message_list.imp().inner().borrow();
@@ -91,6 +95,9 @@ mod imp {
                     } else {
                         false
                     }
+
+                    // WAY-2
+                    false
                 }),
             );
 
