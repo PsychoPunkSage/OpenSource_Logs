@@ -1,4 +1,4 @@
-# Task:: Block Creation
+# Task::> Block Creation
 
 ## Overview
 In this challenge, you are tasked with the simulation of mining process of a block, which includes validating and including transactions from a given set of transactions.
