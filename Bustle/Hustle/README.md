@@ -15,6 +15,52 @@
 
 > 
 
+## `read_one`
+
+<details>
+<summary>Code</summary>
+
+```c
+static gboolean
+read_one (
+    BustlePcapMonitor *self,
+    GError **error)
+{
+  glong sec, usec;
+  const guchar *blob;
+  guint length;
+  g_autoptr(GDBusMessage) message = NULL;
+
+  // Attempt to read a single message from the pcap reader
+  if (!bustle_pcap_reader_read_one (self->reader, &sec, &usec, &blob, &length, &message, error))
+  {
+    // If reading fails, return FALSE to indicate failure
+    return FALSE;
+  }
+  else if (message == NULL)
+  {
+    // If the message is NULL, it indicates end-of-file (EOF),
+    // which shouldn't happen since the function waited for the file descriptor to be readable
+    g_set_error (error, G_IO_ERROR, G_IO_ERROR_CONNECTION_CLOSED,
+        "EOF when reading from dbus-monitor");
+    return FALSE;
+  }
+  else
+  {
+    // If a valid message is read, emit a signal to notify listeners about the logged message
+    g_signal_emit (self, signals[SIG_MESSAGE_LOGGED], 0,
+        sec, usec, blob, length, message);
+
+    // Return TRUE to indicate successful reading
+    return TRUE;
+  }
+}
+```
+
+</details><br>
+
+> Overall, this function is designed to read a single message from a pcap reader associated with a BustlePcapMonitor object, handle errors, and emit a signal to notify listeners about the logged message.
+
 ## `dbus_monitor_readable`
 
 <details>
