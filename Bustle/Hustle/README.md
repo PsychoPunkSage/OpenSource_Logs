@@ -2,6 +2,32 @@
 
 >> [Reference](https://gitlab.freedesktop.org/bustle/bustle/-/blob/22f454058f203ab18e735348900151f27708cb59/c-sources/pcap-monitor.c#L875)
 
+## ``
+
+<details>
+<summary>Code</summary>
+
+```c
+
+```
+
+</details><br>
+
+>
+
+## ``
+
+<details>
+<summary>Code</summary>
+
+```c
+
+```
+
+</details><br>
+
+>
+
 ## `dump_names_thread_func`
 
 <details>
@@ -85,20 +111,7 @@ dump_names_thread_func (
 
 </details><br>
 
-> Overall, this function seems to be responsible for setting up a DBus connection, registering the application under a well-known name, and listing all available DBus names, possibly for monitoring purposes.
-
-## ``
-
-<details>
-<summary>Code</summary>
-
-```c
-
-```
-
-</details><br>
-
-> 
+> Overall, this function seems to be responsible for setting up a DBus connection, registering the application under a well-known name, and listing all available DBus names, possibly for monitoring purposes. 
 
 ## `dump_names_async`
 
