@@ -2,6 +2,91 @@
 
 >> [Reference](https://gitlab.freedesktop.org/bustle/bustle/-/blob/22f454058f203ab18e735348900151f27708cb59/c-sources/pcap-monitor.c#L875)
 
+## ``
+
+<details>
+<summary>Code</summary>
+
+```c
+
+```
+
+</details><br>
+
+> 
+
+## `dbus_monitor_readable`
+
+<details>
+<summary>Code</summary>
+
+```c
+static gboolean
+dbus_monitor_readable (
+    GObject *pollable_input_stream,
+    gpointer user_data)
+{
+  // Cast user_data back to BustlePcapMonitor pointer
+  BustlePcapMonitor *self = BUSTLE_PCAP_MONITOR (user_data);
+  // Function pointer for reading from pcap
+  gboolean (*read_func) (BustlePcapMonitor *, GError **);
+
+  // Ensure that pcap_error is not set
+  g_return_val_if_fail (self->pcap_error == NULL, FALSE);
+
+  // Set error if operation was cancelled
+  if (g_cancellable_set_error_if_cancelled (self->cancellable, &self->pcap_error))
+    {
+      // Handle cancellation
+      await_both_errors (self);
+      return FALSE;
+    }
+
+  // Choose read function based on current state
+  switch (self->state)
+    {
+    case STATE_STARTING:
+      // Set read function to start_pcap
+      read_func = start_pcap;
+      break;
+
+    case STATE_RUNNING:
+    case STATE_STOPPING: /* may have a few last messages to read */
+      // Set read function to read_one
+      read_func = read_one;
+      break;
+
+    default:
+      // Log an error for unexpected state
+      g_critical ("%s in unexpected state %d (%s)",
+                  G_STRFUNC, self->state, STATES[self->state]);
+      return FALSE;
+    }
+
+  // Call the chosen read function
+  if (!read_func (self, &self->pcap_error))
+    {
+      // Handle errors
+      await_both_errors (self);
+      return FALSE;
+    }
+
+  // Return TRUE to indicate successful reading
+  return TRUE;
+}
+```
+
+</details><br>
+
+- tis function is a callback for when a D-Bus monitor becomes readable. It's typically invoked when there's data to be read from the monitor.
+- it first retrieves the BustlePcapMonitor instance from the user_data parameter, assuming it was passed correctly.
+- it checks if pcap_error is not set, ensuring there are no previous errors.
+- if the operation was cancelled, it sets the pcap_error and handles the cancellation by calling await_both_errors() and then returns FALSE. 
+- depending on the current state of the BustlePcapMonitor, it selects a read function (start_pcap if the state is STATE_STARTING, read_one if the state is STATE_RUNNING or STATE_STOPPING).
+- it calls the selected read function with the monitor instance and the address of pcap_error as arguments. If the read function returns FALSE, indicating an error, it handles the error by calling await_both_errors() and returns FALSE.
+
+Finally, it returns TRUE if the reading was successful, indicating that there might be more data to read from the monitor.
+
 ## `cancellable_cancelled_cb`
 
 <details>
