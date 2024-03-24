@@ -15,18 +15,60 @@
 
 >
 
-## ``
+## `get_connection`
 
 <details>
 <summary>Code</summary>
 
 ```c
+static GDBusConnection *
+get_connection (
+    BustlePcapMonitor *self,
+    GCancellable *cancellable,
+    GError **error)
+{
+  // Declare a variable to hold an address string to free later
+  g_autofree gchar *address_to_free = NULL;
+  // Declare a constant pointer to hold the address
+  const gchar *address = self->address;
 
+  // Check if the address is not NULL
+  if (self->address != NULL)
+    {
+      // If it's not NULL, assign the address to the constant pointer
+      address = self->address;
+    }
+  else
+    {
+      // If it's NULL, get the address for the bus synchronously
+      address_to_free = g_dbus_address_get_for_bus_sync (self->bus_type,
+                                                         cancellable, error);
+      // Check if getting the address failed
+      if (address_to_free == NULL)
+        {
+          // Prefix an error message and return FALSE
+          g_prefix_error (error, "Couldn't get bus address: ");
+          return FALSE;
+        }
+
+      // Assign the obtained address to the constant pointer
+      address = address_to_free;
+    }
+
+  // Return a new D-Bus connection for the specified address
+  return g_dbus_connection_new_for_address_sync (
+      address,
+      G_DBUS_CONNECTION_FLAGS_AUTHENTICATION_CLIENT |
+      G_DBUS_CONNECTION_FLAGS_MESSAGE_BUS_CONNECTION,
+      NULL, // No authentication observer provided
+      cancellable,
+      error);
+}
 ```
 
 </details><br>
 
->
+> this function is used to obtain a D-Bus connection, either using a pre-existing address provided in the self object or by dynamically obtaining it and then creating a connection.
 
 ## `dump_names_thread_func`
 
