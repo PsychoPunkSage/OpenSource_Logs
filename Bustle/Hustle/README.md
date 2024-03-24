@@ -2,6 +2,35 @@
 
 >> [Reference](https://gitlab.freedesktop.org/bustle/bustle/-/blob/22f454058f203ab18e735348900151f27708cb59/c-sources/pcap-monitor.c#L875)
 
+## `cancellable_cancelled_cb`
+
+<details>
+<summary>Code</summary>
+
+```c
+static void
+cancellable_cancelled_cb (GCancellable *cancellable,
+                          gpointer      user_data)
+{
+  // Casts user_data back to a BustlePcapMonitor pointer
+  BustlePcapMonitor *self = BUSTLE_PCAP_MONITOR (user_data);
+
+  /* Closes the stream; should cause dbus-monitor to quit in due course when it
+   * tries to write to the other end of the pipe.
+   */
+  // Closes the stream associated with the pcap reader
+  bustle_pcap_reader_close (self->reader);
+
+  /* And try to terminate it immediately. */
+  // Sends a SIGINT signal to try to terminate dbus-monitor
+  send_sigint (self);
+}
+```
+
+</details><br>
+
+> `cancellable_cancelled_cb`, which serves as a callback function. It takes two parameters: cancellable, which is a pointer to a GCancellable object, and user_data, which is a pointer to arbitrary user-supplied data. The function retrieves a pointer to a `BustlePcapMonitor` object from the user_data. It then closes the stream associated with the pcap reader of the `BustlePcapMonitor` object using `bustle_pcap_reader_close()`, which should cause `dbus-monitor` to quit eventually when it tries to write to the other end of the pipe. Finally, it tries to immediately terminate `dbus-monitor` by sending a SIGINT signal using the `send_sigint()` function.
+
 ## `build_argv`
 
 <details>
@@ -71,19 +100,6 @@ build_argv (BustlePcapMonitor *self,
 </details><br>
 
 > This function essentially prepares the command-line arguments necessary to execute `dbus-monitor` with specific options based on the bus type and environment considerations like Flatpak.
-
-## ``
-
-<details>
-<summary>Code</summary>
-
-```c
-
-```
-
-</details><br>
-
->
 
 ## `spawn_monitor`
 
