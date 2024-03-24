@@ -2,6 +2,91 @@
 
 >> [Reference](https://gitlab.freedesktop.org/bustle/bustle/-/blob/22f454058f203ab18e735348900151f27708cb59/c-sources/pcap-monitor.c#L875)
 
+## `dump_names_thread_func`
+
+<details>
+<summary>Code</summary>
+
+```c
+static void
+dump_names_thread_func (
+    GTask *task,
+    gpointer source_object,
+    gpointer task_data,
+    GCancellable *cancellable)
+{
+  // Cast source_object to BustlePcapMonitor pointer
+  BustlePcapMonitor *self = BUSTLE_PCAP_MONITOR (source_object);
+  
+  // Declare GDBusConnection and GDBusProxy pointers with automatic cleanup
+  g_autoptr(GDBusConnection) connection = NULL;
+  g_autoptr(GDBusProxy) bus = NULL;
+  g_autoptr(GError) error = NULL;
+
+  // Get DBus connection
+  connection = get_connection (self, cancellable, &error);
+  if (connection != NULL)
+    {
+      // Get unique name of the connection
+      const gchar *unique_name = g_dbus_connection_get_unique_name (connection);
+
+      if (unique_name != NULL)
+        {
+          // Mangle the unique name to form a well-known name
+          g_autofree gchar *mangled = g_strdup (unique_name);
+          g_autofree gchar *well_known_name =
+            g_strconcat (BUSTLE_MONITOR_NAME_PREFIX,
+                         /* ":3.14" -> "_3_14", a legal bus name component */
+                         g_strcanon (mangled, "0123456789", '_'),
+                         NULL);
+
+          // Log attempting to own well-known name
+          g_debug ("%s: attempting to own %s", G_STRFUNC, well_known_name);
+          
+          // Own the well-known name on the connection
+          g_bus_own_name_on_connection (connection,
+                                        well_known_name,
+                                        G_BUS_NAME_OWNER_FLAGS_NONE,
+                                        NULL /* acquired */,
+                                        NULL /* lost */,
+                                        NULL /* user_data */,
+                                        NULL /* free_func */);
+        }
+
+      // Create a new DBus proxy
+      bus = g_dbus_proxy_new_sync (connection,
+                                   G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES |
+                                   G_DBUS_PROXY_FLAGS_DO_NOT_CONNECT_SIGNALS |
+                                   G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START,
+                                   NULL,
+                                   "org.freedesktop.DBus",
+                                   "/org/freedesktop/DBus",
+                                   "org.freedesktop.DBus",
+                                   cancellable,
+                                   &error);
+    }
+
+  // If bus is valid and listing all names is successful, return TRUE
+  if (bus != NULL && list_all_names (bus, &error))
+    g_task_return_boolean (task, TRUE);
+  else
+    // If there's an error, return it
+    g_task_return_error (task, g_steal_pointer (&error));
+
+  // Assert that there's no error
+  g_assert (error == NULL);
+  
+  // Close DBus connection if it's open and log any error if encountered
+  if (connection != NULL
+      && !g_dbus_connection_close_sync (connection, cancellable, &error))
+    g_warning ("%s: %s", G_STRFUNC, error->message);
+}
+```
+
+</details><br>
+
+> Overall, this function seems to be responsible for setting up a DBus connection, registering the application under a well-known name, and listing all available DBus names, possibly for monitoring purposes.
+
 ## ``
 
 <details>
