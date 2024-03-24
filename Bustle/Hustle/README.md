@@ -2,6 +2,89 @@
 
 >> [Reference](https://gitlab.freedesktop.org/bustle/bustle/-/blob/22f454058f203ab18e735348900151f27708cb59/c-sources/pcap-monitor.c#L875)
 
+## `build_argv`
+
+<details>
+<summary>Code</summary>
+
+```c
+static const char **
+build_argv (BustlePcapMonitor *self,
+            GError **error)
+{
+  // Create a new GPtrArray to store the command-line arguments for dbus-monitor
+  g_autoptr(GPtrArray) dbus_monitor_argv = g_ptr_array_sized_new (8);
+
+  // If running inside Flatpak, add "flatpak-spawn" and "--host" to the arguments
+  if (RUNNING_IN_FLATPAK)
+    {
+      g_ptr_array_add (dbus_monitor_argv, "flatpak-spawn");
+      g_ptr_array_add (dbus_monitor_argv, "--host");
+    }
+
+  // If the bus type is G_BUS_TYPE_SYSTEM, add "pkexec" to the arguments
+  if (self->bus_type == G_BUS_TYPE_SYSTEM)
+    g_ptr_array_add (dbus_monitor_argv, "pkexec");
+
+  // Add "dbus-monitor" and "--pcap" to the arguments unconditionally
+  g_ptr_array_add (dbus_monitor_argv, "dbus-monitor");
+  g_ptr_array_add (dbus_monitor_argv, "--pcap");
+
+  // Depending on the bus type, add corresponding options to the arguments
+  switch (self->bus_type)
+    {
+      case G_BUS_TYPE_SESSION:
+        // For session bus, ensure address is not provided and add "--session"
+        g_return_val_if_fail (self->address == NULL, FALSE);
+        g_ptr_array_add (dbus_monitor_argv, "--session");
+        break;
+
+      case G_BUS_TYPE_SYSTEM:
+        // For system bus, ensure address is not provided and add "--system"
+        g_return_val_if_fail (self->address == NULL, FALSE);
+        g_ptr_array_add (dbus_monitor_argv, "--system");
+        break;
+
+      case G_BUS_TYPE_NONE:
+        // For no specific bus type, ensure address is provided and add "--address" with the address
+        g_return_val_if_fail (self->address != NULL, FALSE);
+        g_ptr_array_add (dbus_monitor_argv, "--address");
+        g_ptr_array_add (dbus_monitor_argv, self->address);
+        break;
+
+      default:
+        // If an unsupported bus type is encountered, set an error and return NULL
+        g_set_error (error, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
+            "Can only log the session bus, system bus, or a given address");
+        return NULL;
+    }
+
+  // Add a NULL terminator to the argument array to mark its end
+  g_ptr_array_add (dbus_monitor_argv, NULL);
+
+  // Free the GPtrArray and return its data as a const char ** array
+  return (const char **) g_ptr_array_free (g_steal_pointer (&dbus_monitor_argv), FALSE);
+}
+
+```
+
+</details><br>
+
+> This function essentially prepares the command-line arguments necessary to execute `dbus-monitor` with specific options based on the bus type and environment considerations like Flatpak.
+
+## ``
+
+<details>
+<summary>Code</summary>
+
+```c
+
+```
+
+</details><br>
+
+>
+
 ## `spawn_monitor`
 
 <details>
@@ -55,7 +138,7 @@ spawn_monitor (BustlePcapMonitor *self,
 }
 ```
 
-</details>
+</details><br>
 
 > `spawn_monitor` sets up a subprocess launcher to spawn a child process with its standard input connected to a `pseudo-terminal` (PTY). It does this by opening a master PTY, unlocking it, and then opening the corresponding slave PTY. It configures the subprocess launcher to use the slave PTY as the child's standard input and then spawns the child process with the given command-line arguments. If not running in a Flatpak environment, it sets up the child process to use the PTY as its controlling terminal. Finally, it returns the handle to the spawned subprocess.
 
@@ -209,7 +292,7 @@ bustle_pcap_monitor_stop (
 In summary, this function is responsible for stopping a BustlePcapMonitor instance by updating its state to stopping and canceling any ongoing operations associated with it.
 
 
-## ``
+## `Misc`
 
 <details>
 <summary>Code</summary>
@@ -261,23 +344,3 @@ bustle_pcap_monitor_new (
 - Inside the function, it calls `g_initable_new` to create a new instance of `BUSTLE_TYPE_PCAP_MONITOR`.
 - It passes `NULL` for the parent object, the `error` parameter, and then provides initialization options as key-value pairs for the object's properties ("bus-type", "address", "filename").
 - Finally, it returns the newly created instance of `BustlePcapMonitor`.
-
-
-
-
-
-
-
-
-## ``
-
-<details>
-<summary>Code</summary>
-
-```c
-
-```
-
-</details><br>
-
->
