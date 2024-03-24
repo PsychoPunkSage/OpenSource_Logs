@@ -207,3 +207,77 @@ bustle_pcap_monitor_stop (
 - It cancels any ongoing operations associated with the monitor's cancellable object (`self->cancellable`). This action interrupts any ongoing processes or tasks related to monitoring, effectively stopping them.
 
 In summary, this function is responsible for stopping a BustlePcapMonitor instance by updating its state to stopping and canceling any ongoing operations associated with it.
+
+
+## ``
+
+<details>
+<summary>Code</summary>
+
+```c
+static void
+initable_iface_init (
+    gpointer g_class,
+    gpointer unused)
+{
+  // Cast the passed gpointer to GInitableIface pointer
+  GInitableIface *iface = g_class;
+
+  // Assign the init function pointer of the interface to the initable_init function
+  iface->init = initable_init;
+}
+
+BustlePcapMonitor *
+bustle_pcap_monitor_new (
+    GBusType bus_type,
+    const gchar *address,
+    const gchar *filename,
+    GError **error)
+{
+  // Create a new instance of the BUSTLE_TYPE_PCAP_MONITOR type with initialization options
+  // using g_initable_new function
+  return g_initable_new (
+      BUSTLE_TYPE_PCAP_MONITOR, NULL, error,
+      "bus-type", bus_type,
+      "address", address,
+      "filename", filename,
+      NULL);
+}
+```
+
+</details><br>
+
+> initable_iface_init Function:
+
+- This function is a callback used to initialize the GInitable interface.
+- It takes two parameters: `g_class`, which is a pointer to the interface structure, and unused, which is not used in this function.
+- Inside the function, it casts the `g_class` pointer to `GInitableIface` pointer.
+- Then it assigns the init function pointer of the interface to the `initable_init` function.
+
+> bustle_pcap_monitor_new Function:
+
+- This function creates a new instance of the `BustlePcapMonitor` type with initialization options.
+- It takes parameters for the bus type, address, filename, and a pointer to a `GError` pointer.
+- Inside the function, it calls `g_initable_new` to create a new instance of `BUSTLE_TYPE_PCAP_MONITOR`.
+- It passes `NULL` for the parent object, the `error` parameter, and then provides initialization options as key-value pairs for the object's properties ("bus-type", "address", "filename").
+- Finally, it returns the newly created instance of `BustlePcapMonitor`.
+
+
+
+
+
+
+
+
+## ``
+
+<details>
+<summary>Code</summary>
+
+```c
+
+```
+
+</details><br>
+
+>
