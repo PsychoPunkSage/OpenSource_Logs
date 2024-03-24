@@ -162,3 +162,48 @@ initable_init (
 </details><br>
 
 > It builds command-line arguments based on some internal parameters, checks if a filename is specified, setting an error and returning FALSE if not, connects a callback to handle cancellation, spawns processes to monitor D-Bus and tee its output, setting errors and returning FALSE if any of these operations fail, retrieves the stdout pipe of the tee process and sets up a source to monitor it, attaching it to the main context, starts asynchronous waiting for the D-Bus monitor process to finish and sets the state to 'STARTING' and returns TRUE to indicate successful initialization.
+
+
+## `bustle_pcap_monitor_stop`
+
+<details>
+<summary>Code</summary>
+
+```c
+void
+bustle_pcap_monitor_stop (
+    BustlePcapMonitor *self)  // Function definition for stopping a BustlePcapMonitor instance.
+{
+  // Check if the monitor is already stopped, stopping, or in a new state.
+  if (self->state == STATE_STOPPED ||  
+      self->state == STATE_STOPPING ||
+      self->state == STATE_NEW)
+    {
+      // If already in one of these states, log a debug message and return.
+      g_debug ("%s: already in state %s", G_STRFUNC, STATES[self->state]);
+      return;
+    }
+
+  // Update the monitor state to stopping.
+  self->state = STATE_STOPPING;
+  
+  // Cancel any ongoing operations associated with the monitor's cancellable.
+  g_cancellable_cancel (self->cancellable);
+}
+```
+
+</details><br>
+
+> State Check:
+
+- It checks if the current state of the BustlePcapMonitor (self->state) is already in a stopped state, stopping state, or a new state. If it's in any of these states, it logs a debug message indicating that the monitor is already in that state and returns without performing any further action.
+
+> State Update:
+
+- If the monitor is not already stopping or stopped, it updates the monitor's state to stopping. This indicates that the monitor is in the process of being stopped.
+
+> Cancellable Operation:
+
+- It cancels any ongoing operations associated with the monitor's cancellable object (`self->cancellable`). This action interrupts any ongoing processes or tasks related to monitoring, effectively stopping them.
+
+In summary, this function is responsible for stopping a BustlePcapMonitor instance by updating its state to stopping and canceling any ongoing operations associated with it.
