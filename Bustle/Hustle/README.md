@@ -2,6 +2,19 @@
 
 >> [Reference](https://gitlab.freedesktop.org/bustle/bustle/-/blob/22f454058f203ab18e735348900151f27708cb59/c-sources/pcap-monitor.c#L875)
 
+## ``
+
+<details>
+<summary>Code</summary>
+
+```c
+
+```
+
+</details><br>
+
+> 
+
 ## `dump_names_async`
 
 <details>
@@ -21,19 +34,6 @@ dump_names_async (
 </details><br>
 
 > Overall, this function is a part of an asynchronous operation mechanism where a task (`dump_names_cb`) is executed in a separate thread to avoid blocking the main execution flow. It allows for concurrent processing of tasks without freezing the application's user interface or other operations.
-
-## ``
-
-<details>
-<summary>Code</summary>
-
-```c
-
-```
-
-</details><br>
-
-> 
 
 ## `send_sigint`
 
