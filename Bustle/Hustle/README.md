@@ -94,3 +94,71 @@ spawn_tee (BustlePcapMonitor  *self,
 </details><br>
 
 > this function sets up a subprocess launcher to execute the `tee` command, redirecting its standard input to the output of another process. It effectively duplicates the output of the monitored process into a file specified by `self->filename`.
+
+
+## `initable_init`
+
+<details>
+<summary>Code</summary>
+
+```c
+static gboolean
+initable_init (
+    GInitable *initable,
+    GCancellable *cancellable,
+    GError **error)
+{
+  BustlePcapMonitor *self = BUSTLE_PCAP_MONITOR (initable); // Casts the 'initable' parameter to a BustlePcapMonitor instance
+  g_autofree const char **argv = NULL; // Declares a NULL-initialized array of const char pointers to store arguments
+  GInputStream *stdout_pipe = NULL; // Declares a pointer to store the stdout pipe of the spawned process
+
+  // Builds command-line arguments based on 'self', which is a BustlePcapMonitor instance
+  argv = build_argv (self, error); 
+  if (NULL == argv)
+    return FALSE; // Returns FALSE if building command-line arguments fails
+
+  if (self->filename == NULL)
+    {
+      g_set_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT,
+          "You must specify a filename"); // Sets an error if 'filename' is not specified
+      return FALSE; // Returns FALSE if 'filename' is not specified
+    }
+
+  self->cancellable_cancelled_id =
+    g_cancellable_connect (self->cancellable,
+                           G_CALLBACK (cancellable_cancelled_cb),
+                           self, NULL); // Connects a callback to handle cancellation
+
+  self->dbus_monitor = spawn_monitor (self, (const char * const *) argv, error); // Spawns a process to monitor D-Bus
+  if (self->dbus_monitor == NULL)
+    return FALSE; // Returns FALSE if spawning D-Bus monitor process fails
+
+  self->tee_proc = spawn_tee (self, error); // Spawns a process to tee the output
+  if (self->tee_proc == NULL)
+    return FALSE; // Returns FALSE if spawning tee process fails
+
+  stdout_pipe = g_subprocess_get_stdout_pipe (self->tee_proc); // Retrieves the stdout pipe of the tee process
+  g_return_val_if_fail (stdout_pipe != NULL, FALSE); // Checks if stdout pipe is not NULL
+  g_return_val_if_fail (G_IS_POLLABLE_INPUT_STREAM (stdout_pipe), FALSE); // Checks if stdout pipe is a pollable input stream
+  g_return_val_if_fail (G_IS_UNIX_INPUT_STREAM (stdout_pipe), FALSE); // Checks if stdout pipe is a UNIX input stream
+
+  self->tee_source = g_pollable_input_stream_create_source (
+      G_POLLABLE_INPUT_STREAM (stdout_pipe), self->cancellable); // Creates a source for the stdout pipe
+  g_source_set_callback (self->tee_source,
+      (GSourceFunc) dbus_monitor_readable, self, NULL); // Sets a callback function for the source
+  g_source_attach (self->tee_source, NULL); // Attaches the source to the main context
+
+  g_subprocess_wait_check_async (
+      self->dbus_monitor,
+      self->cancellable,
+      wait_check_cb, g_object_ref (self)); // Starts asynchronous waiting for the D-Bus monitor process to finish
+
+  self->state = STATE_STARTING; // Sets the state to 'STARTING'
+  return TRUE; // Returns TRUE to indicate successful initialization
+}
+
+```
+
+</details><br>
+
+> It builds command-line arguments based on some internal parameters, checks if a filename is specified, setting an error and returning FALSE if not, connects a callback to handle cancellation, spawns processes to monitor D-Bus and tee its output, setting errors and returning FALSE if any of these operations fail, retrieves the stdout pipe of the tee process and sets up a source to monitor it, attaching it to the main context, starts asynchronous waiting for the D-Bus monitor process to finish and sets the state to 'STARTING' and returns TRUE to indicate successful initialization.
