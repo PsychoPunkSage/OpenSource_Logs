@@ -2,6 +2,26 @@
 
 >> [Reference](https://gitlab.freedesktop.org/bustle/bustle/-/blob/22f454058f203ab18e735348900151f27708cb59/c-sources/pcap-monitor.c#L875)
 
+## `dump_names_async`
+
+<details>
+<summary>Code</summary>
+
+```c
+static void
+dump_names_async (
+    BustlePcapMonitor *self) // Function definition for a function named dump_names_async, taking a pointer to BustlePcapMonitor struct as an argument
+{
+  g_autoptr(GTask) task = g_task_new (self, self->cancellable, dump_names_cb, NULL); // Creates a new GTask object using g_task_new, passing self (pointer to the BustlePcapMonitor instance), self->cancellable (cancellable), dump_names_cb (callback function), and NULL (userdata)
+
+  g_task_run_in_thread (task, dump_names_thread_func); // Runs the GTask in a separate thread using g_task_run_in_thread, passing the task object and the function pointer dump_names_thread_func
+}
+```
+
+</details><br>
+
+> Overall, this function is a part of an asynchronous operation mechanism where a task (`dump_names_cb`) is executed in a separate thread to avoid blocking the main execution flow. It allows for concurrent processing of tasks without freezing the application's user interface or other operations.
+
 ## ``
 
 <details>
