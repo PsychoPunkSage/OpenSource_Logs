@@ -2,6 +2,74 @@
 
 >> [Reference](https://gitlab.freedesktop.org/bustle/bustle/-/blob/22f454058f203ab18e735348900151f27708cb59/c-sources/pcap-monitor.c#L875)
 
+## `list_all_names`
+
+<details>
+<summary>Code</summary>
+
+```c
+static gboolean
+list_all_names (
+    GDBusProxy *bus,
+    GError **error)
+{
+  // Declare a GVariant pointer to store the return value from D-Bus call
+  g_autoptr(GVariant) ret = NULL;
+  // Declare a gchar pointer to store names retrieved from the return value
+  gchar **names;  /* borrowed from 'ret' */
+
+  // Check if the 'bus' parameter is a valid GDBusProxy object
+  g_return_val_if_fail (G_IS_DBUS_PROXY (bus), FALSE);
+
+  // Call the D-Bus method "ListNames" synchronously and store the result in 'ret'
+  ret = g_dbus_proxy_call_sync (bus, "ListNames", NULL,
+      G_DBUS_CALL_FLAGS_NONE, -1, NULL, error);
+  // Check if the call was successful
+  if (ret == NULL)
+    {
+      // Prefix the error message with a specific string
+      g_prefix_error (error, "Couldn't ListNames: ");
+      // Return FALSE indicating failure
+      return FALSE;
+    }
+
+  // Iterate through each name retrieved from the return value
+  for (g_variant_get_child (ret, 0, "^a&s", &names);
+       *names != NULL;
+       names++)
+    {
+      gchar *name = *names;
+
+      // Check if the name is not a unique name and not "org.freedesktop.DBus"
+      if (!g_dbus_is_unique_name (name) &&
+          strcmp (name, "org.freedesktop.DBus") != 0)
+        {
+          // Call the D-Bus method "GetNameOwner" to get the owner of the name
+          g_autoptr(GVariant) owner =
+            g_dbus_proxy_call_sync (bus, "GetNameOwner",
+                                    g_variant_new ("(s)", name),
+                                    G_DBUS_CALL_FLAGS_NONE, -1, NULL, NULL);
+          /* Ignore returned value or error. These are just used by the UI to
+           * fill in the initial owners of each well-known name. If we get an
+           * error here, the owner disappeared between ListNames() and here;
+           * but that means we'll have seen a NameOwnerChanged from which the
+           * UI can (in theory) infer who the owner used to be.
+           *
+           * We cannot use G_DBUS_MESSAGE_FLAGS_NO_REPLY_EXPECTED because we
+           * do want the reply to be sent to us.
+           */
+        }
+    }
+
+  // Return TRUE indicating success
+  return TRUE;
+}
+```
+
+</details><br>
+
+> This function, `list_all_names`, interacts with D-Bus to retrieve a list of all registered bus names. It iterates over each name, ignoring unique names and the D-Bus daemon's own name. For each non-unique name, it attempts to retrieve the current owner asynchronously but doesn't use the response for immediate processing. Instead, it annotates that information for potential use by the UI. Finally, it returns TRUE if the operation succeeds, indicating that it successfully listed all names.
+
 ## ``
 
 <details>
