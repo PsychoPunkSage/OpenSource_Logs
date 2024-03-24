@@ -15,6 +15,70 @@
 
 > 
 
+## `start_pcap`
+
+<details>
+<summary>Code</summary>
+
+```c
+static gboolean
+start_pcap (
+    BustlePcapMonitor *self,
+    GError **error)
+{
+  // Declaring variables to hold stdout pipe, stdout file descriptor, and a FILE pointer for dbus monitor
+  GInputStream *stdout_pipe = NULL;
+  gint stdout_fd = -1;
+  FILE *dbus_monitor_filep = NULL;
+
+  // Retrieving the stdout pipe from the tee process
+  stdout_pipe = g_subprocess_get_stdout_pipe (self->tee_proc);
+  g_return_val_if_fail (stdout_pipe != NULL, FALSE);
+
+  // Getting the file descriptor of the stdout pipe
+  stdout_fd = g_unix_input_stream_get_fd (G_UNIX_INPUT_STREAM (stdout_pipe));
+  g_return_val_if_fail (stdout_fd >= 0, FALSE);
+
+  // Opening a FILE pointer using the stdout file descriptor
+  dbus_monitor_filep = fdopen (stdout_fd, "r");
+  if (dbus_monitor_filep == NULL)
+    {
+      throw_errno (error, "fdopen failed");
+      return FALSE;
+    }
+
+  // Ensuring the stream doesn't close its file descriptor when finalized
+  g_unix_input_stream_set_close_fd (G_UNIX_INPUT_STREAM (stdout_pipe), FALSE);
+
+  /* This reads the 4-byte pcap header from the pipe, in a single blocking
+   * fread(). It's safe to do this on the main thread, since we know the pipe
+   * is readable. On short read, pcap_fopen_offline() fails immediately.
+   */
+  // Opening a pcap reader using the dbus monitor FILE pointer
+  self->reader = bustle_pcap_reader_fopen (g_steal_pointer (&dbus_monitor_filep), error);
+  if (self->reader == NULL)
+    {
+      g_prefix_error (error, "Couldn't read messages from dbus-monitor: ");
+
+      /* Try to terminate dbus-monitor immediately. The reader closes the FILE * on error. */
+      send_sigint (self);
+
+      return FALSE;
+    }
+
+  // Initiating asynchronous dump of names
+  dump_names_async (self);
+  // Setting state to running
+  self->state = STATE_RUNNING;
+  // Returning TRUE to indicate successful start
+  return TRUE;
+}
+```
+
+</details><br>
+
+> This function is responsible for starting a pcap monitor. 
+
 ## `read_one`
 
 <details>
