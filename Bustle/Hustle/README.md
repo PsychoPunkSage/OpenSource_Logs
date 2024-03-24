@@ -15,6 +15,44 @@
 
 > 
 
+## `send_sigint`
+
+<details>
+<summary>Code</summary>
+
+```c
+static void
+send_sigint (BustlePcapMonitor *self)
+{
+  /* Send the signal directly; this has no effect on the privileged subprocess
+   * used on the system bus.
+   */
+  if (self->dbus_monitor != NULL)
+    g_subprocess_send_signal (self->dbus_monitor, SIGINT);
+
+  /* Send it via the PTY that we set as the subprocess's controlling terminal;
+   * this works even for a privileged child.
+   */
+  if (self->pt_master >= 0)
+    {
+      char ctrl_c = '\x03'; // Define the character for Ctrl+C (ASCII code 3)
+
+      // Write the Ctrl+C character to the master PTY to send SIGINT to the subprocess
+      if (write (self->pt_master, &ctrl_c, 1) != 1)
+        {
+          // If the write operation fails, handle the error
+          g_autoptr(GError) local_error = NULL;
+          throw_errno (&local_error, "write to pt_master failed");
+          g_warning ("%s: %s", G_STRFUNC, local_error->message); // Log a warning with the error message
+        }
+    }
+}
+```
+
+</details><br>
+
+> Overall, this function sends a SIGINT signal both directly to a subprocess (if applicable) and via the PTY, ensuring that even privileged children receive the signal correctly.
+
 ## `start_pcap`
 
 <details>
