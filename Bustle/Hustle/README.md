@@ -2,6 +2,19 @@
 
 >> [Reference](https://gitlab.freedesktop.org/bustle/bustle/-/blob/22f454058f203ab18e735348900151f27708cb59/c-sources/pcap-monitor.c#L875)
 
+## ``
+
+<details>
+<summary>Code</summary>
+
+```c
+
+```
+
+</details><br>
+
+>
+
 ## `list_all_names`
 
 <details>
@@ -70,18 +83,6 @@ list_all_names (
 
 > This function, `list_all_names`, interacts with D-Bus to retrieve a list of all registered bus names. It iterates over each name, ignoring unique names and the D-Bus daemon's own name. For each non-unique name, it attempts to retrieve the current owner asynchronously but doesn't use the response for immediate processing. Instead, it annotates that information for potential use by the UI. Finally, it returns TRUE if the operation succeeds, indicating that it successfully listed all names.
 
-## ``
-
-<details>
-<summary>Code</summary>
-
-```c
-
-```
-
-</details><br>
-
->
 
 ## `get_connection`
 
