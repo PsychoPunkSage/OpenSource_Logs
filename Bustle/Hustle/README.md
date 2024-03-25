@@ -2,20 +2,96 @@
 
 >> [Reference](https://gitlab.freedesktop.org/bustle/bustle/-/blob/22f454058f203ab18e735348900151f27708cb59/c-sources/pcap-monitor.c#L875)
 
-
-
-## ``
+## `handle_error`
 
 <details>
 <summary>Code</summary>
 
 ```c
+static void
+handle_error (BustlePcapMonitor *self)
+{
+  g_autoptr(GError) error = NULL;
 
+  // Ensure either pcap_error or subprocess_error is not NULL
+  g_return_if_fail (self->pcap_error != NULL ||
+                    self->subprocess_error != NULL);
+
+  // Print pcap_error message if present
+  if (self->pcap_error != NULL)
+    g_debug ("%s: pcap_error: %s", G_STRFUNC, self->pcap_error->message);
+
+  // Print subprocess_error message if present
+  if (self->subprocess_error != NULL)
+    g_debug ("%s: subprocess_error: %s", G_STRFUNC,
+             self->subprocess_error->message);
+
+  // If the monitor is already stopped, return
+  if (self->state == STATE_STOPPED)
+    {
+      g_debug ("%s: already stopped", G_STRFUNC);
+      return;
+    }
+
+  // Check for pkexec errors if subprocess_error is present and bus type is SYSTEM
+  if (self->subprocess_error != NULL &&
+      self->bus_type == G_BUS_TYPE_SYSTEM)
+    {
+      // Handle pkexec dialog dismissal
+      if (g_error_matches (self->subprocess_error, G_SPAWN_EXIT_ERROR, 126))
+        {
+          g_set_error (&error, G_IO_ERROR, G_IO_ERROR_CANCELLED,
+                       "User dismissed polkit authorization dialog");
+        }
+      // Handle pkexec authorization failure
+      else if (g_error_matches (self->subprocess_error, G_SPAWN_EXIT_ERROR, 127))
+        {
+          g_set_error (&error, G_IO_ERROR, G_IO_ERROR_PERMISSION_DENIED,
+                       "Not authorized to monitor system bus");
+        }
+    }
+
+  // Handle clean exit or cancellation
+  if (g_error_matches (self->subprocess_error, G_SPAWN_EXIT_ERROR, 0))
+    {
+      g_set_error_literal (&error, G_IO_ERROR, G_IO_ERROR_CANCELLED,
+                           self->subprocess_error->message);
+    }
+
+  // If no pkexec errors, prefer errors from libpcap or subprocess
+  if (error == NULL)
+    {
+      if (self->pcap_error != NULL)
+        {
+          error = g_steal_pointer (&self->pcap_error);
+        }
+      else
+        {
+          error = g_steal_pointer (&self->subprocess_error);
+
+          // Prefix error if monitor was in starting state
+          if (self->state == STATE_STARTING)
+            g_prefix_error (&error, "Failed to start dbus-monitor: ");
+        }
+    }
+
+  // Update monitor state to stopped
+  self->state = STATE_STOPPED;
+
+  // Emit stopped signal with error details
+  g_debug ("%s: emitting ::stopped(%s, %d, %s)", G_STRFUNC,
+           g_quark_to_string (error->domain), error->code, error->message);
+  g_signal_emit (self, signals[SIG_STOPPED], 0,
+                 (guint) error->domain, error->code, error->message);
+
+  // Clear the source ID of await_both_errors
+  g_clear_handle_id (&self->await_both_errors_id, g_source_remove);
+}
 ```
 
 </details><br>
 
->
+> responsible for managing errors encountered during the operation of a BustlePcapMonitor.
 
 ## `await_both_errors_cb`
 
