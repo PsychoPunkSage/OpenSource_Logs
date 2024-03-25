@@ -2,39 +2,51 @@
 
 >> [Reference](https://gitlab.freedesktop.org/bustle/bustle/-/blob/22f454058f203ab18e735348900151f27708cb59/c-sources/pcap-monitor.c#L875)
 
-## `bustle_pcap_monitor_dispose`
+## `bustle_pcap_monitor_set_property`
 
 <details>
 <summary>Code</summary>
 
 ```c
 static void
-bustle_pcap_monitor_dispose (GObject *object)
+bustle_pcap_monitor_set_property (
+    GObject *object,
+    guint property_id,
+    const GValue *value,
+    GParamSpec *pspec)
 {
-  BustlePcapMonitor *self = BUSTLE_PCAP_MONITOR (object); // Casts the GObject pointer to BustlePcapMonitor type
-  GObjectClass *parent_class = bustle_pcap_monitor_parent_class; // Gets the parent class of BustlePcapMonitor
+  // Cast the GObject pointer to BustlePcapMonitor pointer
+  BustlePcapMonitor *self = BUSTLE_PCAP_MONITOR (object);
 
-  if (self->cancellable_cancelled_id != 0) // Checks if cancellable_cancelled_id is set
+  // Switch based on the property ID
+  switch (property_id)
     {
-      g_assert (self->cancellable != NULL); // Verifies that cancellable is not NULL
-      g_cancellable_disconnect (self->cancellable, self->cancellable_cancelled_id); // Disconnects a signal handler
-      self->cancellable_cancelled_id = 0; // Resets the cancel id
+      // If the property is PROP_BUS_TYPE
+      case PROP_BUS_TYPE:
+        // Set the bus_type member of BustlePcapMonitor to the enum value from GValue
+        self->bus_type = g_value_get_enum (value);
+        break;
+      // If the property is PROP_ADDRESS
+      case PROP_ADDRESS:
+        // Duplicate the string value from GValue and assign it to the address member
+        self->address = g_value_dup_string (value);
+        break;
+      // If the property is PROP_FILENAME
+      case PROP_FILENAME:
+        // Duplicate the string value from GValue and assign it to the filename member
+        self->filename = g_value_dup_string (value);
+        break;
+      // If the property ID is not recognized
+      default:
+        // Warn about invalid property ID
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
     }
-
-  g_clear_object (&self->cancellable); // Clears the cancellable object
-  g_clear_pointer (&self->tee_source, g_source_destroy); // Clears the tee_source and destroys the associated GSource
-  g_clear_object (&self->tee_proc); // Clears the tee_proc object
-  g_clear_object (&self->reader); // Clears the reader object
-  g_clear_object (&self->dbus_monitor); // Clears the dbus_monitor object
-
-  if (parent_class->dispose != NULL) // Checks if the parent class has a dispose function
-    parent_class->dispose (object); // Calls the dispose function of the parent class
 }
 ```
 
 </details><br>
 
-> In summary, this function is responsible for releasing resources associated with a BustlePcapMonitor instance, including cancellable objects, sources, and other objects, and also ensures that the dispose method of the parent class is invoked if available, facilitating complete cleanup of resources.
+> It is a setter method for properties of a BustlePcapMonitor object
 
 ## `bustle_pcap_monitor_dispose`
 
