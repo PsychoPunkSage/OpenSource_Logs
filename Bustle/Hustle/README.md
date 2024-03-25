@@ -2,50 +2,40 @@
 
 >> [Reference](https://gitlab.freedesktop.org/bustle/bustle/-/blob/22f454058f203ab18e735348900151f27708cb59/c-sources/pcap-monitor.c#L875)
 
-## `bustle_pcap_monitor_finalize`
+## `bustle_pcap_monitor_dispose`
 
 <details>
 <summary>Code</summary>
 
 ```c
 static void
-bustle_pcap_monitor_finalize (GObject *object)
+bustle_pcap_monitor_dispose (GObject *object)
 {
-  // Cast the object to BustlePcapMonitor type
-  BustlePcapMonitor *self = BUSTLE_PCAP_MONITOR (object);
-  
-  // Get the parent class of BustlePcapMonitor
-  GObjectClass *parent_class = bustle_pcap_monitor_parent_class;
+  BustlePcapMonitor *self = BUSTLE_PCAP_MONITOR (object); // Casts the GObject pointer to BustlePcapMonitor type
+  GObjectClass *parent_class = bustle_pcap_monitor_parent_class; // Gets the parent class of BustlePcapMonitor
 
-  // Clear and free the 'address' member of BustlePcapMonitor
-  g_clear_pointer (&self->address, g_free);
-  
-  // Clear and free the 'filename' member of BustlePcapMonitor
-  g_clear_pointer (&self->filename, g_free);
-  
-  // Clear the 'pcap_error' member of BustlePcapMonitor
-  g_clear_error (&self->pcap_error);
-  
-  // Clear the 'subprocess_error' member of BustlePcapMonitor
-  g_clear_error (&self->subprocess_error);
-
-  // Close the master PTY file descriptor if it's open
-  if (self->pt_master >= 0)
+  if (self->cancellable_cancelled_id != 0) // Checks if cancellable_cancelled_id is set
     {
-      g_close (self->pt_master, NULL);
-      self->pt_master = -1;
+      g_assert (self->cancellable != NULL); // Verifies that cancellable is not NULL
+      g_cancellable_disconnect (self->cancellable, self->cancellable_cancelled_id); // Disconnects a signal handler
+      self->cancellable_cancelled_id = 0; // Resets the cancel id
     }
 
-  // Call the finalize method of the parent class, if it exists
-  if (parent_class->finalize != NULL)
-    parent_class->finalize (object);
+  g_clear_object (&self->cancellable); // Clears the cancellable object
+  g_clear_pointer (&self->tee_source, g_source_destroy); // Clears the tee_source and destroys the associated GSource
+  g_clear_object (&self->tee_proc); // Clears the tee_proc object
+  g_clear_object (&self->reader); // Clears the reader object
+  g_clear_object (&self->dbus_monitor); // Clears the dbus_monitor object
+
+  if (parent_class->dispose != NULL) // Checks if the parent class has a dispose function
+    parent_class->dispose (object); // Calls the dispose function of the parent class
 }
 ```
 
 </details><br>
 
-> this function is responsible for releasing resources and performing cleanup operations associated with a BustlePcapMonitor instance before it is destroyed. 
-> 
+> In summary, this function is responsible for releasing resources associated with a BustlePcapMonitor instance, including cancellable objects, sources, and other objects, and also ensures that the dispose method of the parent class is invoked if available, facilitating complete cleanup of resources.
+
 ## `bustle_pcap_monitor_finalize`
 
 <details>
