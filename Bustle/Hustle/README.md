@@ -2,6 +2,38 @@
 
 >> [Reference](https://gitlab.freedesktop.org/bustle/bustle/-/blob/22f454058f203ab18e735348900151f27708cb59/c-sources/pcap-monitor.c#L875)
 
+## `typedef`
+
+<details>
+<summary>Code</summary>
+
+```c
+typedef enum {
+    /* Nothing's happened yet */
+    STATE_NEW,
+
+    /* We're waiting to read the pcap header from the subprocess */
+    STATE_STARTING,
+
+    /* We've read the pcap header, messages are flowing freely */
+    STATE_RUNNING,
+
+    /* Error or user request is causing us to stop; we're waiting to consume
+     * everything from the pipe and for the dbus-monitor subprocess to exit.
+     */
+    STATE_STOPPING,
+
+    /* We've stopped, whether by user decision or because of an error.
+     * Everything has been torn down (except possibly a root-owned subprocess),
+     * the output file has been fully written and closed, and no more signals
+     * will be emitted.
+     */
+    STATE_STOPPED,
+} BustlePcapMonitorState;
+```
+
+</details><br>
+
 ## `setup code`
 
 <details>
