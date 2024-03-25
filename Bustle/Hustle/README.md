@@ -2,43 +2,46 @@
 
 >> [Reference](https://gitlab.freedesktop.org/bustle/bustle/-/blob/22f454058f203ab18e735348900151f27708cb59/c-sources/pcap-monitor.c#L875)
 
-## `bustle_pcap_monitor_set_property`
+## `bustle_pcap_monitor_get_property`
 
 <details>
 <summary>Code</summary>
 
 ```c
 static void
-bustle_pcap_monitor_set_property (
+bustle_pcap_monitor_get_property (
     GObject *object,
     guint property_id,
-    const GValue *value,
+    GValue *value,
     GParamSpec *pspec)
 {
-  // Cast the GObject pointer to BustlePcapMonitor pointer
+  // Casting the GObject to BustlePcapMonitor type
   BustlePcapMonitor *self = BUSTLE_PCAP_MONITOR (object);
 
-  // Switch based on the property ID
+  // Switching based on the property ID
   switch (property_id)
     {
-      // If the property is PROP_BUS_TYPE
+      // If the property ID matches PROP_BUS_TYPE
       case PROP_BUS_TYPE:
-        // Set the bus_type member of BustlePcapMonitor to the enum value from GValue
-        self->bus_type = g_value_get_enum (value);
+        // Setting the value to the bus type enum stored in self
+        g_value_set_enum (value, self->bus_type);
         break;
-      // If the property is PROP_ADDRESS
+      
+      // If the property ID matches PROP_ADDRESS
       case PROP_ADDRESS:
-        // Duplicate the string value from GValue and assign it to the address member
-        self->address = g_value_dup_string (value);
+        // Setting the value to the address string stored in self
+        g_value_set_string (value, self->address);
         break;
-      // If the property is PROP_FILENAME
+      
+      // If the property ID matches PROP_FILENAME
       case PROP_FILENAME:
-        // Duplicate the string value from GValue and assign it to the filename member
-        self->filename = g_value_dup_string (value);
+        // Setting the value to the filename string stored in self
+        g_value_set_string (value, self->filename);
         break;
-      // If the property ID is not recognized
+      
+      // If the property
       default:
-        // Warn about invalid property ID
+        // Warning about invalid property ID
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
     }
 }
@@ -46,7 +49,7 @@ bustle_pcap_monitor_set_property (
 
 </details><br>
 
-> It is a setter method for properties of a BustlePcapMonitor object
+> Overall, this function is responsible for retrieving the values of specific properties (bus_type, address, filename) from a BustlePcapMonitor instance and storing them in the provided GValue pointer. It's a part of implementing property access for objects of this type.
 
 ## `bustle_pcap_monitor_set_property`
 
