@@ -2,41 +2,80 @@
 
 >> [Reference](https://gitlab.freedesktop.org/bustle/bustle/-/blob/22f454058f203ab18e735348900151f27708cb59/c-sources/pcap-monitor.c#L875)
 
-## `throw_errno + bustle_pcap_monitor_init`
+## `setup code`
 
 <details>
 <summary>Code</summary>
 
 ```c
-// This function takes an error pointer and a prefix string as arguments.
-// It captures the current value of errno, sets a GError with the corresponding
-// error code and message, and returns NULL.
-static inline void *
-throw_errno (GError **error,
-             const gchar *prefix)
-{
-  int errsv = errno; // Save the current errno value
-  // Set a GError with the error code and message derived from errno
-  g_set_error (error, G_IO_ERROR, g_io_error_from_errno (errsv),
-               "%s: %s", prefix, g_strerror (errsv));
-  return NULL; // Return NULL
-}
+/* Definition of an array of string literals representing different states */
+static const gchar * const STATES[] = {
+    "NEW",
+    "STARTING",
+    "RUNNING",
+    "STOPPING",
+    "STOPPED",
+};
 
-// This function initializes a BustlePcapMonitor object.
-static void
-bustle_pcap_monitor_init (BustlePcapMonitor *self)
-{
-  self->bus_type = G_BUS_TYPE_SESSION; // Set bus_type to G_BUS_TYPE_SESSION
-  self->state = STATE_NEW; // Set state to STATE_NEW
-  self->cancellable = g_cancellable_new (); // Create a new G Cancellable object
-  self->pt_master = -1; // Set pt_master to -1
-}
+/* Definition of a struct for BustlePcapMonitor */
+typedef struct _BustlePcapMonitor {
+    GObject parent;
+
+    GBusType bus_type;
+    gchar *address;
+    BustlePcapMonitorState state;
+    GCancellable *cancellable;
+    guint cancellable_cancelled_id;
+
+    /* Input */
+    GSubprocess *dbus_monitor;
+    /* If >= 0, master side of controlling terminal for dbus_monitor */
+    int pt_master;
+    GSubprocess *tee_proc;
+    GSource *tee_source;
+    BustlePcapReader *reader;
+
+    /* Output */
+    gchar *filename;
+
+    /* Errors */
+    GError *pcap_error;
+    GError *subprocess_error;
+    guint await_both_errors_id;
+} BustlePcapMonitor;
+
+/* Definition of property enumeration */
+enum {
+    PROP_BUS_TYPE = 1,
+    PROP_ADDRESS,
+    PROP_FILENAME,
+};
+
+/* Definition of signal enumeration */
+enum {
+    SIG_MESSAGE_LOGGED,
+    SIG_STOPPED,
+    N_SIGNALS
+};
+
+/* Declaration of an array to store signal IDs */
+static guint signals[N_SIGNALS];
+
+/* Initialization of the 'initable' interface */
+static void initable_iface_init (
+    gpointer g_class,
+    gpointer unused);
+
+/* Macro to define the type and implement the BustlePcapMonitor class */
+G_DEFINE_TYPE_WITH_CODE (BustlePcapMonitor, bustle_pcap_monitor, G_TYPE_OBJECT,
+    /* Implementing the GInitable interface */
+    G_IMPLEMENT_INTERFACE (G_TYPE_INITABLE, initable_iface_init);
+)
 ```
 
 </details><br>
 
-> The throw_errno function is a utility function used for reporting errors. It sets a GError with the error code and message corresponding to the current errno value. This function is typically used to handle errors encountered in system calls.<br>
-The bustle_pcap_monitor_init function initializes a BustlePcapMonitor object. It sets the bus_type member to G_BUS_TYPE_SESSION, the state member to STATE_NEW, creates a new GCancellable object and assigns it to the cancellable member, and sets the pt_master member to -1. This function prepares the BustlePcapMonitor object for further use, typically as part of an initialization routine.
+> this code sets up data structures and definitions necessary for managing a Bustle Pcap monitor, including states, properties, signals, and the monitor struct itself. It also initializes the GInitable interface for the monitor class.
 
 ## `throw_errno + bustle_pcap_monitor_init`
 
