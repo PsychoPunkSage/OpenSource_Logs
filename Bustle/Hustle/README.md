@@ -36,6 +36,40 @@ bustle_pcap_monitor_dispose (GObject *object)
 
 > In summary, this function is responsible for releasing resources associated with a BustlePcapMonitor instance, including cancellable objects, sources, and other objects, and also ensures that the dispose method of the parent class is invoked if available, facilitating complete cleanup of resources.
 
+## `bustle_pcap_monitor_dispose`
+
+<details>
+<summary>Code</summary>
+
+```c
+static void
+bustle_pcap_monitor_dispose (GObject *object)
+{
+  BustlePcapMonitor *self = BUSTLE_PCAP_MONITOR (object); // Casts the GObject pointer to BustlePcapMonitor type
+  GObjectClass *parent_class = bustle_pcap_monitor_parent_class; // Gets the parent class of BustlePcapMonitor
+
+  if (self->cancellable_cancelled_id != 0) // Checks if cancellable_cancelled_id is set
+    {
+      g_assert (self->cancellable != NULL); // Verifies that cancellable is not NULL
+      g_cancellable_disconnect (self->cancellable, self->cancellable_cancelled_id); // Disconnects a signal handler
+      self->cancellable_cancelled_id = 0; // Resets the cancel id
+    }
+
+  g_clear_object (&self->cancellable); // Clears the cancellable object
+  g_clear_pointer (&self->tee_source, g_source_destroy); // Clears the tee_source and destroys the associated GSource
+  g_clear_object (&self->tee_proc); // Clears the tee_proc object
+  g_clear_object (&self->reader); // Clears the reader object
+  g_clear_object (&self->dbus_monitor); // Clears the dbus_monitor object
+
+  if (parent_class->dispose != NULL) // Checks if the parent class has a dispose function
+    parent_class->dispose (object); // Calls the dispose function of the parent class
+}
+```
+
+</details><br>
+
+> In summary, this function is responsible for releasing resources associated with a BustlePcapMonitor instance, including cancellable objects, sources, and other objects, and also ensures that the dispose method of the parent class is invoked if available, facilitating complete cleanup of resources.
+
 ## `bustle_pcap_monitor_finalize`
 
 <details>
