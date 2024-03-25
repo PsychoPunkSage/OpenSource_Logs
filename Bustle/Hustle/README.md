@@ -15,6 +15,34 @@
 
 >
 
+## `await_both_errors`
+
+<details>
+<summary>Code</summary>
+
+```c
+static void
+await_both_errors (BustlePcapMonitor *self)
+{
+  // Check if the monitor is in the stopped state; if so, return without further action.
+  if (self->state == STATE_STOPPED)
+    return;
+  // Check if both subprocess error and pcap error are not NULL; if so, call handle_error().
+  else if (self->subprocess_error != NULL && self->pcap_error != NULL)
+    handle_error (self);
+  // Check if await_both_errors_id is 0 (indicating no pending timeout); if so, schedule a timeout.
+  else if (self->await_both_errors_id == 0)
+    // Schedule a timeout callback function to be called after 2 seconds with default priority.
+    self->await_both_errors_id =
+      g_timeout_add_seconds_full (G_PRIORITY_DEFAULT, 2, await_both_errors_cb,
+                                  g_object_ref (self), g_object_unref);
+}
+```
+
+</details><br>
+
+> this function appears to be part of a mechanism for coordinating error handling in a larger system, ensuring that both subprocess and pcap errors are considered before taking any action. If both errors occur or if a certain time elapses without both errors being encountered, it triggers the handle_error function.
+
 ## `list_all_names`
 
 <details>
