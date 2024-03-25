@@ -2,6 +2,81 @@
 
 >> [Reference](https://gitlab.freedesktop.org/bustle/bustle/-/blob/22f454058f203ab18e735348900151f27708cb59/c-sources/pcap-monitor.c#L875)
 
+## `bustle_pcap_monitor_class_init`
+
+<details>
+<summary>Code</summary>
+
+```c
+static void
+bustle_pcap_monitor_class_init (BustlePcapMonitorClass *klass)
+{
+  // Get the GObjectClass of the class
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
+  GParamSpec *param_spec;
+
+  // Assigning methods for property handling and object lifecycle management
+  object_class->get_property = bustle_pcap_monitor_get_property;
+  object_class->set_property = bustle_pcap_monitor_set_property;
+  object_class->dispose = bustle_pcap_monitor_dispose;
+  object_class->finalize = bustle_pcap_monitor_finalize;
+
+  // Define macro for convenience
+#define THRICE(x) x, x, x
+
+  // Define a property for the bus type
+  param_spec = g_param_spec_enum (
+      "bus-type", "Bus type",
+      "Which standard bus to monitor. If NONE, :address must be non-NULL.",
+      G_TYPE_BUS_TYPE, G_BUS_TYPE_NONE,
+      G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+  // Install the property to the object class
+  g_object_class_install_property (object_class, PROP_BUS_TYPE, param_spec);
+
+  // Define a property for the address
+  param_spec = g_param_spec_string (
+      "address", "Address",
+      "Address of bus to monitor. If non-NULL, :bus-type must be G_BUS_TYPE_NONE",
+      NULL,
+      G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+  // Install the property to the object class
+  g_object_class_install_property (object_class, PROP_ADDRESS, param_spec);
+
+  // Define a property for the filename (three times)
+  param_spec = g_param_spec_string (THRICE ("filename"), NULL,
+      G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+  // Install the property to the object class
+  g_object_class_install_property (object_class, PROP_FILENAME, param_spec);
+
+  // Define a signal for message logging
+  signals[SIG_MESSAGE_LOGGED] = g_signal_new ("message-logged",
+      BUSTLE_TYPE_PCAP_MONITOR, G_SIGNAL_RUN_FIRST,
+      0, NULL, NULL,
+      NULL, G_TYPE_NONE, 5,
+      G_TYPE_LONG,
+      G_TYPE_LONG,
+      G_TYPE_POINTER,
+      G_TYPE_UINT,
+      G_TYPE_DBUS_MESSAGE);
+
+  // Define a signal for monitoring stoppage
+  signals[SIG_STOPPED] = g_signal_new ("stopped",
+      BUSTLE_TYPE_PCAP_MONITOR, G_SIGNAL_RUN_FIRST,
+      0, NULL, NULL,
+      NULL, G_TYPE_NONE, 3,
+      G_TYPE_UINT,
+      G_TYPE_INT,
+      G_TYPE_STRING);
+
+  // Check if running inside a Flatpak environment and assign the result to a global variable
+  RUNNING_IN_FLATPAK = g_file_test ("/.flatpak-info", G_FILE_TEST_EXISTS);
+}
+```
+
+</details><br>
+
+> This code is part of a class initialization function in GObject-based programming, responsible for setting up class properties, signals, and environment checks. 
+
 ## `handle_error`
 
 <details>
