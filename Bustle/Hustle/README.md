@@ -50,6 +50,54 @@ bustle_pcap_monitor_get_property (
 </details><br>
 
 > Overall, this function is responsible for retrieving the values of specific properties (bus_type, address, filename) from a BustlePcapMonitor instance and storing them in the provided GValue pointer. It's a part of implementing property access for objects of this type.
+## `bustle_pcap_monitor_get_property`
+
+<details>
+<summary>Code</summary>
+
+```c
+static void
+bustle_pcap_monitor_get_property (
+    GObject *object,
+    guint property_id,
+    GValue *value,
+    GParamSpec *pspec)
+{
+  // Casting the GObject to BustlePcapMonitor type
+  BustlePcapMonitor *self = BUSTLE_PCAP_MONITOR (object);
+
+  // Switching based on the property ID
+  switch (property_id)
+    {
+      // If the property ID matches PROP_BUS_TYPE
+      case PROP_BUS_TYPE:
+        // Setting the value to the bus type enum stored in self
+        g_value_set_enum (value, self->bus_type);
+        break;
+      
+      // If the property ID matches PROP_ADDRESS
+      case PROP_ADDRESS:
+        // Setting the value to the address string stored in self
+        g_value_set_string (value, self->address);
+        break;
+      
+      // If the property ID matches PROP_FILENAME
+      case PROP_FILENAME:
+        // Setting the value to the filename string stored in self
+        g_value_set_string (value, self->filename);
+        break;
+      
+      // If the property
+      default:
+        // Warning about invalid property ID
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+    }
+}
+```
+
+</details><br>
+
+> Overall, this function is responsible for retrieving the values of specific properties (bus_type, address, filename) from a BustlePcapMonitor instance and storing them in the provided GValue pointer. It's a part of implementing property access for objects of this type.
 
 ## `bustle_pcap_monitor_set_property`
 
