@@ -48,6 +48,52 @@ bustle_pcap_monitor_set_property (
 
 > It is a setter method for properties of a BustlePcapMonitor object
 
+## `bustle_pcap_monitor_set_property`
+
+<details>
+<summary>Code</summary>
+
+```c
+static void
+bustle_pcap_monitor_set_property (
+    GObject *object,
+    guint property_id,
+    const GValue *value,
+    GParamSpec *pspec)
+{
+  // Cast the GObject pointer to BustlePcapMonitor pointer
+  BustlePcapMonitor *self = BUSTLE_PCAP_MONITOR (object);
+
+  // Switch based on the property ID
+  switch (property_id)
+    {
+      // If the property is PROP_BUS_TYPE
+      case PROP_BUS_TYPE:
+        // Set the bus_type member of BustlePcapMonitor to the enum value from GValue
+        self->bus_type = g_value_get_enum (value);
+        break;
+      // If the property is PROP_ADDRESS
+      case PROP_ADDRESS:
+        // Duplicate the string value from GValue and assign it to the address member
+        self->address = g_value_dup_string (value);
+        break;
+      // If the property is PROP_FILENAME
+      case PROP_FILENAME:
+        // Duplicate the string value from GValue and assign it to the filename member
+        self->filename = g_value_dup_string (value);
+        break;
+      // If the property ID is not recognized
+      default:
+        // Warn about invalid property ID
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+    }
+}
+```
+
+</details><br>
+
+> It is a setter method for properties of a BustlePcapMonitor object
+
 ## `bustle_pcap_monitor_dispose`
 
 <details>
