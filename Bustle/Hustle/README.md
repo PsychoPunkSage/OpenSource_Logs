@@ -2,54 +2,41 @@
 
 >> [Reference](https://gitlab.freedesktop.org/bustle/bustle/-/blob/22f454058f203ab18e735348900151f27708cb59/c-sources/pcap-monitor.c#L875)
 
-## `bustle_pcap_monitor_get_property`
+## `throw_errno + bustle_pcap_monitor_init`
 
 <details>
 <summary>Code</summary>
 
 ```c
-static void
-bustle_pcap_monitor_get_property (
-    GObject *object,
-    guint property_id,
-    GValue *value,
-    GParamSpec *pspec)
+// This function takes an error pointer and a prefix string as arguments.
+// It captures the current value of errno, sets a GError with the corresponding
+// error code and message, and returns NULL.
+static inline void *
+throw_errno (GError **error,
+             const gchar *prefix)
 {
-  // Casting the GObject to BustlePcapMonitor type
-  BustlePcapMonitor *self = BUSTLE_PCAP_MONITOR (object);
+  int errsv = errno; // Save the current errno value
+  // Set a GError with the error code and message derived from errno
+  g_set_error (error, G_IO_ERROR, g_io_error_from_errno (errsv),
+               "%s: %s", prefix, g_strerror (errsv));
+  return NULL; // Return NULL
+}
 
-  // Switching based on the property ID
-  switch (property_id)
-    {
-      // If the property ID matches PROP_BUS_TYPE
-      case PROP_BUS_TYPE:
-        // Setting the value to the bus type enum stored in self
-        g_value_set_enum (value, self->bus_type);
-        break;
-      
-      // If the property ID matches PROP_ADDRESS
-      case PROP_ADDRESS:
-        // Setting the value to the address string stored in self
-        g_value_set_string (value, self->address);
-        break;
-      
-      // If the property ID matches PROP_FILENAME
-      case PROP_FILENAME:
-        // Setting the value to the filename string stored in self
-        g_value_set_string (value, self->filename);
-        break;
-      
-      // If the property
-      default:
-        // Warning about invalid property ID
-        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
-    }
+// This function initializes a BustlePcapMonitor object.
+static void
+bustle_pcap_monitor_init (BustlePcapMonitor *self)
+{
+  self->bus_type = G_BUS_TYPE_SESSION; // Set bus_type to G_BUS_TYPE_SESSION
+  self->state = STATE_NEW; // Set state to STATE_NEW
+  self->cancellable = g_cancellable_new (); // Create a new G Cancellable object
+  self->pt_master = -1; // Set pt_master to -1
 }
 ```
 
 </details><br>
 
-> Overall, this function is responsible for retrieving the values of specific properties (bus_type, address, filename) from a BustlePcapMonitor instance and storing them in the provided GValue pointer. It's a part of implementing property access for objects of this type.
+> The throw_errno function is a utility function used for reporting errors. It sets a GError with the error code and message corresponding to the current errno value. This function is typically used to handle errors encountered in system calls.<br>
+The bustle_pcap_monitor_init function initializes a BustlePcapMonitor object. It sets the bus_type member to G_BUS_TYPE_SESSION, the state member to STATE_NEW, creates a new GCancellable object and assigns it to the cancellable member, and sets the pt_master member to -1. This function prepares the BustlePcapMonitor object for further use, typically as part of an initialization routine.
 ## `bustle_pcap_monitor_get_property`
 
 <details>
