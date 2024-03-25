@@ -45,6 +45,50 @@ bustle_pcap_monitor_finalize (GObject *object)
 </details><br>
 
 > this function is responsible for releasing resources and performing cleanup operations associated with a BustlePcapMonitor instance before it is destroyed. 
+> 
+## `bustle_pcap_monitor_finalize`
+
+<details>
+<summary>Code</summary>
+
+```c
+static void
+bustle_pcap_monitor_finalize (GObject *object)
+{
+  // Cast the object to BustlePcapMonitor type
+  BustlePcapMonitor *self = BUSTLE_PCAP_MONITOR (object);
+  
+  // Get the parent class of BustlePcapMonitor
+  GObjectClass *parent_class = bustle_pcap_monitor_parent_class;
+
+  // Clear and free the 'address' member of BustlePcapMonitor
+  g_clear_pointer (&self->address, g_free);
+  
+  // Clear and free the 'filename' member of BustlePcapMonitor
+  g_clear_pointer (&self->filename, g_free);
+  
+  // Clear the 'pcap_error' member of BustlePcapMonitor
+  g_clear_error (&self->pcap_error);
+  
+  // Clear the 'subprocess_error' member of BustlePcapMonitor
+  g_clear_error (&self->subprocess_error);
+
+  // Close the master PTY file descriptor if it's open
+  if (self->pt_master >= 0)
+    {
+      g_close (self->pt_master, NULL);
+      self->pt_master = -1;
+    }
+
+  // Call the finalize method of the parent class, if it exists
+  if (parent_class->finalize != NULL)
+    parent_class->finalize (object);
+}
+```
+
+</details><br>
+
+> this function is responsible for releasing resources and performing cleanup operations associated with a BustlePcapMonitor instance before it is destroyed. 
 
 ## `bustle_pcap_monitor_class_init`
 
