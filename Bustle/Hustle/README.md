@@ -2,6 +2,21 @@
 
 >> [Reference](https://gitlab.freedesktop.org/bustle/bustle/-/blob/22f454058f203ab18e735348900151f27708cb59/c-sources/pcap-monitor.c#L875)
 
+
+
+## ``
+
+<details>
+<summary>Code</summary>
+
+```c
+
+```
+
+</details><br>
+
+>
+
 ## `await_both_errors_cb`
 
 <details>
@@ -26,20 +41,6 @@ await_both_errors_cb (gpointer data)
 ```
 
 </details><br>
-
-
-## ``
-
-<details>
-<summary>Code</summary>
-
-```c
-
-```
-
-</details><br>
-
->
 
 ## `await_both_errors`
 
