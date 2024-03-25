@@ -37,6 +37,43 @@ bustle_pcap_monitor_init (BustlePcapMonitor *self)
 
 > The throw_errno function is a utility function used for reporting errors. It sets a GError with the error code and message corresponding to the current errno value. This function is typically used to handle errors encountered in system calls.<br>
 The bustle_pcap_monitor_init function initializes a BustlePcapMonitor object. It sets the bus_type member to G_BUS_TYPE_SESSION, the state member to STATE_NEW, creates a new GCancellable object and assigns it to the cancellable member, and sets the pt_master member to -1. This function prepares the BustlePcapMonitor object for further use, typically as part of an initialization routine.
+
+## `throw_errno + bustle_pcap_monitor_init`
+
+<details>
+<summary>Code</summary>
+
+```c
+// This function takes an error pointer and a prefix string as arguments.
+// It captures the current value of errno, sets a GError with the corresponding
+// error code and message, and returns NULL.
+static inline void *
+throw_errno (GError **error,
+             const gchar *prefix)
+{
+  int errsv = errno; // Save the current errno value
+  // Set a GError with the error code and message derived from errno
+  g_set_error (error, G_IO_ERROR, g_io_error_from_errno (errsv),
+               "%s: %s", prefix, g_strerror (errsv));
+  return NULL; // Return NULL
+}
+
+// This function initializes a BustlePcapMonitor object.
+static void
+bustle_pcap_monitor_init (BustlePcapMonitor *self)
+{
+  self->bus_type = G_BUS_TYPE_SESSION; // Set bus_type to G_BUS_TYPE_SESSION
+  self->state = STATE_NEW; // Set state to STATE_NEW
+  self->cancellable = g_cancellable_new (); // Create a new G Cancellable object
+  self->pt_master = -1; // Set pt_master to -1
+}
+```
+
+</details><br>
+
+> The throw_errno function is a utility function used for reporting errors. It sets a GError with the error code and message corresponding to the current errno value. This function is typically used to handle errors encountered in system calls.<br>
+The bustle_pcap_monitor_init function initializes a BustlePcapMonitor object. It sets the bus_type member to G_BUS_TYPE_SESSION, the state member to STATE_NEW, creates a new GCancellable object and assigns it to the cancellable member, and sets the pt_master member to -1. This function prepares the BustlePcapMonitor object for further use, typically as part of an initialization routine.
+
 ## `bustle_pcap_monitor_get_property`
 
 <details>
