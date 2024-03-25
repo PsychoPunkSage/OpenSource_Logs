@@ -2,6 +2,32 @@
 
 >> [Reference](https://gitlab.freedesktop.org/bustle/bustle/-/blob/22f454058f203ab18e735348900151f27708cb59/c-sources/pcap-monitor.c#L875)
 
+## `await_both_errors_cb`
+
+<details>
+<summary>Code</summary>
+
+```c
+static gboolean
+await_both_errors_cb (gpointer data)
+{
+  // Cast the data pointer to BustlePcapMonitor pointer
+  BustlePcapMonitor *self = BUSTLE_PCAP_MONITOR (data);
+
+  // Call the function handle_error() with the BustlePcapMonitor instance as argument
+  handle_error (self);
+
+  // Reset the ID associated with the timeout function to 0, indicating it has been removed
+  self->await_both_errors_id = 0;
+
+  // Return G_SOURCE_REMOVE to indicate that this event source should be removed
+  return G_SOURCE_REMOVE;
+}
+```
+
+</details><br>
+
+
 ## ``
 
 <details>
