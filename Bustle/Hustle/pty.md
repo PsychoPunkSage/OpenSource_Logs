@@ -49,3 +49,14 @@ fn main() {
 > This crate is a wrapper around [tokio::process::Command] or `std::process::Command` which provides the ability to allocate a pty and spawn new processes attached to that pty, with the pty as their controlling terminal. This allows for manipulation of interactive programs.<br>
 
 > The basic functionality looks like this:
+
+```rust
+let mut pty = pty_process::Pty::new()?;
+pty.resize(pty_process::Size::new(24, 80))?;
+let mut cmd = pty_process::Command::new("nethack");
+let child = cmd.spawn(&pty.pts()?)?;
+let mut pty = pty_process::blocking::Pty::new()?;
+pty.resize(pty_process::Size::new(24, 80))?;
+let mut cmd = pty_process::blocking::Command::new("nethack");
+let child = cmd.spawn(&pty.pts()?)?;
+```
