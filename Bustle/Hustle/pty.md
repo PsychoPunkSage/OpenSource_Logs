@@ -60,3 +60,6 @@ pty.resize(pty_process::Size::new(24, 80))?;
 let mut cmd = pty_process::blocking::Command::new("nethack");
 let child = cmd.spawn(&pty.pts()?)?;
 ```
+
+The returned child is a normal instance of [tokio::process::Child] (or `std::process::Child` for the blocking variant), with its `stdin/stdout/stderr` file descriptors pointing at the given pty. The `pty` instance implements [tokio::io::AsyncRead] and [tokio::io::AsyncWrite] (or `std::io::Read` and `std::io::Write` for the blocking variant), and can be used to communicate with the child process. The child process will also be made a session leader of a new session, and the controlling terminal of that session will be set to the given pty.
+
