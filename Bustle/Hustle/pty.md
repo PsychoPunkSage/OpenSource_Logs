@@ -71,7 +71,7 @@ The returned child is a normal instance of [tokio::process::Child] (or `std::pro
 use std::os::fd::{AsRawFd, FromRawFd};
 use pty_exec::Pty;
 
-// spawn Pty
+// spawn Pty...
 let pty = Pty::spawn(move |_fd, res| {
     println!("-> {}", res.unwrap());
 }, move |fd| {
