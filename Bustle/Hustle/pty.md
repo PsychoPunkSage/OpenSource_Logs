@@ -64,3 +64,25 @@ let child = cmd.spawn(&pty.pts()?)?;
 The returned child is a normal instance of [tokio::process::Child] (or `std::process::Child` for the blocking variant), with its `stdin/stdout/stderr` file descriptors pointing at the given pty. The `pty` instance implements [tokio::io::AsyncRead] and [tokio::io::AsyncWrite] (or `std::io::Read` and `std::io::Write` for the blocking variant), and can be used to communicate with the child process. The child process will also be made a session leader of a new session, and the controlling terminal of that session will be set to the given pty.
 
 > **Features** :: By default, only the `blocking` APIs are available. To include the asynchronous APIs, you must enable the `async` feature.
+
+### `pty_exec`
+
+```rust
+use std::os::fd::{AsRawFd, FromRawFd};
+use pty_exec::Pty;
+
+// spawn Pty
+let pty = Pty::spawn(move |_fd, res| {
+    println!("-> {}", res.unwrap());
+}, move |fd| {
+    println!("-> {fd} died");
+})?;
+
+// (optional) create new pty, this maintains the on_read and on_death callbacks
+let pty = unsafe { Pty::from_raw_fd(pty.as_raw_fd()) };
+
+// write to original pty with new pty from_raw_fd
+pty.write("echo 'Hello, World'\r")?;
+
+pty.kill();
+```
