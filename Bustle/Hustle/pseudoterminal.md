@@ -21,3 +21,13 @@ pub fn set_term_size(&mut self, new_size: TerminalSize) -> Result<()>
 pub fn close(self) -> Result<()>
 ```
 
+### auto Trait Implementations
+
+```rust
+impl RefUnwindSafe for Terminal
+impl Send for Terminal
+impl Sync for Terminal
+impl Unpin for Terminal
+impl UnwindSafe for Terminal
+```
+
