@@ -43,3 +43,9 @@ fn main() {
 ```
 
 </details>
+
+### `pty_process`
+
+> This crate is a wrapper around [tokio::process::Command] or `std::process::Command` which provides the ability to allocate a pty and spawn new processes attached to that pty, with the pty as their controlling terminal. This allows for manipulation of interactive programs.<br>
+
+> The basic functionality looks like this:
