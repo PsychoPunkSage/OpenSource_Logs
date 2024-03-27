@@ -20,3 +20,11 @@
 `Transaction Prioritization`: Transactions may be prioritized based on factors like transaction fee, transaction size, etc.<br>
 `Transaction Sorting`: Sort transactions based on priority, with higher fee transactions typically given priority.<br>
 `Transaction Filtering`: Remove any transactions deemed invalid or conflicting.
+
+> **Step 2: Transaction Validation**
+
+`Input Validation`: Check if each transaction's inputs are valid and exist in the UTXO (Unspent Transaction Output) set.<br>
+`Double Spending Check`: Ensure no inputs are spent more than once.<br>
+`Script Validation`: Validate the transaction scripts, including signature verification.<br>
+`Transaction Fee Check`: Verify that the transaction fee is sufficient according to current network standards.<br>
+`Consensus Rules Compliance`: Ensure all transactions adhere to Bitcoin's consensus rules.<br>
