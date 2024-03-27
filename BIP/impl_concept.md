@@ -37,7 +37,11 @@
 - **Signature Verification**: Verify that the signature provided in the transaction input matches the corresponding public key and the associated output's scriptPubKey.
 
 
-`Transaction Fee Check`: Verify that the transaction fee is sufficient according to current network standards.<br>
+`Transaction Fee Check`(optional): Verify that the transaction fee is sufficient according to current network standards.<br>
+- **Fee Calculation**: Calculate the transaction fee as the difference between the total input amounts and the total output amounts.
+- **Minimum Fee Requirement**: Compare the calculated fee with the minimum required fee according to network policies and current block space availability.
+- **Fee Rate Consideration**: Take into account the transaction fee rate (satoshi per byte) to determine if the fee is sufficient for timely inclusion in a block.
+
 `Consensus Rules Compliance`: Ensure all transactions adhere to Bitcoin's consensus rules.<br>
 
 > **Step 3: Block Header Construction**
