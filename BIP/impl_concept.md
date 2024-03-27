@@ -12,6 +12,11 @@
 
 ### Things to remember:
 
->> Block Mining:
+>> **Block Mining:**
 
-- 
+> **Step 1: Transaction Selection**
+
+`Mempool Overview`: The mempool is a collection of all pending transactions waiting to be included in a block.<br>
+`Transaction Prioritization`: Transactions may be prioritized based on factors like transaction fee, transaction size, etc.<br>
+`Transaction Sorting`: Sort transactions based on priority, with higher fee transactions typically given priority.<br>
+`Transaction Filtering`: Remove any transactions deemed invalid or conflicting.
