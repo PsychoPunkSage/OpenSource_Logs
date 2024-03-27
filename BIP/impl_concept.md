@@ -1,4 +1,4 @@
-## ToDo: Simulate Minig of Blocks
+## ToDo: Simulate Mining of Blocks
 
 >> Write a code that will process the txns, mines them, validates them and put them in a block.
 
@@ -24,6 +24,10 @@
 > **Step 2: Transaction Validation**
 
 `Input Validation`: Check if each transaction's inputs are valid and exist in the UTXO (Unspent Transaction Output) set.<br>
+- **Access UTXO Set**: Access the Unspent Transaction Output (UTXO) set, which contains records of all unspent transaction outputs.
+- **Check Inputs**: For each transaction, verify that all inputs referenced by the transaction are present in the UTXO set.
+- **UTXO Usage**: Ensure that inputs are not already spent by checking if they exist in the UTXO set.
+
 `Double Spending Check`: Ensure no inputs are spent more than once.<br>
 `Script Validation`: Validate the transaction scripts, including signature verification.<br>
 `Transaction Fee Check`: Verify that the transaction fee is sufficient according to current network standards.<br>
