@@ -45,3 +45,8 @@
 `Difficulty Adjustment`: Compare the resulting hash with the target difficulty. If the hash meets the difficulty criteria (has a sufficient number of leading zeros), the block is considered mined.<br>
 `Nonce Incrementation`: If the hash does not meet the difficulty criteria, increment the nonce value and repeat the hashing process.<br>
 `Block Submission`: Once a valid block hash is found, broadcast the block to the network for validation and inclusion in the blockchain.<br>
+
+> Step 5: Block Validation (Performed by Network Nodes)
+Consensus Verification: Network nodes verify the validity of the block, including the transactions it contains and its adherence to consensus rules.
+Chain Longest-Valid Rule: Nodes accept the block only if it extends the longest valid chain and is considered valid according to network consensus.
+Block Propagation: Validated blocks are propagated to other nodes in the network for further verification and propagation.
