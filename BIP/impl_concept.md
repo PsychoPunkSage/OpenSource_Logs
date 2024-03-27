@@ -31,9 +31,16 @@
 
 > **Step 3: Block Header Construction**
 
-`Version`: Define the block version number.
-`Previous Block Hash`: Include the hash of the previous block in the blockchain to maintain the chain's continuity.
-`Merkle Root`: Calculate the Merkle root hash of all valid transactions included in the block.
-`Timestamp`: Assign a timestamp to the block, indicating when the block was created.
-`Target Difficulty`: Determine the target difficulty for mining the block.
-`Nonce`: Initialize the nonce value, which miners will increment during mining to find a valid block hash.
+`Version`: Define the block version number.<br>
+`Previous Block Hash`: Include the hash of the previous block in the blockchain to maintain the chain's continuity.<br>
+`Merkle Root`: Calculate the Merkle root hash of all valid transactions included in the block.<br>
+`Timestamp`: Assign a timestamp to the block, indicating when the block was created.<br>
+`Target Difficulty`: Determine the target difficulty for mining the block.<br>
+`Nonce`: Initialize the nonce value, which miners will increment during mining to find a valid block hash.<br>
+
+> Step 4: Mining
+Proof-of-Work: Start the mining process by selecting a nonce value and combining it with the block header.
+Block Hash Calculation: Hash the block header using the SHA-256 cryptographic hash function.
+Difficulty Adjustment: Compare the resulting hash with the target difficulty. If the hash meets the difficulty criteria (has a sufficient number of leading zeros), the block is considered mined.
+Nonce Incrementation: If the hash does not meet the difficulty criteria, increment the nonce value and repeat the hashing process.
+Block Submission: Once a valid block hash is found, broadcast the block to the network for validation and inclusion in the blockchain.
