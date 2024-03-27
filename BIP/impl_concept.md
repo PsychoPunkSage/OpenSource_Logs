@@ -76,8 +76,9 @@
 - Repeat the hashing process by combining the updated block header with the incremented nonce.
 
 `Block Submission`: Once a valid block hash is found, broadcast the block to the network for validation and inclusion in the blockchain.<br>
+- We need to output the Block infos in `output.txt`
 
-> **Step 5: Block Validation (Performed by Network Nodes)**
+> **Step 5: Block Validation (Performed by Network Nodes)** \<optional/Not req. here>
 
 `Consensus Verification`: Network nodes verify the validity of the block, including the transactions it contains and its adherence to consensus rules.<br>
 `Chain Longest-Valid Rule`: Nodes accept the block only if it extends the longest valid chain and is considered valid according to network consensus.<br>
