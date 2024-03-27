@@ -29,6 +29,9 @@
 - **UTXO Usage**: Ensure that inputs are not already spent by checking if they exist in the UTXO set.
 
 `Double Spending Check`: Ensure no inputs are spent more than once.<br>
+- **Transaction History**: Maintain a record of all spent transaction outputs to detect double spending attempts.
+- **Transaction Order**: Validate that each input of a transaction has not been previously spent in another transaction within the same block or earlier blocks.
+  
 `Script Validation`: Validate the transaction scripts, including signature verification.<br>
 `Transaction Fee Check`: Verify that the transaction fee is sufficient according to current network standards.<br>
 `Consensus Rules Compliance`: Ensure all transactions adhere to Bitcoin's consensus rules.<br>
