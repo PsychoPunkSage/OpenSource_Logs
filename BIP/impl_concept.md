@@ -59,9 +59,22 @@
 > **Step 4: Mining**
 
 `Proof-of-Work`: Start the mining process by selecting a nonce value and combining it with the block header.<br>
+- Start by initializing the block header with necessary information like version, previous block hash, Merkle root, timestamp, and target difficulty.
+- Generate a nonce value and append it to the block header.
+- Combine the block header with the nonce to form a candidate block.
+
 `Block Hash Calculation`: Hash the block header using the SHA-256 cryptographic hash function.<br>
+- Hash the candidate block using the SHA-256 cryptographic hash function.
+- This hashing process creates a unique hash value for the block.
+
 `Difficulty Adjustment`: Compare the resulting hash with the target difficulty. If the hash meets the difficulty criteria (has a sufficient number of leading zeros), the block is considered mined.<br>
+- It will be constant for us := `0000ffff00000000000000000000000000000000000000000000000000000000`
+
 `Nonce Incrementation`: If the hash does not meet the difficulty criteria, increment the nonce value and repeat the hashing process.<br>
+- If the hash does not meet the difficulty criteria, increment the nonce value by 1.
+- Update the block header with the new nonce.
+- Repeat the hashing process by combining the updated block header with the incremented nonce.
+
 `Block Submission`: Once a valid block hash is found, broadcast the block to the network for validation and inclusion in the blockchain.<br>
 
 > **Step 5: Block Validation (Performed by Network Nodes)**
