@@ -28,3 +28,11 @@
 `Script Validation`: Validate the transaction scripts, including signature verification.<br>
 `Transaction Fee Check`: Verify that the transaction fee is sufficient according to current network standards.<br>
 `Consensus Rules Compliance`: Ensure all transactions adhere to Bitcoin's consensus rules.<br>
+
+> Step 3: Block Header Construction
+Version: Define the block version number.
+Previous Block Hash: Include the hash of the previous block in the blockchain to maintain the chain's continuity.
+Merkle Root: Calculate the Merkle root hash of all valid transactions included in the block.
+Timestamp: Assign a timestamp to the block, indicating when the block was created.
+Target Difficulty: Determine the target difficulty for mining the block.
+Nonce: Initialize the nonce value, which miners will increment during mining to find a valid block hash.
