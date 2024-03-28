@@ -101,7 +101,7 @@ def mine_block(transactions, coinbase_transaction):
 
 #### Fn to `Format output` from mempool
 
-> **AIM:** Mines the block by finding a hash that meets the difficulty target.
+> **AIM:** This will create `output.txt` in desired format.
 
 <details>
 <summary>Template</summary>
