@@ -20,7 +20,7 @@ def read_transactions():
 
 </details><br>
 
-#### Fn to `Validate txn` from mempool
+#### Fn to `Validate txn` 
 
 > **AIM:** Parse the list of Transactions returned by `Read txn fn` and then **return the list of valid Transactions** .
 
@@ -38,7 +38,7 @@ def validate_transactions(transactions):
 
 </details><br>
 
-#### Fn to `Create Coinbase txn` from mempool
+#### Fn to `Create Coinbase txn`
 
 > **AIM:** From the selected transactions (from list of valid txns), get the coinbase txn and then return it .
 
@@ -57,7 +57,7 @@ def create_coinbase_transaction():
 
 </details><br>
 
-#### Fn to `Compute merkle root` from mempool
+#### Fn to `Compute merkle root`
 
 > **AIM:** Return the merkel root of the txn that is being put in the given block.
 
@@ -72,7 +72,7 @@ def compute_merkle_root(transactions):
 
 </details><br>
 
-#### Fn to `Mine Block` from mempool
+#### Fn to `Mine Block`
 
 > **AIM:** Mines the block by finding a hash that meets the difficulty target.
 
@@ -99,7 +99,7 @@ def mine_block(transactions, coinbase_transaction):
 </details><br>
 
 
-#### Fn to `Format output` from mempool
+#### Fn to `Format output`
 
 > **AIM:** This will create `output.txt` in desired format.
 
