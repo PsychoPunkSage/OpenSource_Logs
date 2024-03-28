@@ -40,7 +40,7 @@ def validate_transactions(transactions):
 
 #### Fn to `Create Coinbase txn` from mempool
 
-> **AIM:** From the **return the list of valid Transactions** .
+> **AIM:** From the selected transactions (from list of valid txns), get the coinbase txn and then return it .
 
 <details>
 <summary>Template</summary>
