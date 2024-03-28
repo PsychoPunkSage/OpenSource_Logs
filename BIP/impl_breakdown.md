@@ -38,3 +38,22 @@ def validate_transactions(transactions):
 
 </details><br>
 
+#### Fn to `Create Coinbase txn` from mempool
+
+> **AIM:** From the **return the list of valid Transactions** .
+
+<details>
+<summary>Template</summary>
+
+```python
+def create_coinbase_transaction():
+    coinbase_transaction = {
+        # Add coinbase transaction details here
+        "txid": "coinbase_txid",
+        # Add other fields as needed
+    }
+    return coinbase_transaction
+```
+
+</details><br>
+
