@@ -57,3 +57,22 @@ def create_coinbase_transaction():
 
 </details><br>
 
+#### Fn to `Compute merkle root` from mempool
+
+> **AIM:** Return the merkel root of the txn that is being put in the given block.
+
+<details>
+<summary>Template</summary>
+
+```python
+def create_coinbase_transaction():
+    coinbase_transaction = {
+        # Add coinbase transaction details here
+        "txid": "coinbase_txid",
+        # Add other fields as needed
+    }
+    return coinbase_transaction
+```
+
+</details><br>
+
