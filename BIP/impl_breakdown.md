@@ -51,6 +51,7 @@ Unlocking Script (scriptSig or witness): Provides data to spend the referenced o
 Sequence Number: Typically set to maximum value (4294967295), indicating default priority.<br>
 * `Outputs (vout)`:<br>
 Value: Specifies the amount of Bitcoin being sent to each output.<br>
+
 Locking Script (scriptPubkey): Defines conditions for spending the output in future transactions.<br>
 
 **2. Input Validation:**
