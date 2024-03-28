@@ -72,3 +72,18 @@ def compute_merkle_root(transactions):
 
 </details><br>
 
+#### Fn to `Mine Block` from mempool
+
+> **AIM:** Mines the block by finding a hash that meets the difficulty target.
+
+<details>
+<summary>Template</summary>
+
+```python
+def compute_merkle_root(transactions):
+    merkle_root = hashlib.sha256(b"".join(sorted([hashlib.sha256(json.dumps(tx).encode()).digest() for tx in transactions]))).hexdigest()
+    return merkle_root
+```
+
+</details><br>
+
