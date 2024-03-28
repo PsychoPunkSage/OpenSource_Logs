@@ -80,9 +80,20 @@ def compute_merkle_root(transactions):
 <summary>Template</summary>
 
 ```python
-def compute_merkle_root(transactions):
-    merkle_root = hashlib.sha256(b"".join(sorted([hashlib.sha256(json.dumps(tx).encode()).digest() for tx in transactions]))).hexdigest()
-    return merkle_root
+def mine_block(transactions, coinbase_transaction):
+    block_header = {
+        "version": "1",
+        "prev_block_hash": "previous_block_hash",
+        "merkle_root": compute_merkle_root(transactions),
+        "timestamp": int(time.time()),
+        "nonce": 0
+    }
+    while True:
+        block_header_hash = hashlib.sha256(json.dumps(block_header).encode()).hexdigest()
+        if block_header_hash < DIFFICULTY_TARGET:
+            break
+        block_header["nonce"] += 1
+    return block_header, coinbase_transaction
 ```
 
 </details><br>
