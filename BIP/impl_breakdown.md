@@ -28,14 +28,12 @@ def read_transactions():
 <summary>Template</summary>
 
 ```python
-def read_transactions():
-    transactions = []
-    mempool_dir = "mempool"
-    for filename in os.listdir(mempool_dir):
-        with open(os.path.join(mempool_dir, filename), "r") as file:
-            transaction_data = json.load(file)
-            transactions.append(transaction_data)
-    return transactions
+def validate_transactions(transactions):
+    valid_transactions = []
+    for transaction in transactions:
+        # Add validation logic here
+        valid_transactions.append(transaction)
+    return valid_transactions
 ```
 
 </details><br>
