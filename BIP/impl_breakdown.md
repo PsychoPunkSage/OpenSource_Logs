@@ -41,7 +41,7 @@ def validate_transactions(transactions):
 <details>
 <summary>Pointers</summary>
 
-> p2pkh
+> **p2pkh**
 
 * **Validation**
 `OP_DUP`: Duplicates the top stack item.
@@ -52,7 +52,7 @@ def validate_transactions(transactions):
 
 </details><br>
 
-> Valid Txn details
+> **Valid Txn details**
 
 - no. of transactions::> `no limit` BUT the allowable size of block is 1MB. 
 
