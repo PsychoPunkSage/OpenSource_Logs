@@ -38,6 +38,18 @@ def validate_transactions(transactions):
 
 </details><br>
 
+<details>
+<summary>Pointers</summary>
+
+OP_DUP: Duplicates the top stack item.
+OP_HASH160: Hashes the top stack item using SHA-256 followed by RIPEMD-160.
+OP_PUSHBYTES_20: Pushes 20 bytes onto the stack.
+[20-byte public key hash]: The public key hash used to identify the recipient.
+OP_EQUALVERIFY: Checks if the top two stack items are equal, then removes them from the stack.
+OP_CHECKSIG: Verifies the signature of the transaction input.
+
+</details><br>
+
 > Valid Txn details
 
 - no. of transactions::> `no limit` BUT the allowable size of block is 1MB. 
