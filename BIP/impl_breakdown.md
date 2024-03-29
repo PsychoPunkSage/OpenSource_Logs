@@ -40,10 +40,12 @@ def validate_transactions(transactions):
 
 > Valid Txn details
 
+- no. of transactions::> `no limit` BUT the allowable size of block is 1MB. 
+
 **1. Transaction Structure:**
 
 * `Version`: Must be within a supported range (currently 1 or 2).
-*`Locktime`: Specifies a block height or timestamp for transaction execution.
+* `Locktime`: Specifies a block height or timestamp for transaction execution. Here this should be `0` as we are creating 1 block and we are not waiting for other block creation.
 * `Inputs (vin)`:<br>
 Transaction ID (txid): References previous transaction's output(s) being spent.<br>
 Output Index (vout): Identifies which specific output from the previous transaction is being used.<br>
