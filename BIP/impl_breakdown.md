@@ -59,19 +59,19 @@ def validate_transactions(transactions):
 `OP_EQUALVERIFY`: Checks if the top two stack items are equal, then removes them from the stack.
 `OP_CHECKSIG`: Verifies the signature of the transaction input.
 
-txid: The transaction ID uniquely identifies the transaction on the blockchain. To validate this field, one would typically check if the transaction ID is unique and corresponds to the transaction data provided.
+`txid`: The transaction ID uniquely identifies the transaction on the blockchain. To validate this field, one would typically check if the transaction ID is unique and corresponds to the transaction data provided.
 
-vout: This field specifies the index of the output being spent by the input. It indicates which output of the previous transaction (specified by txid) is being spent. To validate, ensure that the referenced output exists in the previous transaction and has not already been spent.
+`vout`: This field specifies the index of the output being spent by the input. It indicates which output of the previous transaction (specified by txid) is being spent. To validate, ensure that the referenced output exists in the previous transaction and has not already been spent.
 
-prevout: This object contains information about the output being spent, including the script public key, its type, address, and value. To validate, ensure that the referenced output is valid, unspent, and matches the provided details.
+`prevout`: This object contains information about the output being spent, including the script public key, its type, address, and value. To validate, ensure that the referenced output is valid, unspent, and matches the provided details.
 
-scriptsig: This field contains the signature script for the input, which is used to unlock the output being spent. To validate, verify that the signature script is correctly formatted and can unlock the referenced output.
+`scriptsig`: This field contains the signature script for the input, which is used to unlock the output being spent. To validate, verify that the signature script is correctly formatted and can unlock the referenced output.
 
-scriptsig_asm: This field provides the human-readable representation of the signature script. To validate, ensure that the signature script corresponds to the expected unlocking conditions for the referenced output.
+`scriptsig_asm`: This field provides the human-readable representation of the signature script. To validate, ensure that the signature script corresponds to the expected unlocking conditions for the referenced output.
 
-is_coinbase: This boolean field indicates whether the transaction is a coinbase transaction, which is a special type of transaction created by miners as the first transaction in a block. To validate, check if the transaction is a coinbase transaction and ensure it adheres to the rules governing coinbase transactions.
+`is_coinbase`: This boolean field indicates whether the transaction is a coinbase transaction, which is a special type of transaction created by miners as the first transaction in a block. To validate, check if the transaction is a coinbase transaction and ensure it adheres to the rules governing coinbase transactions.
 
-sequence: This field specifies the relative locktime of the input. It determines when the transaction can be included in a block based on its age or block height. To validate, ensure that the sequence number meets the requirements set by the transaction's locktime.
+`sequence`: This field specifies the relative locktime of the input. It determines when the transaction can be included in a block based on its age or block height. To validate, ensure that the sequence number meets the requirements set by the transaction's locktime.
 
 </details><br>
 
