@@ -41,6 +41,7 @@ def validate_transactions(transactions):
 <details>
 <summary>Pointers</summary>
 
+>> **Vin**
 > **p2pkh**
 
 * **Validation**
@@ -71,6 +72,18 @@ def validate_transactions(transactions):
 `scriptsig_asm`: This field provides the human-readable representation of the signature script. To validate, ensure that the signature script corresponds to the expected unlocking conditions for the referenced output.
 
 `sequence`: This field specifies the relative locktime of the input. It determines when the transaction can be included in a block based on its age or block height. To validate, ensure that the sequence number meets the requirements set by the transaction's locktime.
+
+>> **Vout**
+
+scriptpubkey: This field contains the locking script, which defines the conditions under which the funds can be spent. It typically includes an output address or public key hash (for P2PKH or P2WPKH scripts), allowing the owner of the corresponding private key to unlock and spend the funds.
+
+scriptpubkey_asm: This is the assembly representation of the locking script. It shows the individual operations (OP_CODES) performed by the script, such as OP_DUP, OP_HASH160, and OP_EQUALVERIFY, along with any associated data (e.g., public key hashes).
+
+scriptpubkey_type: Indicates the type of locking script used. In the provided examples, "p2pkh" denotes Pay-to-Public-Key-Hash, indicating that the funds are locked using a public key hash.
+
+scriptpubkey_address: This field represents the Bitcoin address associated with the locking script. It is a human-readable format derived from the locking script's hash, making it easier for users to send funds to and identify the recipient of the transaction.
+
+value: Denotes the amount of Bitcoin (in satoshis) associated with each output. It represents the quantity of funds being transferred to the corresponding locking script/address.
 
 </details><br>
 
