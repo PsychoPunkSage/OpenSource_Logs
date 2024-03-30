@@ -104,6 +104,16 @@ def validate_transactions(transactions):
 
 **1. Transaction Structure:**
 
+* `Version`: Must be within a supported range (currently 1 or 2).
+* `Locktime`: Specifies a block height or timestamp for transaction execution. Here this should be `0` as we are creating 1 block and we are not waiting for other block creation.
+* `Inputs (vin)`:<br>
+Transaction ID (txid): References previous transaction's output(s) being spent.<br>
+Output Index (vout): Identifies which specific output from the previous transaction is being used.<br>
+Unlocking Script (scriptSig or witness): Provides data to spend the referenced output, proving ownership of funds.<br>
+Sequence Number: Typically set to maximum value (4294967295), indicating default priority.<br>
+* `Outputs (vout)`:<br>
+Value: Specifies the amount of Bitcoin being sent to each output.<br>
+Locking Script (scriptPubkey): Defines conditions for spending the output in future transactions.<br>
 
 **2. Input Validation:**
 
