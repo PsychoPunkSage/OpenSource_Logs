@@ -86,15 +86,7 @@ def validate_transactions(transactions):
 
 `value`: Denotes the amount of Bitcoin (in satoshis) associated with each output. It represents the quantity of funds being transferred to the corresponding locking script/address.
 
-```
-**Extract the relevant information**: Retrieve the scriptpubkey, scriptpubkey_type, scriptpubkey_address, and value fields from each output in the transaction.
 
-**Verify the locking script**: Ensure that the scriptpubkey matches the expected locking script type (e.g., "p2pkh") and that it corresponds to the provided address.
-
-**Check the amount**: Verify that the value field contains a valid amount of Bitcoin, considering factors such as transaction fees and dust limits.
-
-**Optional**: Depending on the use case, you may also need to perform additional checks, such as ensuring that the address is not associated with known malicious activity or verifying the digital signatures if the transaction includes inputs.
-```
 
 </details><br>
 
