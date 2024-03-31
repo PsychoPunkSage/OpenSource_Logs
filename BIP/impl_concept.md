@@ -79,3 +79,7 @@
 - We need to output the Block infos in `output.txt`
 
 > **Step 5: Block Validation (Performed by Network Nodes)** \<optional/Not req. here>
+
+`Consensus Verification`: Network nodes verify the validity of the block, including the transactions it contains and its adherence to consensus rules.<br>
+`Chain Longest-Valid Rule`: Nodes accept the block only if it extends the longest valid chain and is considered valid according to network consensus.<br>
+`Block Propagation`: Validated blocks are propagated to other nodes in the network for further verification and propagation.<br>
