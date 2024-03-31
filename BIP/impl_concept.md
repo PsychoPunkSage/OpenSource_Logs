@@ -49,7 +49,12 @@
 
 > **Step 3: Block Header Construction**
 
-
+`Version`: Define the block version number.<br>
+`Previous Block Hash`: Include the hash of the previous block in the blockchain to maintain the chain's continuity.<br>
+`Merkle Root`: Calculate the Merkle root hash of all valid transactions included in the block.<br>
+`Timestamp`: Assign a timestamp to the block, indicating when the block was created.<br>
+`Target Difficulty`: Determine the target difficulty for mining the block.<br>
+`Nonce`: Initialize the nonce value, which miners will increment during mining to find a valid block hash.<br>
 
 > **Step 4: Mining**
 
