@@ -205,12 +205,7 @@ def mine_block(transactions, coinbase_transaction):
 <summary>Template</summary>
 
 ```python
-def format_output(block_header, coinbase_transaction, valid_transactions):
-    with open("output.txt", "w") as file:
-        file.write(json.dumps(block_header) + "\n")
-        file.write(json.dumps(coinbase_transaction) + "\n")
-        for transaction in valid_transactions:
-            file.write(transaction["txid"] + "\n")
+
 ```
 
 </details><br>
