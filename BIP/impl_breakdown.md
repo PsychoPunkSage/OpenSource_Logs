@@ -144,7 +144,13 @@ Locking Script (scriptPubkey): Defines conditions for spending the output in fut
 <summary>Template</summary>
 
 ```python
-
+def create_coinbase_transaction():
+    coinbase_transaction = {
+        # Add coinbase transaction details here
+        "txid": "coinbase_txid",
+        # Add other fields as needed
+    }
+    return coinbase_transaction
 ```
 
 </details><br>
