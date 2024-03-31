@@ -28,7 +28,12 @@ def read_transactions():
 <summary>Template</summary>
 
 ```python
-
+def validate_transactions(transactions):
+    valid_transactions = []
+    for transaction in transactions:
+        # Add validation logic here
+        valid_transactions.append(transaction)
+    return valid_transactions
 ```
 
 </details><br>
