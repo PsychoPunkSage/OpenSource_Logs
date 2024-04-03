@@ -30,3 +30,7 @@ in-depth validation is performed here.
 `hash`:
 - Compares it with the hash extracted from the address (if available).
 - Updates the hash variable for further checks.
+
+`output`:
+- Ensures the output script has the expected format (OP_DUP, OP_HASH160, hash, OP_EQUALVERIFY, OP_CHECKSIG) and correct lengths.
+- Compares the extracted hash from the output script with the hash variable.
