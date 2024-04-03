@@ -32,5 +32,8 @@ in-depth validation is performed here.
 - Updates the hash variable for further checks.
 
 `output`:
-- Ensures the output script has the expected format (OP_DUP, OP_HASH160, hash, OP_EQUALVERIFY, OP_CHECKSIG) and correct lengths.
+- Ensures the output script has the expected format (`OP_DUP`, `OP_HASH160`, `hash`, `OP_EQUALVERIFY`, `OP_CHECKSIG`) and correct lengths.
 - Compares the extracted hash from the output script with the hash variable.
+
+`pubkey`:
+Calculates the public key hash (P2KH) from the provided pubkey and compares it with the hash variable.
