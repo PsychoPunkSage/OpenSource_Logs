@@ -26,3 +26,7 @@ in-depth validation is performed here.
 - Verifies the version against the network's pubKeyHash.
 - Ensures the address length is correct (21 bytes).
 - Extracts the hash from the address and stores it in the hash variable.
+
+`hash`:
+- Compares it with the hash extracted from the address (if available).
+- Updates the hash variable for further checks.
