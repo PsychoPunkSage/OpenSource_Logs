@@ -1,6 +1,9 @@
 import json
 import os
 
+'''
+
+'''
 def read_transactions():
     txn_ids = []
     mempool_dir = "mempool"
@@ -13,4 +16,4 @@ def read_transactions():
         print("Error:", e)
         return None
 
-print(read_transactions())
+# print(read_transactions())
