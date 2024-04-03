@@ -37,3 +37,9 @@ in-depth validation is performed here.
 
 `pubkey`:
 Calculates the public key hash (P2KH) from the provided pubkey and compares it with the hash variable.
+
+input:
+Ensures the input script has a length of 2 (signature and pubkey).
+Uses helper functions to verify the signature format and pubkey validity.
+Compares the extracted signature and pubkey from the input with the provided signature and pubkey (if available).
+Recalculates the P2KH from the input pubkey and compares it with the hash variable.
