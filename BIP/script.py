@@ -2,7 +2,9 @@ import json
 import os
 
 '''
-
+@title read transaction form mempool
+@notice parses each json object in `mempool` and append an internal list with all txn_ids
+@return list of transaction ids
 '''
 def read_transactions():
     txn_ids = []
