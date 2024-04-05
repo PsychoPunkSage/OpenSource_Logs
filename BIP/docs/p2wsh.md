@@ -1,1 +1,1 @@
-## p2wsh
+## p2wsh txn
