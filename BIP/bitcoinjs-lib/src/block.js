@@ -106,6 +106,7 @@ class Block {
       : rootHash;
   }
 
+  // <<<REQUIRED>>>
   getWitnessCommit() {
     // Check if any transactions in the block have a witness commitment
     if (!txesHaveWitnessCommit(this.transactions)) return null;
@@ -143,6 +144,7 @@ class Block {
     if (this.getWitnessCommit() !== null) return true;
     return false;
   }
+
   hasWitness() {
     return anyTxHasWitness(this.transactions);
   }
@@ -240,18 +242,20 @@ function txesHaveWitnessCommit(transactions) {
     transactions[0].ins[0].witness.length > 0
   );
 }
+
+// This function checks if any of the transactions in the block contain witness data.
 function anyTxHasWitness(transactions) {
   return (
-    transactions instanceof Array &&
-    transactions.some(
+    transactions instanceof Array && // Check if transactions is an array.
+    transactions.some( // Iterate over each transaction in transactions array.
       tx =>
-        typeof tx === 'object' &&
-        tx.ins instanceof Array &&
-        tx.ins.some(
+        typeof tx === 'object' && // Ensure tx is an object.
+        tx.ins instanceof Array && // Check if tx.ins is an array.
+        tx.ins.some( // Iterate over each input in tx.ins array. <in our case its `Vin`>
           input =>
-            typeof input === 'object' &&
-            input.witness instanceof Array &&
-            input.witness.length > 0,
+            typeof input === 'object' && // Ensure input is an object.
+            input.witness instanceof Array && // Check if input.witness is an array.
+            input.witness.length > 0, // Check if input.witness has at least one element.
         ),
     )
   );
