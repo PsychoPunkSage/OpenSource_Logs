@@ -27,27 +27,36 @@ class Block {
   }
 
   // Method to create a Block instance from a buffer
+  // <<<REQUIRED>>>
   static fromBuffer(buffer) {
     if (buffer.length < 80) throw new Error('Buffer too small (< 80 bytes)');
     const bufferReader = new bufferutils_1.BufferReader(buffer);
     const block = new Block();
+    // Parse block header fields
     block.version = bufferReader.readInt32();
     block.prevHash = bufferReader.readSlice(32);
     block.merkleRoot = bufferReader.readSlice(32);
     block.timestamp = bufferReader.readUInt32();
     block.bits = bufferReader.readUInt32();
     block.nonce = bufferReader.readUInt32();
+    // If buffer length is exactly 80 bytes, return the block
     if (buffer.length === 80) return block;
     const readTransaction = () => {
+      // Parse transaction from buffer
       const tx = transaction_1.Transaction.fromBuffer(
         bufferReader.buffer.slice(bufferReader.offset),
         true,
       );
+      // Increment buffer offset
       bufferReader.offset += tx.byteLength();
       return tx;
     };
+
+    // Read the number of transactions in the block
     const nTransactions = bufferReader.readVarInt();
-    block.transactions = [];
+    block.transactions = []; // Initialize transactions array
+
+    // Iterate over transactions and parse them
     for (let i = 0; i < nTransactions; ++i) {
       const tx = readTransaction();
       block.transactions.push(tx);
@@ -57,9 +66,13 @@ class Block {
     if (witnessCommit) block.witnessCommit = witnessCommit;
     return block;
   }
+
+  // Method to create a Block instance from a hexadecimal string
   static fromHex(hex) {
     return Block.fromBuffer(Buffer.from(hex, 'hex'));
   }
+
+  // <<DONE>> This is given. So no need to make this
   static calculateTarget(bits) {
     const exponent = ((bits & 0xff000000) >> 24) - 3;
     const mantissa = bits & 0x007fffff;
@@ -67,21 +80,32 @@ class Block {
     target.writeUIntBE(mantissa, 29 - exponent, 3);
     return target;
   }
+
+  // <<<REQUIRED>>>
   static calculateMerkleRoot(transactions, forWitness) {
     typeforce([{ getHash: types.Function }], transactions);
     if (transactions.length === 0) throw errorMerkleNoTxes;
+    // If the 'forWitness' flag is true and transactions don't have witness commitments, throw an error
     if (forWitness && !txesHaveWitnessCommit(transactions))
       throw errorWitnessNotSegwit;
+
+    // Map transactions to their respective hashes using the getHash function
     const hashes = transactions.map(transaction =>
       transaction.getHash(forWitness),
     );
+
+    // Compute the Merkle root using the fastMerkleRoot algorithm
     const rootHash = (0, merkle_1.fastMerkleRoot)(hashes, bcrypto.hash256);
+
+    // If 'forWitness' is true, concatenate the rootHash with the witness commitment of the first transaction
+    // and compute the hash of the concatenated buffer
     return forWitness
       ? bcrypto.hash256(
         Buffer.concat([rootHash, transactions[0].ins[0].witness[0]]),
       )
       : rootHash;
   }
+
   getWitnessCommit() {
     if (!txesHaveWitnessCommit(this.transactions)) return null;
     // The merkle root for the witness data is in an OP_RETURN output.
