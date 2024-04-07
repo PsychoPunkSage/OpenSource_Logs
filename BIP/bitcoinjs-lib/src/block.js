@@ -246,18 +246,32 @@ class Block {
     // Check if the block's hash meets the target difficulty
     return hash.compare(target) <= 0;
   }
+
+  // Function to check if the calculated merkle root matches the stored merkle root
   __checkMerkleRoot() {
+    // If there are no transactions, throw an error
     if (!this.transactions) throw errorMerkleNoTxes;
+
+    // Calculate the actual merkle root based on the transactions
     const actualMerkleRoot = Block.calculateMerkleRoot(this.transactions);
+
+    // Compare the calculated merkle root with the stored merkle root
     return this.merkleRoot.compare(actualMerkleRoot) === 0;
   }
   __checkWitnessCommit() {
+    // If there are no transactions, throw an error
     if (!this.transactions) throw errorMerkleNoTxes;
+
+    // If the block doesn't have a witness commit, throw an error
     if (!this.hasWitnessCommit()) throw errorWitnessNotSegwit;
+
+    // Calculate the actual witness commit based on the transactions
     const actualWitnessCommit = Block.calculateMerkleRoot(
       this.transactions,
       true,
     );
+
+    // Compare the calculated witness commit with the stored witness commit
     return this.witnessCommit.compare(actualWitnessCommit) === 0;
   }
 }
