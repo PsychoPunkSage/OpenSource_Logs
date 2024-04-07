@@ -228,6 +228,7 @@ class Block {
   toHex(headersOnly) {
     return this.toBuffer(headersOnly).toString('hex');
   }
+  // <<<REQUIRED>>>
   checkTxRoots() {
     // If the Block has segwit transactions but no witness commit,
     // there's no way it can be valid, so fail the check.
@@ -238,6 +239,7 @@ class Block {
       (hasWitnessCommit ? this.__checkWitnessCommit() : true) // If there is a witness commit, check it; otherwise, return true
     );
   }
+  // <<<REQUIRED>>>
   checkProofOfWork() {
     // Reverse the hash of the block
     const hash = (0, bufferutils_1.reverseBuffer)(this.getHash());
@@ -248,6 +250,7 @@ class Block {
   }
 
   // Function to check if the calculated merkle root matches the stored merkle root
+  // <<<REQUIRED>>>
   __checkMerkleRoot() {
     // If there are no transactions, throw an error
     if (!this.transactions) throw errorMerkleNoTxes;
@@ -258,6 +261,7 @@ class Block {
     // Compare the calculated merkle root with the stored merkle root
     return this.merkleRoot.compare(actualMerkleRoot) === 0;
   }
+  // <<<REQUIRED>>>
   __checkWitnessCommit() {
     // If there are no transactions, throw an error
     if (!this.transactions) throw errorMerkleNoTxes;
