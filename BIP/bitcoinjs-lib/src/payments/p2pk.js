@@ -23,7 +23,7 @@ function p2pk(a, opts) {
   (0, types_1.typeforce)(
     {
       network: types_1.typeforce.maybe(types_1.typeforce.Object),
-      output: types_1.typeforce.maybe(types_1.typeforce.Buffer),
+      output: types_1.typeforce.maybe(types_1.typeforce.Buffer),   
       pubkey: types_1.typeforce.maybe(types_1.isPoint),
       signature: types_1.typeforce.maybe(bscript.isCanonicalScriptSignature),
       input: types_1.typeforce.maybe(types_1.typeforce.Buffer),

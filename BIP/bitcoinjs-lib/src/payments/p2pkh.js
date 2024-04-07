@@ -22,7 +22,7 @@ function p2pkh(a, opts) {
   if (!a.address && !a.hash && !a.output && !a.pubkey && !a.input)
     throw new TypeError('Not enough data');
   opts = Object.assign({ validate: true }, opts || {});
-  (0, types_1.typeforce)(
+  (0, types_1.typeforce)(   
     {
       network: types_1.typeforce.maybe(types_1.typeforce.Object),
       address: types_1.typeforce.maybe(types_1.typeforce.String),
