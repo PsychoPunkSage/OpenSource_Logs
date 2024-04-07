@@ -154,9 +154,12 @@ class Block {
     return base * 3 + total;
   }
   byteLength(headersOnly, allowWitness = true) {
+    // If only headers are requested or there are no transactions, return the fixed header size (80 bytes)
     if (headersOnly || !this.transactions) return 80;
+    // Calculate the total byte length of the block including transactions
     return (
       80 +
+      // Add the byte length required to encode the number of transactions (varint)
       bufferutils_1.varuint.encodingLength(this.transactions.length) +
       this.transactions.reduce((a, x) => a + x.byteLength(allowWitness), 0)
     );
@@ -244,6 +247,7 @@ function txesHaveWitnessCommit(transactions) {
 }
 
 // This function checks if any of the transactions in the block contain witness data.
+// <<<REQUIRED>>>
 function anyTxHasWitness(transactions) {
   return (
     transactions instanceof Array && // Check if transactions is an array.
