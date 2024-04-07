@@ -189,24 +189,37 @@ class Block {
   }
   // TODO: buffer, offset compatibility
   toBuffer(headersOnly) {
+    // Allocate memory for the buffer based on the byte length of the block
     const buffer = Buffer.allocUnsafe(this.byteLength(headersOnly));
+    // Create a BufferWriter instance to write data into the buffer
     const bufferWriter = new bufferutils_1.BufferWriter(buffer);
+
+    // Write block header fields into the buffer
     bufferWriter.writeInt32(this.version);
     bufferWriter.writeSlice(this.prevHash);
     bufferWriter.writeSlice(this.merkleRoot);
     bufferWriter.writeUInt32(this.timestamp);
     bufferWriter.writeUInt32(this.bits);
     bufferWriter.writeUInt32(this.nonce);
+
+    // If headersOnly is true or if there are no transactions, return the buffer
     if (headersOnly || !this.transactions) return buffer;
+
+    // If there are transactions, encode the number of transactions
     bufferutils_1.varuint.encode(
-      this.transactions.length,
-      buffer,
-      bufferWriter.offset,
+      this.transactions.length, // Number of transactions
+      buffer, // Buffer to write into
+      bufferWriter.offset, // Offset to start writing at
     );
+
+    // Increment the buffer offset based on the number of bytes used to encode the number of transactions
     bufferWriter.offset += bufferutils_1.varuint.encode.bytes;
     this.transactions.forEach(tx => {
+      // Get the byte length of the transaction
       const txSize = tx.byteLength(); // TODO: extract from toBuffer?
+      // Serialize the transaction into the buffer
       tx.toBuffer(buffer, bufferWriter.offset);
+      // Increment the buffer offset by the byte length of the transaction
       bufferWriter.offset += txSize;
     });
     return buffer;
