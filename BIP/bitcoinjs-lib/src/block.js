@@ -107,19 +107,30 @@ class Block {
   }
 
   getWitnessCommit() {
+    // Check if any transactions in the block have a witness commitment
     if (!txesHaveWitnessCommit(this.transactions)) return null;
     // The merkle root for the witness data is in an OP_RETURN output.
     // There is no rule for the index of the output, so use filter to find it.
     // The root is prepended with 0xaa21a9ed so check for 0x6a24aa21a9ed
     // If multiple commits are found, the output with highest index is assumed.
+
+    // Filter the outputs of the first transaction to find the witness commitments
     const witnessCommits = this.transactions[0].outs
       .filter(out =>
+        // Check if the output script starts with a specific pattern indicating a witness commitment
         out.script.slice(0, 6).equals(Buffer.from('6a24aa21a9ed', 'hex')),
       )
+      // Extract the witness commitment data from the output scripts
       .map(out => out.script.slice(6, 38));
+
+    // If no witness commitments were found, return null
     if (witnessCommits.length === 0) return null;
+
     // Use the commit with the highest output (should only be one though)
+    // Return the last witness commitment found (assuming multiple commitments, choose the one with the highest index)
     const result = witnessCommits[witnessCommits.length - 1];
+
+    // Check if the result is a Buffer of 32 bytes
     if (!(result instanceof Buffer && result.length === 32)) return null;
     return result;
   }
