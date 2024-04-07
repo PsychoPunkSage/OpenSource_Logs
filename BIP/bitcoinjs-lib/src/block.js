@@ -161,17 +161,29 @@ class Block {
       80 +
       // Add the byte length required to encode the number of transactions (varint)
       bufferutils_1.varuint.encodingLength(this.transactions.length) +
+      // Add the byte length of each transaction
+      // This is calculated by iterating over each transaction and summing up their byte lengths
       this.transactions.reduce((a, x) => a + x.byteLength(allowWitness), 0)
     );
   }
+
+  // Get the hash of the block header. It uses the hash256 function from the bcrypto module.
   getHash() {
+    // Convert the block header to a buffer (excluding transactions) and hash it using SHA-256 twice.
     return bcrypto.hash256(this.toBuffer(true));
   }
+  // Get the ID of the block. It reverses the hash of the block header and converts it to a hexadecimal string.
   getId() {
+    // Get the hash of the block header. 
+    // Reverse the hash and convert it to a hexadecimal string.
     return (0, bufferutils_1.reverseBuffer)(this.getHash()).toString('hex');
   }
+  // Get the UTC date of the block based on its timestamp.
+  // <<->>
   getUTCDate() {
+    // Create a new Date object with epoch time (January 1, 1970 00:00:00 UTC).
     const date = new Date(0); // epoch
+    // Set the seconds since epoch to the block's timestamp to calculate the date and time.
     date.setUTCSeconds(this.timestamp);
     return date;
   }
