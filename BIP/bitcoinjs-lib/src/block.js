@@ -14,6 +14,7 @@ const errorWitnessNotSegwit = new TypeError(
   'Cannot compute witness commit for non-segwit block',
 );
 class Block {
+  // Initialize block properties
   constructor() {
     this.version = 1;
     this.prevHash = undefined;
@@ -24,6 +25,8 @@ class Block {
     this.nonce = 0;
     this.transactions = undefined;
   }
+
+  // Method to create a Block instance from a buffer
   static fromBuffer(buffer) {
     if (buffer.length < 80) throw new Error('Buffer too small (< 80 bytes)');
     const bufferReader = new bufferutils_1.BufferReader(buffer);
@@ -75,8 +78,8 @@ class Block {
     const rootHash = (0, merkle_1.fastMerkleRoot)(hashes, bcrypto.hash256);
     return forWitness
       ? bcrypto.hash256(
-          Buffer.concat([rootHash, transactions[0].ins[0].witness[0]]),
-        )
+        Buffer.concat([rootHash, transactions[0].ins[0].witness[0]]),
+      )
       : rootHash;
   }
   getWitnessCommit() {
