@@ -188,6 +188,7 @@ class Block {
     return date;
   }
   // TODO: buffer, offset compatibility
+  // <<<MAYBE REQUIRED>>>
   toBuffer(headersOnly) {
     // Allocate memory for the buffer based on the byte length of the block
     const buffer = Buffer.allocUnsafe(this.byteLength(headersOnly));
@@ -230,16 +231,19 @@ class Block {
   checkTxRoots() {
     // If the Block has segwit transactions but no witness commit,
     // there's no way it can be valid, so fail the check.
-    const hasWitnessCommit = this.hasWitnessCommit();
-    if (!hasWitnessCommit && this.hasWitness()) return false;
+    const hasWitnessCommit = this.hasWitnessCommit(); // Check if the block has a witness commit
+    if (!hasWitnessCommit && this.hasWitness()) return false; // If there are segwit transactions but no witness commit, the block is invalid
     return (
-      this.__checkMerkleRoot() &&
-      (hasWitnessCommit ? this.__checkWitnessCommit() : true)
+      this.__checkMerkleRoot() && // Check if the merkle root is correct
+      (hasWitnessCommit ? this.__checkWitnessCommit() : true) // If there is a witness commit, check it; otherwise, return true
     );
   }
   checkProofOfWork() {
+    // Reverse the hash of the block
     const hash = (0, bufferutils_1.reverseBuffer)(this.getHash());
+    // Calculate the target based on the block's bits
     const target = Block.calculateTarget(this.bits);
+    // Check if the block's hash meets the target difficulty
     return hash.compare(target) <= 0;
   }
   __checkMerkleRoot() {
