@@ -57,6 +57,7 @@ class Transaction {
     this.ins = [];
     this.outs = [];
   }
+  // <<<REQUIRED>>>
   static fromBuffer(buffer, _NO_STRICT) {
     // Create a buffer reader to read from the provided buffer
     const bufferReader = new bufferutils_1.BufferReader(buffer);
@@ -122,13 +123,17 @@ class Transaction {
     return Transaction.fromBuffer(Buffer.from(hex, 'hex'), false);
   }
   static isCoinbaseHash(buffer) {
+    // Ensure the buffer has the correct length (32 bytes)
     typeforce(types.Hash256bit, buffer);
+    // Check if the buffer consists of all zeros
     for (let i = 0; i < 32; ++i) {
-      if (buffer[i] !== 0) return false;
+      if (buffer[i] !== 0) return false; // If any byte is non-zero, return false
     }
-    return true;
+    return true; // If all bytes are zero, return true
   }
   isCoinbase() {
+    // Check if the transaction is a coinbase transaction
+    // A coinbase transaction has only one input and its hash is all zeros
     return (
       this.ins.length === 1 && Transaction.isCoinbaseHash(this.ins[0].hash)
     );
