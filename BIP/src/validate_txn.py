@@ -33,6 +33,11 @@ def validate(txnId):
     if len(txn_data["vin"]) < 1 or len(txn_data["vout"]) < 1:
         print(f"ERROR::> Vin or Vout fields can't be empty")
         return False
+    # Amount Consistency <vin >= vout> as coinbase txn are not present in mempool
+    if sum([vin["prevout"]["value"] for vin in txn_data["vin"]]) < sum([vout["value"] for vout in txn_data["vout"]]):
+        print("ERROR::> value_Vin shouldn't be less than value_Vout")
+        return False
+
     return True
 
 print(validate("0a3c3139b32f021a35ac9a7bef4d59d4abba9ee0160910ac94b4bcefb294f196"))
