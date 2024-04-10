@@ -140,7 +140,7 @@ class Psbt {
           output.script,
           this.opts.network,
         );
-      } catch (_) {}
+      } catch (_) { }
       return {
         script: (0, bufferutils_1.cloneBuffer)(output.script),
         value: output.value,
@@ -202,7 +202,7 @@ class Psbt {
     ) {
       throw new Error(
         `Invalid arguments for Psbt.addInput. ` +
-          `Requires single object with at least [hash] and [index]`,
+        `Requires single object with at least [hash] and [index]`,
       );
     }
     (0, bip371_1.checkTaprootInputFields)(inputData, inputData, 'addInput');
@@ -235,7 +235,7 @@ class Psbt {
     ) {
       throw new Error(
         `Invalid arguments for Psbt.addOutput. ` +
-          `Requires single object with at least [script or address] and [value]`,
+        `Requires single object with at least [script or address] and [value]`,
       );
     }
     checkInputsForPartialSig(this.data.inputs, 'addOutput');
@@ -370,7 +370,7 @@ class Psbt {
       'input',
       input.redeemScript || redeemFromFinalScriptSig(input.finalScriptSig),
       input.witnessScript ||
-        redeemFromFinalWitnessScript(input.finalScriptWitness),
+      redeemFromFinalWitnessScript(input.finalScriptWitness),
     );
     const type = result.type === 'raw' ? '' : result.type + '-';
     const mainType = classifyScript(result.meaningfulScript);
@@ -398,6 +398,7 @@ class Psbt {
       !!output.bip32Derivation && output.bip32Derivation.some(derivationIsMine)
     );
   }
+  // <<<REQUIRED>>>
   validateSignaturesOfAllInputs(validator) {
     (0, utils_1.checkForInput)(this.data.inputs, 0); // making sure we have at least one
     const results = range(this.data.inputs.length).map(idx =>
@@ -405,6 +406,7 @@ class Psbt {
     );
     return results.reduce((final, res) => res === true && final, true);
   }
+  // <<<REQUIRED>>>
   validateSignaturesOfInput(inputIndex, validator, pubkey) {
     const input = this.data.inputs[inputIndex];
     if ((0, bip371_1.isTaprootInput)(input))
@@ -415,6 +417,7 @@ class Psbt {
       );
     return this._validateSignaturesOfInput(inputIndex, validator, pubkey);
   }
+  // <<<REQUIRED>>>
   _validateSignaturesOfInput(inputIndex, validator, pubkey) {
     const input = this.data.inputs[inputIndex];
     const partialSig = (input || {}).partialSig;
@@ -435,11 +438,11 @@ class Psbt {
       const { hash, script } =
         sighashCache !== sig.hashType
           ? getHashForSig(
-              inputIndex,
-              Object.assign({}, input, { sighashType: sig.hashType }),
-              this.__CACHE,
-              true,
-            )
+            inputIndex,
+            Object.assign({}, input, { sighashType: sig.hashType }),
+            this.__CACHE,
+            true,
+          )
           : { hash: hashCache, script: scriptCache };
       sighashCache = sig.hashType;
       hashCache = hash;
@@ -449,6 +452,7 @@ class Psbt {
     }
     return results.every(res => res === true);
   }
+  // <<<REQUIRED>>>
   validateSignaturesOfTaprootInput(inputIndex, validator, pubkey) {
     const input = this.data.inputs[inputIndex];
     const tapKeySig = (input || {}).tapKeySig;
@@ -460,18 +464,18 @@ class Psbt {
     pubkey = pubkey && (0, bip371_1.toXOnly)(pubkey);
     const allHashses = pubkey
       ? getTaprootHashesForSig(
-          inputIndex,
-          input,
-          this.data.inputs,
-          pubkey,
-          this.__CACHE,
-        )
+        inputIndex,
+        input,
+        this.data.inputs,
+        pubkey,
+        this.__CACHE,
+      )
       : getAllTaprootHashesForSig(
-          inputIndex,
-          input,
-          this.data.inputs,
-          this.__CACHE,
-        );
+        inputIndex,
+        input,
+        this.data.inputs,
+        this.__CACHE,
+      );
     if (!allHashses.length) throw new Error('No signatures for this pubkey');
     const tapKeyHash = allHashses.find(h => !h.leafHash);
     let validationResultCount = 0;
@@ -1035,10 +1039,10 @@ function checkFees(psbt, cache, opts) {
   if (feeRate >= opts.maximumFeeRate) {
     throw new Error(
       `Warning: You are paying around ${(satoshis / 1e8).toFixed(8)} in ` +
-        `fees, which is ${feeRate} satoshi per byte for a transaction ` +
-        `with a VSize of ${vsize} bytes (segwit counted as 0.25 byte per ` +
-        `byte). Use setMaximumFeeRate method to raise your threshold, or ` +
-        `pass true to the first arg of extractTransaction.`,
+      `fees, which is ${feeRate} satoshi per byte for a transaction ` +
+      `with a VSize of ${vsize} bytes (segwit counted as 0.25 byte per ` +
+      `byte). Use setMaximumFeeRate method to raise your threshold, or ` +
+      `pass true to the first arg of extractTransaction.`,
     );
   }
 }
@@ -1261,17 +1265,17 @@ function getHashForSig(inputIndex, input, cache, forValidate, sighashTypes) {
     )
       throw new Error(
         `Input #${inputIndex} has witnessUtxo but non-segwit script: ` +
-          `${meaningfulScript.toString('hex')}`,
+        `${meaningfulScript.toString('hex')}`,
       );
     if (!forValidate && cache.__UNSAFE_SIGN_NONSEGWIT !== false)
       console.warn(
         'Warning: Signing non-segwit inputs without the full parent transaction ' +
-          'means there is a chance that a miner could feed you incorrect information ' +
-          "to trick you into paying large fees. This behavior is the same as Psbt's predecessor " +
-          '(TransactionBuilder - now removed) when signing non-segwit scripts. You are not ' +
-          'able to export this Psbt with toBuffer|toBase64|toHex since it is not ' +
-          'BIP174 compliant.\n*********************\nPROCEED WITH CAUTION!\n' +
-          '*********************',
+        'means there is a chance that a miner could feed you incorrect information ' +
+        "to trick you into paying large fees. This behavior is the same as Psbt's predecessor " +
+        '(TransactionBuilder - now removed) when signing non-segwit scripts. You are not ' +
+        'able to export this Psbt with toBuffer|toBase64|toHex since it is not ' +
+        'BIP174 compliant.\n*********************\nPROCEED WITH CAUTION!\n' +
+        '*********************',
       );
     hash = unsignedTx.hashForSignature(
       inputIndex,
@@ -1374,7 +1378,7 @@ function checkSighashTypeAllowed(sighashType, sighashTypes) {
     const str = sighashTypeToString(sighashType);
     throw new Error(
       `Sighash type is not allowed. Retry the sign method passing the ` +
-        `sighashTypes array of whitelisted types. Sighash type: ${str}`,
+      `sighashTypes array of whitelisted types. Sighash type: ${str}`,
     );
   }
 }
@@ -1710,10 +1714,10 @@ function getMeaningfulScript(
     type: isP2SHP2WSH
       ? 'p2sh-p2wsh'
       : isP2SH
-      ? 'p2sh'
-      : isP2WSH
-      ? 'p2wsh'
-      : 'raw',
+        ? 'p2sh'
+        : isP2WSH
+          ? 'p2wsh'
+          : 'raw',
   };
 }
 function checkInvalidP2WSH(script) {
