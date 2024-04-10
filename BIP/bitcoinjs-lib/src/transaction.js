@@ -58,11 +58,17 @@ class Transaction {
     this.outs = [];
   }
   static fromBuffer(buffer, _NO_STRICT) {
+    // Create a buffer reader to read from the provided buffer
     const bufferReader = new bufferutils_1.BufferReader(buffer);
+    // Create a new Transaction object
     const tx = new Transaction();
+    // Read the transaction version
     tx.version = bufferReader.readInt32();
+    // Read the marker and flag bytes <<WHAT IS THE USE>>
     const marker = bufferReader.readUInt8();
     const flag = bufferReader.readUInt8();
+
+    // Check if the transaction has witness data
     let hasWitnesses = false;
     if (
       marker === Transaction.ADVANCED_TRANSACTION_MARKER &&
@@ -70,26 +76,31 @@ class Transaction {
     ) {
       hasWitnesses = true;
     } else {
+      // If not, adjust the bufferReader offset to skip the marker and flag bytes <<WHY??>>
       bufferReader.offset -= 2;
     }
+
+    // Read the number of transaction inputs (vinLen)
     const vinLen = bufferReader.readVarInt();
     for (let i = 0; i < vinLen; ++i) {
       tx.ins.push({
-        hash: bufferReader.readSlice(32),
-        index: bufferReader.readUInt32(),
-        script: bufferReader.readVarSlice(),
-        sequence: bufferReader.readUInt32(),
-        witness: EMPTY_WITNESS,
+        hash: bufferReader.readSlice(32), // Read input hash (32 bytes)
+        index: bufferReader.readUInt32(), // Read input index (4 bytes)
+        script: bufferReader.readVarSlice(), // Read input script (variable length)
+        sequence: bufferReader.readUInt32(), // Read input sequence number (4 bytes)
+        witness: EMPTY_WITNESS, // Initialize input witness as an empty array
       });
     }
+
+    // Read the number of transaction outputs (voutLen)
     const voutLen = bufferReader.readVarInt();
     for (let i = 0; i < voutLen; ++i) {
       tx.outs.push({
-        value: bufferReader.readUInt64(),
-        script: bufferReader.readVarSlice(),
+        value: bufferReader.readUInt64(), // Read output value (8 bytes)
+        script: bufferReader.readVarSlice(), // Read output script (variable length)
       });
     }
-    if (hasWitnesses) {
+    if (hasWitnesses) { // If the transaction has witnesses, read witness data for each input
       for (let i = 0; i < vinLen; ++i) {
         tx.ins[i].witness = bufferReader.readVector();
       }
@@ -97,7 +108,11 @@ class Transaction {
       if (!tx.hasWitnesses())
         throw new Error('Transaction has superfluous witness data');
     }
+
+    // Read the transaction locktime
     tx.locktime = bufferReader.readUInt32();
+
+    // NOT_REQUIRED
     if (_NO_STRICT) return tx;
     if (bufferReader.offset !== buffer.length)
       throw new Error('Transaction has unexpected data');
