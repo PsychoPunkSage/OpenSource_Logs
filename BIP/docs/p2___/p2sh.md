@@ -12,7 +12,7 @@
 First, it will perform the same seven steps of verfication, but it will save the stack. Let’s call this the saved stack. If the first seven steps result in OK, then the stack is replaced by the saved stack; and the top item, redeemScript, is taken off the stack.<br>
 **must create a p2sh output instead of a normal p2pkh.**
 
-![Creating a p2sh address](../image/Creating_a_p2sh_address.png)
+![Creating a p2sh address](../../image/Creating_a_p2sh_address.png)
 
 
 
