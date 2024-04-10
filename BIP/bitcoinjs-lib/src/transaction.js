@@ -7,12 +7,19 @@ const bscript = require('./script');
 const script_1 = require('./script');
 const types = require('./types');
 const { typeforce } = types;
+
+// Function to calculate the size of a variable-length slice
 function varSliceSize(someScript) {
   const length = someScript.length;
+  // Calculate the size by adding the length of the script data to the length of its encoding
   return bufferutils_1.varuint.encodingLength(length) + length;
 }
+
+// Function to calculate the size of a vector (array of variable-length slices)
 function vectorSize(someVector) {
   const length = someVector.length;
+  // Calculate the size by adding the encoding length of the vector length
+  // and the size of each element in the vector
   return (
     bufferutils_1.varuint.encodingLength(length) +
     someVector.reduce((sum, witness) => {
@@ -35,6 +42,8 @@ const BLANK_OUTPUT = {
   script: EMPTY_BUFFER,
   valueBuffer: VALUE_UINT64_MAX,
 };
+
+// Function to check if an output is defined (has a value)
 function isOutput(out) {
   return out.value !== undefined;
 }
@@ -170,8 +179,8 @@ class Transaction {
       }, 0) +
       (hasWitnesses
         ? this.ins.reduce((sum, input) => {
-            return sum + vectorSize(input.witness);
-          }, 0)
+          return sum + vectorSize(input.witness);
+        }, 0)
         : 0)
     );
   }
