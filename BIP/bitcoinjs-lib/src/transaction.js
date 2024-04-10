@@ -122,6 +122,7 @@ class Transaction {
   static fromHex(hex) {
     return Transaction.fromBuffer(Buffer.from(hex, 'hex'), false);
   }
+  // <<<REQUIRED>>>
   static isCoinbaseHash(buffer) {
     // Ensure the buffer has the correct length (32 bytes)
     typeforce(types.Hash256bit, buffer);
@@ -131,6 +132,7 @@ class Transaction {
     }
     return true; // If all bytes are zero, return true
   }
+  // <<<REQUIRED>>>
   isCoinbase() {
     // Check if the transaction is a coinbase transaction
     // A coinbase transaction has only one input and its hash is all zeros
@@ -138,6 +140,7 @@ class Transaction {
       this.ins.length === 1 && Transaction.isCoinbaseHash(this.ins[0].hash)
     );
   }
+  // <<<NOT__REQUIRED>>>
   addInput(hash, index, sequence, scriptSig) {
     typeforce(
       types.tuple(
@@ -148,6 +151,8 @@ class Transaction {
       ),
       arguments,
     );
+
+    // If sequence is not provided, default to Transaction.DEFAULT_SEQUENCE
     if (types.Null(sequence)) {
       sequence = Transaction.DEFAULT_SEQUENCE;
     }
@@ -156,12 +161,13 @@ class Transaction {
       this.ins.push({
         hash,
         index,
-        script: scriptSig || EMPTY_BUFFER,
+        script: scriptSig || EMPTY_BUFFER, // Use provided scriptSig or an empty buffer
         sequence: sequence,
-        witness: EMPTY_WITNESS,
+        witness: EMPTY_WITNESS, // Initialize witness data to an empty array
       }) - 1
     );
   }
+  // <<<NOT__REQUIRED>>>
   addOutput(scriptPubKey, value) {
     typeforce(types.tuple(types.Buffer, types.Satoshi), arguments);
     // Add the output and return the output's index
@@ -172,6 +178,7 @@ class Transaction {
       }) - 1
     );
   }
+  // <<<REQUIRED>>>
   hasWitnesses() {
     return this.ins.some(x => {
       return x.witness.length !== 0;
