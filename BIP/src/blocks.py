@@ -1,8 +1,20 @@
 import os
 import json
+import time
 import hashlib
 
-# Block init
+##############
+# Block init #
+##############
+class Block:
+    def __init__(self, previous_hash, transactions, merkle_root):
+        self.previous_hash = previous_hash
+        self.transactions = transactions
+        self.merkle_root = merkle_root
+        self.timestamp = time.time()
+        self.nonce = 0
+
+
 
 #########################
 # merkel root formation #
@@ -50,6 +62,7 @@ def _extract_txn_hashes_from_folder(folder_path, txn_list):
                 txn_hashes.append(txn_hash)
     return txn_hashes
 
+# coinbase txn init
 """
 def create_witness_commitment(txn_ids):
     # Compute the Merkle root of the transaction IDs
@@ -62,8 +75,6 @@ def create_witness_commitment(txn_ids):
 
     return bytes(witness_commitment_script)
 """
-
-# coinbase txn init
 
 # witness calculation
 
