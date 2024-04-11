@@ -14,6 +14,9 @@ class Block:
         self.timestamp = time.time()
         self.nonce = 0
 
+    def compute_hash(self):
+        block_header = str(self.previous_hash) + str(self.merkle_root) + str(self.timestamp) + str(self.nonce)
+        return hashlib.sha256(block_header.encode()).hexdigest()
 
 
 #########################
