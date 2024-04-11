@@ -7,26 +7,40 @@ import hashlib
 #########################
 # merkel root formation #
 #########################
-def double_sha256(data):
-    return hashlib.sha256(hashlib.sha256(data).digest()).digest()
-
-def compute_merkle_root(txn_hashes):
+def compute_merkle_root(txn_hashes, include_witness_commit=False):
     # if no. transactions is odd
     if len(txn_hashes) % 2 == 1:
         txn_hashes.append(txn_hashes[-1])
 
-    tree = [double_sha256(hash) for hash in txn_hashes]
+    tree = [_double_sha256(hash) for hash in txn_hashes]
 
     while len(tree) > 1:
         pairs = [(tree[i], tree[i+1]) for i in range(0, len(tree), 2)]
-        tree = [double_sha256(pair[0] + pair[1]) for pair in pairs]
+        tree = [_double_sha256(pair[0] + pair[1]) for pair in pairs]
 
-    return tree[0]
+    merkle_root = tree[0]
 
-def extract_txn_hashes_from_folder(folder_path, txn_list):
+    if include_witness_commit:
+        # Assuming the witness commitment is concatenated with the Merkle root
+        # Here, you would include the witness commitment of the coinbase transaction
+        # If the transactions are SegWit
+        witness_commitment = get_witness_commitment()
+        if witness_commitment:
+            merkle_root += witness_commitment
+
+    return merkle_root
+
+def get_witness_commitment():
+    # Implement the logic to extract witness commitment from the coinbase transaction
+    # If it exists
+    pass
+
+def _double_sha256(data):
+    return hashlib.sha256(hashlib.sha256(data).digest()).digest()
+
+def _extract_txn_hashes_from_folder(folder_path, txn_list):
     txn_hashes = []
-
-    # Iterate over files in the folder
+    # Iterate over JSON txns in the folder
     for filename in txn_list:
         file_path = os.path.join(folder_path, filename)
         if os.path.exists(file_path) and filename.endswith(".json"):
@@ -34,7 +48,6 @@ def extract_txn_hashes_from_folder(folder_path, txn_list):
                 data = json.load(f)
                 txn_hash = hashlib.sha256(json.dumps(data).encode()).digest()
                 txn_hashes.append(txn_hash)
-
     return txn_hashes
 
 
