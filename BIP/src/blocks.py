@@ -50,7 +50,25 @@ def _extract_txn_hashes_from_folder(folder_path, txn_list):
                 txn_hashes.append(txn_hash)
     return txn_hashes
 
+"""
+def create_witness_commitment(txn_ids):
+    # Compute the Merkle root of the transaction IDs
+    merkle_root = compute_merkle_root(txn_ids)
+
+    # Construct the witness commitment script
+    witness_commitment_script = bytearray.fromhex('6a')  # OP_RETURN
+    witness_commitment_script.extend(len(merkle_root).to_bytes(1, byteorder='big'))  # Push the Merkle root size
+    witness_commitment_script.extend(merkle_root)  # Push the Merkle root
+
+    return bytes(witness_commitment_script)
+"""
 
 # coinbase txn init
 
 # witness calculation
+
+
+"""
+ISSUES::
+- Do I need to serialize the transaction before calculating `merkle root`?
+"""
