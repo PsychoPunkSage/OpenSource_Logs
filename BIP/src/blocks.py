@@ -23,21 +23,20 @@ def compute_merkle_root(txn_hashes):
 
     return tree[0]
 
-def extract_txn_hashes_from_folder(folder_path):
+def extract_txn_hashes_from_folder(folder_path, txn_list):
     txn_hashes = []
 
     # Iterate over files in the folder
-    for filename in os.listdir(folder_path):
-        if filename.endswith(".json"):
-            file_path = os.path.join(folder_path, filename)
-            # Read JSON file
+    for filename in txn_list:
+        file_path = os.path.join(folder_path, filename)
+        if os.path.exists(file_path) and filename.endswith(".json"):
             with open(file_path, 'r') as f:
                 data = json.load(f)
-                # Extract transaction hash from JSON data
                 txn_hash = hashlib.sha256(json.dumps(data).encode()).digest()
                 txn_hashes.append(txn_hash)
 
     return txn_hashes
+
 
 # coinbase txn init
 
