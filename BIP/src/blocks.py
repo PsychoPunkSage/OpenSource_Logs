@@ -3,6 +3,8 @@ import json
 import time
 import hashlib
 
+DIFFICULTY = "0000ffff00000000000000000000000000000000000000000000000000000000"
+
 ##############
 # Block init #
 ##############
@@ -17,7 +19,12 @@ class Block:
     def compute_hash(self):
         block_header = str(self.previous_hash) + str(self.merkle_root) + str(self.timestamp) + str(self.nonce)
         return hashlib.sha256(block_header.encode()).hexdigest()
-
+    
+    def mine_block(self):
+        target = '0' * DIFFICULTY
+        while self.compute_hash()[:DIFFICULTY] != target:
+            self.nonce += 1
+        print("Block mined:", self.compute_hash())
 
 #########################
 # merkel root formation #
