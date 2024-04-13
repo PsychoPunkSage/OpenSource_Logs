@@ -131,6 +131,15 @@ print("Transaction ID:", txn_id)
 
 """
 def create_witness_commitment(txn_ids):
+    # Compute the Merkle root of the transaction IDs
+    merkle_root = compute_merkle_root(txn_ids)
+
+    # Construct the witness commitment script
+    witness_commitment_script = bytearray.fromhex('6a')  # OP_RETURN
+    witness_commitment_script.extend(len(merkle_root).to_bytes(1, byteorder='big'))  # Push the Merkle root size
+    witness_commitment_script.extend(merkle_root)  # Push the Merkle root
+
+    return bytes(witness_commitment_script)
 """
 
 # witness calculation
