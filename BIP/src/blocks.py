@@ -98,12 +98,21 @@ def create_raw_txn_hash(txn_id):
             # No. of inputs:
             txn_hash += f"{str(_to_compact_size(len(data['vin'])))}"
             # Inputs
-            for i in data["vin"]:
-                txn_hash += f"{bytes.fromhex(i['txid'])[::-1].hex()}"
-                txn_hash += f"{_little_endian(i['vout'])}"
-                txn_hash += f"{_to_compact_size(len(i['scriptsig'])//2)}" # FLAG@> maybe not divided by 2
-                txn_hash += f"{i['scriptsig']}"
-                txn_hash += f"{_little_endian(i['sequence'])}"
+            for iN in data["vin"]:
+                txn_hash += f"{bytes.fromhex(iN['txid'])[::-1].hex()}"
+                txn_hash += f"{_little_endian(iN['vout'], 4)}"
+                txn_hash += f"{_to_compact_size(len(iN['scriptsig'])//2)}" # FLAG@> maybe not divided by 2
+                txn_hash += f"{iN['scriptsig']}"
+                txn_hash += f"{_little_endian(iN['sequence'], 4)}"
+
+            # No. of outputs
+            txn_hash += f"{str(_to_compact_size(len(data['vout'])))}"
+
+            # Outputs
+            for out in data["vout"]:
+                txn_hash += f"{_little_endian(out['value'], 8)}"
+                txn_hash += f"{_to_compact_size(len(out['scriptpubkey'])//2)}"
+                txn_hash += f"{out['scriptpubkey']}"
 
             # print(f"txn_hash: {txn_hash}")
     return txn_hash
@@ -118,8 +127,8 @@ def _to_compact_size(value):
     else:
         return (0xff).to_bytes(1, byteorder='little').hex() + value.to_bytes(8, byteorder='little').hex()
 
-def _little_endian(num):
-    return num.to_bytes(4, byteorder='little').hex()
+def _little_endian(num, size):
+    return num.to_bytes(size, byteorder='little').hex()
 
 
 
@@ -138,7 +147,8 @@ print(h + "\n")
 
 
 
-
+# 020000000125c9f7c56ab4b9c358cb159175de542b41c7d38bf862a045fa5da51979e37ffb010000006b4830450221008f619822a97841ffd26eee942d41c1c4704022af2dd42600f006336ce686353a0220659476204210b21d605baab00bef7005ff30e878e911dc99413edb6c1e022acd012102c371793f2e19d1652408efef67704a2e9953a43a9dd54360d56fc93277a5667dffffffff0254e80500000000001976a9141ef7874d338d24ecf6577e6eadeeee6cd579c67188acc8910000000000001976a9142e391b6c47778d35586b1f4154cbc6b06dc9840c88ac
+# 020000000125c9f7c56ab4b9c358cb159175de542b41c7d38bf862a045fa5da51979e37ffb010000006b4830450221008f619822a97841ffd26eee942d41c1c4704022af2dd42600f006336ce686353a0220659476204210b21d605baab00bef7005ff30e878e911dc99413edb6c1e022acd012102c371793f2e19d1652408efef67704a2e9953a43a9dd54360d56fc93277a5667dffffffff0254e80500000000001976a9141ef7874d338d24ecf6577e6eadeeee6cd579c67188acc8910000000000001976a9142e391b6c47778d35586b1f4154cbc6b06dc9840c88ac00000000
 
 
 
@@ -167,7 +177,7 @@ ISSUES::
 - Do I need to serialize the transaction before calculating `merkle root`?
 
 - mempool/0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240.json
-=> Serialized Hash::> <02000000><01><25c9f7c56ab4b9c358cb159175de542b41c7d38bf862a045fa5da51979e37ffb><01000000><6b><4830450221008f619822a97841ffd26eee942d41c1c4704022af2dd42600f006336ce686353a0220659476204210b21d605baab00bef7005ff30e878e911dc99413edb6c1e022acd012102c371793f2e19d1652408efef67704a2e9953a43a9dd54360d56fc93277a5667d><ffffffff>0254e80500000000001976a9141ef7874d338d24ecf6577e6eadeeee6cd579c67188acc8910000000000001976a9142e391b6c47778d35586b1f4154cbc6b06dc9840c88ac00000000
+=> Serialized Hash::> <02000000><01><25c9f7c56ab4b9c358cb159175de542b41c7d38bf862a045fa5da51979e37ffb><01000000><6b><4830450221008f619822a97841ffd26eee942d41c1c4704022af2dd42600f006336ce686353a0220659476204210b21d605baab00bef7005ff30e878e911dc99413edb6c1e022acd012102c371793f2e19d1652408efef67704a2e9953a43a9dd54360d56fc93277a5667d><ffffffff><02><54e805>00000000001976a9141ef7874d338d24ecf6577e6eadeeee6cd579c67188acc8910000000000001976a9142e391b6c47778d35586b1f4154cbc6b06dc9840c88ac00000000
 
 
 hash256 your transaction to get the txid
