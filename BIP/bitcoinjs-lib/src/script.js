@@ -30,7 +30,7 @@ const pushdata = require('./push_data');
 const scriptNumber = require('./script_number');
 const scriptSignature = require('./script_signature');
 const types = require('./types');
-const { typeforce } = types;
+const { typeforce } = types;  
 const OP_INT_BASE = ops_1.OPS.OP_RESERVED; // OP_1 - 1
 function isOPInt(value) {
   return (
