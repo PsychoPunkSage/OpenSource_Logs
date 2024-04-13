@@ -74,45 +74,37 @@ def _extract_txn_hashes_from_folder(folder_path, txn_list):
 
 import json
 
-# def serialize_json_file(input_file_path):
-#     with open(input_file_path, 'r') as file:
-#         data = json.load(file)
+# def calculate_txn_id(transaction_data):
+#     serialized_data = json.dumps(transaction_data, separators=(',', ':')).encode()
 
-#     serialized_data = json.dumps(data, indent=4)  # indent for pretty printing, optional
-#     print(serialized_data)
+#     hash_bytes = hashlib.sha256(hashlib.sha256(serialized_data).digest()).digest()
+#     reversed_hash = hash_bytes[::-1]
+#     txn_id = reversed_hash.hex()
+#     return txn_id
 
-# Example usage:
-# input_file_path = 'input.json'
-# output_file_path = 'output.json'
-# serialize_json_file("mempool/0a3c3139b32f021a35ac9a7bef4d59d4abba9ee0160910ac94b4bcefb294f196.json")
+def create_raw_txn_hash(txn_id):
+    txn_hash = ""
 
-def calculate_txn_id(transaction_data):
-    serialized_data = json.dumps(transaction_data, separators=(',', ':')).encode()
+    file_path = os.path.join("mempool", f"{txn_id}.json")
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as f:
+            data = json.load(f)
+            print(f"data: {data}")
+            # Version
+            txn_hash += f"0{data['version']}000000"
+            # Marker+flags (if any `vin` has non-empty scriptsig)
+            if is_segwit(data["vin"]):
+                txn_hash += "0001"
+            # print(f"txn_hash: {txn_hash}")
+    return txn_hash
 
-    hash_bytes = hashlib.sha256(hashlib.sha256(serialized_data).digest()).digest()
-    reversed_hash = hash_bytes[::-1]
-    txn_id = reversed_hash.hex()
-    return txn_id
+def is_segwit(vin):
+    return any(i.get("scriptsig") == "" for i in vin)
 
-def calculate_txn_id_from_file(json_file_path):
-    with open(json_file_path, "r") as f:
-        transaction_data = json.load(f)
 
-    serialized_data = json.dumps(transaction_data, separators=(',', ':')).encode()
-    serialized_bytes = bytes(serialized_data)
-    hash_bytes = hashlib.sha256(hashlib.sha256(serialized_bytes).digest()).digest()
-    reversed_hash = hash_bytes[::-1]
-    txn_id = reversed_hash.hex()
-
-    print(f"\n{bytes(serialized_data)}\n")
-
-    return txn_id
-
-# Example usage:
-# file_location = "mempool/0a3c3139b32f021a35ac9a7bef4d59d4abba9ee0160910ac94b4bcefb294f196.json"
-file_location = "mempool/fff4ebbd7325f2ec9a53347d063225266f324bb178134c5590bde23d83ba8f31.json"
-txn_id = calculate_txn_id_from_file(file_location)
-print("Transaction ID:", txn_id)
+# h = create_raw_txn_hash("0a3c3139b32f021a35ac9a7bef4d59d4abba9ee0160910ac94b4bcefb294f196")
+h = create_raw_txn_hash("0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240")
+print(h)        
 # coinbase txn init
 
 
