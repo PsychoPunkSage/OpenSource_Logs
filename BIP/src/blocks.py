@@ -92,4 +92,11 @@ def create_witness_commitment(txn_ids):
 """
 ISSUES::
 - Do I need to serialize the transaction before calculating `merkle root`?
+
+- mempool/0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240.json
+=> Serialized Hash::> 020000000125c9f7c56ab4b9c358cb159175de542b41c7d38bf862a045fa5da51979e37ffb010000006b4830450221008f619822a97841ffd26eee942d41c1c4704022af2dd42600f006336ce686353a0220659476204210b21d605baab00bef7005ff30e878e911dc99413edb6c1e022acd012102c371793f2e19d1652408efef67704a2e9953a43a9dd54360d56fc93277a5667dffffffff0254e80500000000001976a9141ef7874d338d24ecf6577e6eadeeee6cd579c67188acc8910000000000001976a9142e391b6c47778d35586b1f4154cbc6b06dc9840c88ac00000000
+
+
+hash256 your transaction to get the txid
+and reverse it and sha256 once again to verify if it matches your file name
 """
