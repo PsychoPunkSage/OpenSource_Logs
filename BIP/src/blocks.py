@@ -91,7 +91,7 @@ def create_raw_txn_hash(txn_id):
             data = json.load(f)
             # print(f"data: {data}")
             # Version
-            txn_hash += f"0{data['version']}000000"
+            txn_hash += f"{_little_endian(data['version'], 4)}"
             # Marker+flags (if any `vin` has empty scriptsig)
             if any(i.get("scriptsig") == "" for i in data["vin"]):
                 txn_hash += "0001"
@@ -114,6 +114,16 @@ def create_raw_txn_hash(txn_id):
                 txn_hash += f"{_to_compact_size(len(out['scriptpubkey'])//2)}"
                 txn_hash += f"{out['scriptpubkey']}"
 
+            # witness
+            for i in data["vin"]:
+                if "witness" in i and i["witness"]:
+                    txn_hash += f"{_to_compact_size(len(i['witness']))}"
+                    for j in i["witness"]:
+                        txn_hash += f"{_to_compact_size(len(j) // 2)}"
+                        txn_hash += f"{j}"
+
+            # Locktime
+            txn_hash += f"{_little_endian(data['locktime'], 4)}"
             # print(f"txn_hash: {txn_hash}")
     return txn_hash
 
@@ -145,14 +155,8 @@ print(h + "\n")
 
 
 
-
-
-# 020000000125c9f7c56ab4b9c358cb159175de542b41c7d38bf862a045fa5da51979e37ffb010000006b4830450221008f619822a97841ffd26eee942d41c1c4704022af2dd42600f006336ce686353a0220659476204210b21d605baab00bef7005ff30e878e911dc99413edb6c1e022acd012102c371793f2e19d1652408efef67704a2e9953a43a9dd54360d56fc93277a5667dffffffff0254e80500000000001976a9141ef7874d338d24ecf6577e6eadeeee6cd579c67188acc8910000000000001976a9142e391b6c47778d35586b1f4154cbc6b06dc9840c88ac
-# 020000000125c9f7c56ab4b9c358cb159175de542b41c7d38bf862a045fa5da51979e37ffb010000006b4830450221008f619822a97841ffd26eee942d41c1c4704022af2dd42600f006336ce686353a0220659476204210b21d605baab00bef7005ff30e878e911dc99413edb6c1e022acd012102c371793f2e19d1652408efef67704a2e9953a43a9dd54360d56fc93277a5667dffffffff0254e80500000000001976a9141ef7874d338d24ecf6577e6eadeeee6cd579c67188acc8910000000000001976a9142e391b6c47778d35586b1f4154cbc6b06dc9840c88ac00000000
-
-
-
-
+# 01000000000101bb3b4760944489ec9bed5d5fb002f33b3dda278784d7faef371067e518c97d3b1000000000ffffffff02a0860100000000001976a9146085312a9c500ff9cc35b571b0a1e5efb7fb9f1688ac163d340200000000160014ad4cc1cc859c57477bf90d0f944360d90a3998bf{<02><47><30440220780ad409b4d13eb1882aaf2e7a53a206734aa302279d6859e254a7f0a7633556022011fd0cbdf5d4374513ef60f850b7059c6a093ab9e46beb002505b7cba0623cf301><21><022bf8c45da789f695d59f93983c813ec205203056e19ec5d3fbefa809af67e2ec>}00000000
+# 01000000000101bb3b4760944489ec9bed5d5fb002f33b3dda278784d7faef371067e518c97d3b1000000000ffffffff02a0860100000000001976a9146085312a9c500ff9cc35b571b0a1e5efb7fb9f1688ac163d340200000000160014ad4cc1cc859c57477bf90d0f944360d90a3998bf                                                                                                                                                                                                                                  00000000
 
 
 
@@ -192,14 +196,11 @@ After that, I will have the set of verified, but unconfirmed transactions, and w
 - you'll have to parse and serialise the entire transaction to validate the signature from vins
 
 - assume validity of locktime based on block height. You need to validate locktime which are UNIX timestamps
+
+- Claculate weight of the transaction
 """
 
 """
 SEGWIT Txn::
-
-
-
-010000000001013c735f81c1a0115af2e735554fb271ace18c32a3faf443f9db40cb9a11ca63110000000000ffffffff02b113030000000000160014689a681c462536ad7d735b497511e527e9f59245cf120000000000001600148859f1e9ef3ba438e2ec317f8524ed41f8f06c6a024730440220424772d4ad659960d4f1b541fd853f7da62e8cf505c2f16585dc7c8cf643fe9a02207fbc63b9cf317fc41402b2e7f6fdc1b01f1b43c5456cf9b547fe9645a16dcb150121032533cb19cf37842556dd2168b1c7b6f3a70cff25a6ff4d4b76f2889d2c88a3f200000000
-
 
 """
