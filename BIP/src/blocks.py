@@ -131,15 +131,6 @@ print("Transaction ID:", txn_id)
 
 """
 def create_witness_commitment(txn_ids):
-    # Compute the Merkle root of the transaction IDs
-    merkle_root = compute_merkle_root(txn_ids)
-
-    # Construct the witness commitment script
-    witness_commitment_script = bytearray.fromhex('6a')  # OP_RETURN
-    witness_commitment_script.extend(len(merkle_root).to_bytes(1, byteorder='big'))  # Push the Merkle root size
-    witness_commitment_script.extend(merkle_root)  # Push the Merkle root
-
-    return bytes(witness_commitment_script)
 """
 
 # witness calculation
@@ -163,4 +154,16 @@ OBJECTIVE::
 After that, I will have the set of verified, but unconfirmed transactions, and will proceed to mine the block. 
 
 - you'll have to parse and serialise the entire transaction to validate the signature from vins
+
+- assume validity of locktime based on block height. You need to validate locktime which are UNIX timestamps
+"""
+
+"""
+SEGWIT Txn::
+
+
+
+010000000001013c735f81c1a0115af2e735554fb271ace18c32a3faf443f9db40cb9a11ca63110000000000ffffffff02b113030000000000160014689a681c462536ad7d735b497511e527e9f59245cf120000000000001600148859f1e9ef3ba438e2ec317f8524ed41f8f06c6a024730440220424772d4ad659960d4f1b541fd853f7da62e8cf505c2f16585dc7c8cf643fe9a02207fbc63b9cf317fc41402b2e7f6fdc1b01f1b43c5456cf9b547fe9645a16dcb150121032533cb19cf37842556dd2168b1c7b6f3a70cff25a6ff4d4b76f2889d2c88a3f200000000
+
+
 """
