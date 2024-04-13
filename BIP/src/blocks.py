@@ -86,7 +86,33 @@ import json
 # output_file_path = 'output.json'
 # serialize_json_file("mempool/0a3c3139b32f021a35ac9a7bef4d59d4abba9ee0160910ac94b4bcefb294f196.json")
 
+def calculate_txn_id(transaction_data):
+    serialized_data = json.dumps(transaction_data, separators=(',', ':')).encode()
 
+    hash_bytes = hashlib.sha256(hashlib.sha256(serialized_data).digest()).digest()
+    reversed_hash = hash_bytes[::-1]
+    txn_id = reversed_hash.hex()
+    return txn_id
+
+def calculate_txn_id_from_file(json_file_path):
+    with open(json_file_path, "r") as f:
+        transaction_data = json.load(f)
+
+    serialized_data = json.dumps(transaction_data, separators=(',', ':')).encode()
+    serialized_bytes = bytes(serialized_data)
+    hash_bytes = hashlib.sha256(hashlib.sha256(serialized_bytes).digest()).digest()
+    reversed_hash = hash_bytes[::-1]
+    txn_id = reversed_hash.hex()
+
+    print(f"\n{bytes(serialized_data)}\n")
+
+    return txn_id
+
+# Example usage:
+# file_location = "mempool/0a3c3139b32f021a35ac9a7bef4d59d4abba9ee0160910ac94b4bcefb294f196.json"
+file_location = "mempool/fff4ebbd7325f2ec9a53347d063225266f324bb178134c5590bde23d83ba8f31.json"
+txn_id = calculate_txn_id_from_file(file_location)
+print("Transaction ID:", txn_id)
 # coinbase txn init
 
 
@@ -129,4 +155,12 @@ ISSUES::
 
 hash256 your transaction to get the txid
 and reverse it and sha256 once again to verify if it matches your file name
+
+OBJECTIVE::
+- Also, can anyone confirm if i understand the process correctly as of now:
+
+- There are multiple JSON files. And each file is a whole transaction. I have to verify the signatures and scripts of each object in the "vin" array. If I can verify all the objects in vin array, I will say that this particular JSON file is a valid transaction. While, if even one of them cant be verified I will say its not a valid transaction, and disregard the ENTIRE file. Correct?
+After that, I will have the set of verified, but unconfirmed transactions, and will proceed to mine the block. 
+
+- you'll have to parse and serialise the entire transaction to validate the signature from vins
 """
