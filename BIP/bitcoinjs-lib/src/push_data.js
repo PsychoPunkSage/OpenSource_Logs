@@ -2,7 +2,7 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.decode = exports.encode = exports.encodingLength = void 0;
 const ops_1 = require('./ops');
-/**
+/**  
  * Calculates the encoding length of a number used for push data in Bitcoin transactions.
  * @param i The number to calculate the encoding length for.
  * @returns The encoding length of the number.
