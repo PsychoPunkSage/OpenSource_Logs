@@ -72,7 +72,37 @@ def _extract_txn_hashes_from_folder(folder_path, txn_list):
                 txn_hashes.append(txn_hash)
     return txn_hashes
 
+import json
+
+# def serialize_json_file(input_file_path):
+#     with open(input_file_path, 'r') as file:
+#         data = json.load(file)
+
+#     serialized_data = json.dumps(data, indent=4)  # indent for pretty printing, optional
+#     print(serialized_data)
+
+# Example usage:
+# input_file_path = 'input.json'
+# output_file_path = 'output.json'
+# serialize_json_file("mempool/0a3c3139b32f021a35ac9a7bef4d59d4abba9ee0160910ac94b4bcefb294f196.json")
+
+
 # coinbase txn init
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 """
 def create_witness_commitment(txn_ids):
     # Compute the Merkle root of the transaction IDs
