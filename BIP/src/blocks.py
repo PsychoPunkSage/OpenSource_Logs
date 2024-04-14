@@ -235,6 +235,11 @@ After that, I will have the set of verified, but unconfirmed transactions, and w
 """
 
 """
-SEGWIT Txn::
+COINBASE TXN::>
 
+:> Coinbase:
+    @> https://learnmeabitcoin.com/technical/transaction/input/#coinbase
+A coinbase is a special type of input found in coinbase transactions.
+The input for a coinbase transaction doesn't need to reference any previous outputs, as a coinbase transaction is simply used to collect the block reward. Therefore, the TXID is set to all zeros, the VOUT is set to the maximum value, and a miner is free to put any data they like inside the ScriptSig.
+For example, this is the coinbase transaction for block
 """

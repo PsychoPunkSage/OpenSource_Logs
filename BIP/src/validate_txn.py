@@ -52,13 +52,26 @@ print(validate("0a3c3139b32f021a35ac9a7bef4d59d4abba9ee0160910ac94b4bcefb294f196
 ################
 
 def txn_weight(txnId):
-    # file_path = os.path.join('mempool', f'{txnId}.json') # file path
     txn_bytes = len(create_raw_txn_hash(txnId))//2
-    txn_weight = 4*(len(create_raw_txn_hash_for_wtxid(txnId))//2) + (txn_bytes - len(create_raw_txn_hash_for_wtxid(txnId))//2)
+    txn_weight = 4*(len(create_raw_txn_hash_wo_witness(txnId))//2) + (txn_bytes - len(create_raw_txn_hash_wo_witness(txnId))//2)
     txn_virtual_weight = txn_weight//4
 
     return [txn_bytes, txn_weight, txn_virtual_weight]
 
+##########
+## FEES ##
+##########
+def fees(txnId):
+    file_path = os.path.join('mempool', f'{txnId}.json') # file path
+    if os.path.exists(file_path):
+        # Read the JSON data from the file
+        with open(file_path, 'r') as file:
+            txn_data = json.load(file)
+
+    amt_vin = sum([vin["prevout"]["value"] for vin in txn_data["vin"]])
+    amt_vout = sum([vout["value"] for vout in txn_data["vout"]])
+
+    return amt_vin - amt_vout
 
 ##############
 ## Txn Data ##
@@ -107,7 +120,7 @@ def create_raw_txn_hash(txn_id):
             # print(f"txn_hash: {txn_hash}")
     return txn_hash
 
-def create_raw_txn_hash_for_wtxid(txn_id):
+def create_raw_txn_hash_wo_witness(txn_id):
     txn_hash = ""
 
     file_path = os.path.join("mempool", f"{txn_id}.json")
