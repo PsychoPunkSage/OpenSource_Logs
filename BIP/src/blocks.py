@@ -127,7 +127,7 @@ def create_raw_txn_hash(txn_id):
             # print(f"txn_hash: {txn_hash}")
     return txn_hash
 
-def create_raw_txn_hash_wo(txn_id):
+def create_raw_txn_hash_segwit_txn_id(txn_id):
     txn_hash = ""
 
     file_path = os.path.join("mempool", f"{txn_id}.json")
@@ -177,14 +177,15 @@ def _little_endian(num, size):
 
 # 0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240
 # 896aeeb4d8af739da468ad05932455c639073fa3763d3256ff3a2c86122bda4e - HASH256 (2xSHA256)
+# 
 h = create_raw_txn_hash("0a3c3139b32f021a35ac9a7bef4d59d4abba9ee0160910ac94b4bcefb294f196")
 print(h + "\n")        
-h = create_raw_txn_hash_wo("0a3c3139b32f021a35ac9a7bef4d59d4abba9ee0160910ac94b4bcefb294f196")
+h = create_raw_txn_hash_segwit_txn_id("0a3c3139b32f021a35ac9a7bef4d59d4abba9ee0160910ac94b4bcefb294f196")
 print(h + "\n")        
 
 h = create_raw_txn_hash("0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240")
 print(h + "\n")        
-h = create_raw_txn_hash_wo("0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240")
+h = create_raw_txn_hash_segwit_txn_id("0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240")
 print(h + "\n")        
 
 h = create_raw_txn_hash("ff0717b6f0d2b2518cfb85eed7ccea44c3a3822e2a0ce6e753feecf68df94a7f")
