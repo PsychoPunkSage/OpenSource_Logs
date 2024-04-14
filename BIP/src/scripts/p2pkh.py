@@ -5,8 +5,8 @@ import hashlib
 
 def validate_p2pkh_txn(scriptsig_asm, scriptsig, scriptpubkey_asm):
     stack = []
-    signature = ""
-    pubkey = ""
+    signature = scriptsig_asm[1]
+    pubkey = scriptsig_asm[3]
 
     stack.append(signature)
     stack.append(pubkey)
@@ -23,10 +23,13 @@ def validate_p2pkh_txn(scriptsig_asm, scriptsig, scriptpubkey_asm):
         if i == "OP_HASH160":
             print("===========")
             print("OP_HASH160")
-            ripemd160_hash = hashlib.new('ripemd160', bytes.fromhex(stack[-1])).digest()
-            stack.pop(stack[-1])
+            # last = stack[-1]
+            # print(last)
+            ripemd160_hash = hashlib.new('ripemd160', bytes.fromhex(stack[-1])).digest().hex()
+            # ripemd160_hash = hashlib.new('ripemd160', stack[-1].encode()).digest()
+            stack.pop(-1)
             print(stack)
-            stack.append(ripemd160_hash.hex())
+            stack.append(ripemd160_hash)
             print(stack)
 
         if i == "OP_EQUALVERIFY":
@@ -36,12 +39,28 @@ def validate_p2pkh_txn(scriptsig_asm, scriptsig, scriptpubkey_asm):
                 return False
             else:
                 stack.pop(stack[-1])
+                print(stack)
                 stack.pop(stack[-2])
+                print(stack)
 
         if i == "OP_CHECKSIG":
             pass
 
-        else:
-            stack.append(i)
+        if i == "OP_PUSHBYTES_20":
+            stack.append()
 
-# validate_p2pkh_txn("1ccd927e58ef5395ddef40eee347ded55d2e201034bc763bfb8a263d66b99e5e")
+        if i not in ["OP_DUP", "OP_HASH160", "OP_EQUALVERIFY"]:
+            print("===========")
+            print(f"{i}")
+            stack.append(i)
+            print(stack)
+
+file_path = os.path.join('mempool', "1ccd927e58ef5395ddef40eee347ded55d2e201034bc763bfb8a263d66b99e5e.json") # file path
+if os.path.exists(file_path):
+    with open(file_path, 'r') as file:
+        txn_data = json.load(file)
+
+scriptsig_asm = txn_data["vin"][0]["scriptsig_asm"].split(" ")
+scriptsig = txn_data["vin"][0]["scriptsig"]
+scriptpubkey_asm = txn_data["vin"][0]["prevout"]["scriptpubkey_asm"].split(" ")
+validate_p2pkh_txn(scriptsig_asm, scriptsig, scriptpubkey_asm)
