@@ -2,6 +2,7 @@ import os
 import json
 import time
 import hashlib
+import validate_txn
 
 DIFFICULTY = "0000ffff00000000000000000000000000000000000000000000000000000000"
 
@@ -81,6 +82,39 @@ import json
 #     reversed_hash = hash_bytes[::-1]
 #     txn_id = reversed_hash.hex()
 #     return txn_id
+
+"""
+COINBASE TXN::>
+
+:> Coinbase:
+    @> https://learnmeabitcoin.com/technical/transaction/input/#coinbase
+A coinbase is a special type of input found in coinbase transactions.
+The input for a coinbase transaction doesn't need to reference any previous outputs, as a coinbase transaction is simply used to collect the block reward. Therefore, the TXID is set to all zeros, the VOUT is set to the maximum value, and a miner is free to put any data they like inside the ScriptSig.
+For example, this is the coinbase transaction for block
+"""
+
+##################
+## Coinbase txn ##
+##################
+
+def create_coinbase_txn_data(txn_list):
+    reward = 0
+    for txnId in txn_list:
+        reward += validate_txn.fees(txnId)
+    
+    version = "01000000"
+    in_count = "01"
+    in_txnId = "0000000000000000000000000000000000000000000000000000000000000000"
+    vout = "ffffffff"
+    scriptsig_size = "07"
+    scriptsig = "0453ec131c0108" # RANDOM
+    sequence = "ffffffff"
+
+    out_count = "01"
+    out_amt = f"{validate_txn._little_endian(reward, 8)}"
+
+    return version+in_count+in_txnId+vout+scriptsig_size+scriptsig+sequence+out_count+out_amt
+
 
 def create_raw_txn_hash(txn_id):
     txn_hash = ""
@@ -234,12 +268,3 @@ After that, I will have the set of verified, but unconfirmed transactions, and w
 - Claculate weight of the transaction
 """
 
-"""
-COINBASE TXN::>
-
-:> Coinbase:
-    @> https://learnmeabitcoin.com/technical/transaction/input/#coinbase
-A coinbase is a special type of input found in coinbase transactions.
-The input for a coinbase transaction doesn't need to reference any previous outputs, as a coinbase transaction is simply used to collect the block reward. Therefore, the TXID is set to all zeros, the VOUT is set to the maximum value, and a miner is free to put any data they like inside the ScriptSig.
-For example, this is the coinbase transaction for block
-"""
