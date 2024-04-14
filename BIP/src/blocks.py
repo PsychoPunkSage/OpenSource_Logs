@@ -115,6 +115,14 @@ def create_coinbase_txn_data(txn_list):
 
     return version+in_count+in_txnId+vout+scriptsig_size+scriptsig+sequence+out_count+out_amt
 
+def get_coinbase_txn_id(txn_list):
+    data = create_coinbase_txn_data(txn_list)
+
+    bytes_data = bytes.fromhex(data)
+    txn_id_bytes = hashlib.sha256(hashlib.sha256(bytes_data).digest()).digest()
+    txid = txn_id_bytes.hex()
+
+    return txid[::-1]
 
 def create_raw_txn_hash(txn_id):
     txn_hash = ""
