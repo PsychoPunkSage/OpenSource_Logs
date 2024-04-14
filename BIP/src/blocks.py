@@ -127,6 +127,39 @@ def create_raw_txn_hash(txn_id):
             # print(f"txn_hash: {txn_hash}")
     return txn_hash
 
+def create_raw_txn_hash_wo(txn_id):
+    txn_hash = ""
+
+    file_path = os.path.join("mempool", f"{txn_id}.json")
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as f:
+            data = json.load(f)
+            # print(f"data: {data}")
+            # Version
+            txn_hash += f"{_little_endian(data['version'], 4)}"
+            # No. of inputs:
+            txn_hash += f"{str(_to_compact_size(len(data['vin'])))}"
+            # Inputs
+            for iN in data["vin"]:
+                txn_hash += f"{bytes.fromhex(iN['txid'])[::-1].hex()}"
+                txn_hash += f"{_little_endian(iN['vout'], 4)}"
+                txn_hash += f"{_to_compact_size(len(iN['scriptsig'])//2)}" # FLAG@> maybe not divided by 2
+                txn_hash += f"{iN['scriptsig']}"
+                txn_hash += f"{_little_endian(iN['sequence'], 4)}"
+
+            # No. of outputs
+            txn_hash += f"{str(_to_compact_size(len(data['vout'])))}"
+
+            # Outputs
+            for out in data["vout"]:
+                txn_hash += f"{_little_endian(out['value'], 8)}"
+                txn_hash += f"{_to_compact_size(len(out['scriptpubkey'])//2)}"
+                txn_hash += f"{out['scriptpubkey']}"
+
+            # Locktime
+            txn_hash += f"{_little_endian(data['locktime'], 4)}"
+    return txn_hash
+
 def _to_compact_size(value):
     if value < 0xfd:
         return value.to_bytes(1, byteorder='little').hex()
@@ -142,21 +175,21 @@ def _little_endian(num, size):
 
 
 
-
+# 0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240
+# 896aeeb4d8af739da468ad05932455c639073fa3763d3256ff3a2c86122bda4e - HASH256 (2xSHA256)
 h = create_raw_txn_hash("0a3c3139b32f021a35ac9a7bef4d59d4abba9ee0160910ac94b4bcefb294f196")
 print(h + "\n")        
+h = create_raw_txn_hash_wo("0a3c3139b32f021a35ac9a7bef4d59d4abba9ee0160910ac94b4bcefb294f196")
+print(h + "\n")        
+
 h = create_raw_txn_hash("0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240")
 print(h + "\n")        
+h = create_raw_txn_hash_wo("0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240")
+print(h + "\n")        
+
 h = create_raw_txn_hash("ff0717b6f0d2b2518cfb85eed7ccea44c3a3822e2a0ce6e753feecf68df94a7f")
 print(h + "\n")        
 # coinbase txn init
-
-
-
-
-
-# 01000000000101bb3b4760944489ec9bed5d5fb002f33b3dda278784d7faef371067e518c97d3b1000000000ffffffff02a0860100000000001976a9146085312a9c500ff9cc35b571b0a1e5efb7fb9f1688ac163d340200000000160014ad4cc1cc859c57477bf90d0f944360d90a3998bf{<02><47><30440220780ad409b4d13eb1882aaf2e7a53a206734aa302279d6859e254a7f0a7633556022011fd0cbdf5d4374513ef60f850b7059c6a093ab9e46beb002505b7cba0623cf301><21><022bf8c45da789f695d59f93983c813ec205203056e19ec5d3fbefa809af67e2ec>}00000000
-# 01000000000101bb3b4760944489ec9bed5d5fb002f33b3dda278784d7faef371067e518c97d3b1000000000ffffffff02a0860100000000001976a9146085312a9c500ff9cc35b571b0a1e5efb7fb9f1688ac163d340200000000160014ad4cc1cc859c57477bf90d0f944360d90a3998bf                                                                                                                                                                                                                                  00000000
 
 
 
