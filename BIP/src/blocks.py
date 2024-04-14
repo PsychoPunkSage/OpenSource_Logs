@@ -75,14 +75,6 @@ def _extract_txn_hashes_from_folder(folder_path, txn_list):
 
 import json
 
-# def calculate_txn_id(transaction_data):
-#     serialized_data = json.dumps(transaction_data, separators=(',', ':')).encode()
-
-#     hash_bytes = hashlib.sha256(hashlib.sha256(serialized_data).digest()).digest()
-#     reversed_hash = hash_bytes[::-1]
-#     txn_id = reversed_hash.hex()
-#     return txn_id
-
 """
 COINBASE TXN::>
 
@@ -123,117 +115,6 @@ def get_coinbase_txn_id(txn_list):
     txid = txn_id_bytes.hex()
 
     return txid[::-1]
-
-def create_raw_txn_hash(txn_id):
-    txn_hash = ""
-
-    file_path = os.path.join("mempool", f"{txn_id}.json")
-    if os.path.exists(file_path):
-        with open(file_path, 'r') as f:
-            data = json.load(f)
-            # print(f"data: {data}")
-            # Version
-            txn_hash += f"{_little_endian(data['version'], 4)}"
-            # Marker+flags (if any `vin` has empty scriptsig)
-            if any(i.get("scriptsig") == "" for i in data["vin"]):
-                txn_hash += "0001"
-            # No. of inputs:
-            txn_hash += f"{str(_to_compact_size(len(data['vin'])))}"
-            # Inputs
-            for iN in data["vin"]:
-                txn_hash += f"{bytes.fromhex(iN['txid'])[::-1].hex()}"
-                txn_hash += f"{_little_endian(iN['vout'], 4)}"
-                txn_hash += f"{_to_compact_size(len(iN['scriptsig'])//2)}" # FLAG@> maybe not divided by 2
-                txn_hash += f"{iN['scriptsig']}"
-                txn_hash += f"{_little_endian(iN['sequence'], 4)}"
-
-            # No. of outputs
-            txn_hash += f"{str(_to_compact_size(len(data['vout'])))}"
-
-            # Outputs
-            for out in data["vout"]:
-                txn_hash += f"{_little_endian(out['value'], 8)}"
-                txn_hash += f"{_to_compact_size(len(out['scriptpubkey'])//2)}"
-                txn_hash += f"{out['scriptpubkey']}"
-
-            # witness
-            for i in data["vin"]:
-                if "witness" in i and i["witness"]:
-                    txn_hash += f"{_to_compact_size(len(i['witness']))}"
-                    for j in i["witness"]:
-                        txn_hash += f"{_to_compact_size(len(j) // 2)}"
-                        txn_hash += f"{j}"
-
-            # Locktime
-            txn_hash += f"{_little_endian(data['locktime'], 4)}"
-            # print(f"txn_hash: {txn_hash}")
-    return txn_hash
-
-def create_raw_txn_hash_segwit_txn_id(txn_id):
-    txn_hash = ""
-
-    file_path = os.path.join("mempool", f"{txn_id}.json")
-    if os.path.exists(file_path):
-        with open(file_path, 'r') as f:
-            data = json.load(f)
-            # print(f"data: {data}")
-            # Version
-            txn_hash += f"{_little_endian(data['version'], 4)}"
-            # No. of inputs:
-            txn_hash += f"{str(_to_compact_size(len(data['vin'])))}"
-            # Inputs
-            for iN in data["vin"]:
-                txn_hash += f"{bytes.fromhex(iN['txid'])[::-1].hex()}"
-                txn_hash += f"{_little_endian(iN['vout'], 4)}"
-                txn_hash += f"{_to_compact_size(len(iN['scriptsig'])//2)}" # FLAG@> maybe not divided by 2
-                txn_hash += f"{iN['scriptsig']}"
-                txn_hash += f"{_little_endian(iN['sequence'], 4)}"
-
-            # No. of outputs
-            txn_hash += f"{str(_to_compact_size(len(data['vout'])))}"
-
-            # Outputs
-            for out in data["vout"]:
-                txn_hash += f"{_little_endian(out['value'], 8)}"
-                txn_hash += f"{_to_compact_size(len(out['scriptpubkey'])//2)}"
-                txn_hash += f"{out['scriptpubkey']}"
-
-            # Locktime
-            txn_hash += f"{_little_endian(data['locktime'], 4)}"
-    return txn_hash
-
-def _to_compact_size(value):
-    if value < 0xfd:
-        return value.to_bytes(1, byteorder='little').hex()
-    elif value <= 0xffff:
-        return (0xfd).to_bytes(1, byteorder='little').hex() + value.to_bytes(2, byteorder='little').hex()
-    elif value <= 0xffffffff:
-        return (0xfe).to_bytes(1, byteorder='little').hex() + value.to_bytes(4, byteorder='little').hex()
-    else:
-        return (0xff).to_bytes(1, byteorder='little').hex() + value.to_bytes(8, byteorder='little').hex()
-
-def _little_endian(num, size):
-    return num.to_bytes(size, byteorder='little').hex()
-
-
-
-# 0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240
-# 896aeeb4d8af739da468ad05932455c639073fa3763d3256ff3a2c86122bda4e - HASH256 (2xSHA256)
-# 
-h = create_raw_txn_hash("0a3c3139b32f021a35ac9a7bef4d59d4abba9ee0160910ac94b4bcefb294f196")
-print(h + "\n")        
-h = create_raw_txn_hash_segwit_txn_id("0a3c3139b32f021a35ac9a7bef4d59d4abba9ee0160910ac94b4bcefb294f196")
-print(h + "\n")        
-
-h = create_raw_txn_hash("0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240")
-print(h + "\n")        
-h = create_raw_txn_hash_segwit_txn_id("0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240")
-print(h + "\n")        
-
-h = create_raw_txn_hash("ff0717b6f0d2b2518cfb85eed7ccea44c3a3822e2a0ce6e753feecf68df94a7f")
-print(h + "\n")        
-# coinbase txn init
-
 
 
 """
