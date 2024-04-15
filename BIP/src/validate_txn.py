@@ -73,6 +73,13 @@ def fees(txnId):
 
     return amt_vin - amt_vout
 
+#################
+## TxnId Check ##
+#################
+def check_txn_id(txn_id):
+    txn_da
+    pass
+
 ##############
 ## Txn Data ##
 ##############

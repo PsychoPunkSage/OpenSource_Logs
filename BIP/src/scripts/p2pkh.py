@@ -47,12 +47,9 @@ def validate_p2pkh_txn(scriptsig_asm, scriptsig, scriptpubkey_asm):
             pass
 
         if i == "OP_PUSHBYTES_20":
-            stack.append()
-
-        if i not in ["OP_DUP", "OP_HASH160", "OP_EQUALVERIFY"]:
             print("===========")
-            print(f"{i}")
-            stack.append(i)
+            print("OP_PUSHBYTES_20")
+            stack.append(scriptpubkey_asm[scriptpubkey_asm.index("OP_PUSHBYTES_20") + 1])
             print(stack)
 
 file_path = os.path.join('mempool', "1ccd927e58ef5395ddef40eee347ded55d2e201034bc763bfb8a263d66b99e5e.json") # file path
