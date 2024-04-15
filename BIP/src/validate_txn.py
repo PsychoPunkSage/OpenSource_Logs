@@ -8,7 +8,7 @@ import json
 def txn_weight(txnId):
     txn_bytes = len(create_raw_txn_hash(txnId))//2
     txn_weight = 4*(len(create_raw_txn_hash_wo_witness(txnId))//2) + (txn_bytes - len(create_raw_txn_hash_wo_witness(txnId))//2)
-    txn_virtual_weight = txn_weight//4
+    txn_virtual_weight = txn_weight/4
 
     return [txn_bytes, txn_weight, txn_virtual_weight]
 
@@ -132,20 +132,9 @@ def get_txn_id(txn_id):
     txnId = hashlib.sha256(bytes.fromhex(reversed_bytes)).digest().hex() # last sha256
     return txnId
 
-get_txn_id("ff0717b6f0d2b2518cfb85eed7ccea44c3a3822e2a0ce6e753feecf68df94a7f") 
-
-# h = create_raw_txn_hash("0a3c3139b32f021a35ac9a7bef4d59d4abba9ee0160910ac94b4bcefb294f196")
-# print(h + "\n")        
-# h = create_raw_txn_hash_wo_witness("0a3c3139b32f021a35ac9a7bef4d59d4abba9ee0160910ac94b4bcefb294f196")
-# print(h + "\n")        
-
-# h = create_raw_txn_hash("0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240")
-# print(h + "\n")        
-# h = create_raw_txn_hash_wo_witness("0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240")
-# print(h + "\n")        
-
-# h = create_raw_txn_hash("ff0717b6f0d2b2518cfb85eed7ccea44c3a3822e2a0ce6e753feecf68df94a7f")
-# print(h + "\n")
+# ff0717b6f0d2b2518cfb85eed7ccea44c3a3822e2a0ce6e753feecf68df94a7f
+# 0a3c3139b32f021a35ac9a7bef4d59d4abba9ee0160910ac94b4bcefb294f196
+# 0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240
 
 def validate(txnId):
 
@@ -193,3 +182,4 @@ def validate(txnId):
 
 print(validate("0a3c3139b32f021a35ac9a7bef4d59d4abba9ee0160910ac94b4bcefb294f196"))
 print(validate("ff0717b6f0d2b2518cfb85eed7ccea44c3a3822e2a0ce6e753feecf68df94a7f"))
+print(validate("0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240"))
