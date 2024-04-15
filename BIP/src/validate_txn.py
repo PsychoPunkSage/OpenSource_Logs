@@ -171,19 +171,20 @@ def _little_endian(num, size):
 ## TxnId Check ##
 #################
 def check_txn_id_non_segwit(txn_id):
-    txn_data = create_raw_txn_hash(txn_id)
-
-    print(f"txn_data::> \n{txn_data}\n")
-    txn_hash = hashlib.sha256(hashlib.sha256(bytes.fromhex(txn_data)).digest()).digest().hex()
-    print(f"txn_hash::> \n{txn_hash}\n") # 896aeeb4d8af739da468ad05932455c639073fa3763d3256ff3a2c86122bda4e
-    reversed_bytes = bytes.fromhex(txn_hash)[::-1].hex()
-    print(f"reversed_bytes::> \n{reversed_bytes}\n") 
-    txnId = hashlib.sha256(bytes.fromhex(reversed_bytes)).digest().hex()
-    print(f"txn_id(calculated)::> {txnId}") 
-    print(f"txn_id(actual)    ::> {txn_id}")
+    txn_data = create_raw_txn_hash(txn_id) # get raw txn_data
+    txn_hash = hashlib.sha256(hashlib.sha256(bytes.fromhex(txn_data)).digest()).digest().hex() # 2xSHA256
+    reversed_bytes = bytes.fromhex(txn_hash)[::-1].hex() # bytes reversal
+    txnId = hashlib.sha256(bytes.fromhex(reversed_bytes)).digest().hex() # last sha256
     return txnId
 
-check_txn_id_non_segwit("0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240") 
+def check_txn_id_segwit(txn_id):
+    txn_data = create_raw_txn_hash_wo_witness(txn_id) # get raw txn_data
+    txn_hash = hashlib.sha256(hashlib.sha256(bytes.fromhex(txn_data)).digest()).digest().hex() # 2xSHA256
+    reversed_bytes = bytes.fromhex(txn_hash)[::-1].hex() # bytes reversal
+    txnId = hashlib.sha256(bytes.fromhex(reversed_bytes)).digest().hex() # last sha256
+    return txnId
+
+check_txn_id_segwit("ff0717b6f0d2b2518cfb85eed7ccea44c3a3822e2a0ce6e753feecf68df94a7f") 
 
 # 0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240
 # 896aeeb4d8af739da468ad05932455c639073fa3763d3256ff3a2c86122bda4e - HASH256 (2xSHA256)
@@ -193,8 +194,8 @@ check_txn_id_non_segwit("0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d91532307
 # h = create_raw_txn_hash_wo_witness("0a3c3139b32f021a35ac9a7bef4d59d4abba9ee0160910ac94b4bcefb294f196")
 # print(h + "\n")        
 
-h = create_raw_txn_hash("0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240")
-print(h + "\n")        
+# h = create_raw_txn_hash("0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240")
+# print(h + "\n")        
 # h = create_raw_txn_hash_wo_witness("0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240")
 # print(h + "\n")        
 
