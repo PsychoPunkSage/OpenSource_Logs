@@ -147,3 +147,49 @@ get_txn_id("ff0717b6f0d2b2518cfb85eed7ccea44c3a3822e2a0ce6e753feecf68df94a7f")
 # h = create_raw_txn_hash("ff0717b6f0d2b2518cfb85eed7ccea44c3a3822e2a0ce6e753feecf68df94a7f")
 # print(h + "\n")
 
+def validate(txnId):
+
+    ###############
+    ## READ TXNS ##
+    ###############
+    file_path = os.path.join('mempool', f'{txnId}.json') # file path
+
+    if os.path.exists(file_path):
+        # Read the JSON data from the file
+        with open(file_path, 'r') as file:
+            txn_data = json.load(file) # JSON Object
+    else:
+        print(f"ERROR::> Transaction with ID {txnId} not found.")
+        return None
+    
+    ##################
+    ## BASIC CHECKS ##
+    ##################
+    required_fields = ['version', 'locktime', 'vin', 'vout']
+    for field in required_fields:
+        if field not in txn_data:
+            print(f"ERROR::> Transaction is missing the required field: {field}")
+            return False
+    # version check
+    if txn_data["version"] > 2 or txn_data["version"] < 0:
+        print(f"ERROR::> Possible Transaction versions :: 1 and 2")
+        return False
+    # vin and vout check - Empty or not
+    if len(txn_data["vin"]) < 1 or len(txn_data["vout"]) < 1:
+        print(f"ERROR::> Vin or Vout fields can't be empty")
+        return False
+    # Amount Consistency <vin >= vout> as coinbase txn are not present in mempool
+    if sum([vin["prevout"]["value"] for vin in txn_data["vin"]]) < sum([vout["value"] for vout in txn_data["vout"]]):
+        print("ERROR::> value_Vin shouldn't be less than value_Vout")
+        return False
+
+    ########################
+    ## TXN CONTENT CHECKS ##
+    ########################
+    if txnId != get_txn_id(txnId):
+        return False
+    return True
+
+
+print(validate("0a3c3139b32f021a35ac9a7bef4d59d4abba9ee0160910ac94b4bcefb294f196"))
+print(validate("ff0717b6f0d2b2518cfb85eed7ccea44c3a3822e2a0ce6e753feecf68df94a7f"))
