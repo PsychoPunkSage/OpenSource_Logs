@@ -2,15 +2,13 @@ import os
 import json
 import hashlib
 
-def ripemd160_hex(hex_input):
-    byte_input = bytes.fromhex(hex_input)
+def hash160(hex_input):
+    print(hex_input)
+    sha = hashlib.sha256(bytes.fromhex(hex_input)).hexdigest()
+    hash_160 = hashlib.new('ripemd160')
+    hash_160.update(bytes.fromhex(sha))
 
-    ripemd160_hash = hashlib.new('ripemd160')
-    ripemd160_hash.update(byte_input)    
-    
-    hex_hash = ripemd160_hash.hexdigest()
-
-    return hex_hash
+    return hash_160.hexdigest()
 
 def validate_p2pkh_txn(signature, pubkey, scriptpubkey_asm):
     stack = []
@@ -30,7 +28,7 @@ def validate_p2pkh_txn(signature, pubkey, scriptpubkey_asm):
         if i == "OP_HASH160":
             print("===========")
             print("OP_HASH160")
-            ripemd160_hash = ripemd160_hex(stack[-1])
+            ripemd160_hash = hash160(stack[-1])
             stack.pop(-1)
             print(stack)
             stack.append(ripemd160_hash)
@@ -42,13 +40,13 @@ def validate_p2pkh_txn(signature, pubkey, scriptpubkey_asm):
             if stack[-1] != stack[-2]:
                 return False
             else:
-                stack.pop(stack[-1])
+                stack.pop(-1)
                 print(stack)
-                stack.pop(stack[-2])
+                stack.pop(-2)
                 print(stack)
 
         if i == "OP_CHECKSIG":
-            pass
+            return True
 
         if i == "OP_PUSHBYTES_20":
             print("===========")
@@ -63,6 +61,6 @@ if os.path.exists(file_path):
         txn_data = json.load(file)
 
 scriptsig_asm = txn_data["vin"][0]["scriptsig_asm"].split(" ")
-scriptsig = txn_data["vin"][0]["scriptsig"]
+# scriptsig = txn_data["vin"][0]["scriptsig"]
 scriptpubkey_asm = txn_data["vin"][0]["prevout"]["scriptpubkey_asm"].split(" ")
 validate_p2pkh_txn(scriptsig_asm[1], scriptsig_asm[3], scriptpubkey_asm)
