@@ -1,6 +1,21 @@
 import os
 import json
 import hashlib
+import ecdsa
+import binascii
+
+def parse_signature(signature_hex):
+    signature = binascii.unhexlify(signature_hex)
+    der_signature = ecdsa.util.sigdecode_der(signature, curve=ecdsa.SECP256k1.curve)
+
+    R, S = der_signature
+
+    R_hex = hex(R)
+    S_hex = hex(S)
+    print(f"R::> {R_hex}")
+    print(f"S::> {S_hex}")
+    return R_hex, S_hex
+
 
 def hash160(hex_input):
     print(hex_input)
@@ -46,6 +61,9 @@ def validate_p2pkh_txn(signature, pubkey, scriptpubkey_asm):
                 print(stack)
 
         if i == "OP_CHECKSIG":
+            print("===========")
+            print("OP_CHECKSIG")
+            parse_signature(stack[0])
             return True
 
         if i == "OP_PUSHBYTES_20":
