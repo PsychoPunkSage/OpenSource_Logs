@@ -2,56 +2,9 @@ import hashlib
 import os
 import json
 
-
-def validate(txnId):
-
-    ###############
-    ## READ TXNS ##
-    ###############
-    file_path = os.path.join('mempool', f'{txnId}.json') # file path
-
-    if os.path.exists(file_path):
-        # Read the JSON data from the file
-        with open(file_path, 'r') as file:
-            txn_data = json.load(file) # JSON Object
-    else:
-        print(f"ERROR::> Transaction with ID {txnId} not found.")
-        return None
-    
-    ##################
-    ## BASIC CHECKS ##
-    ##################
-    required_fields = ['version', 'locktime', 'vin', 'vout']
-    for field in required_fields:
-        if field not in txn_data:
-            print(f"ERROR::> Transaction is missing the required field: {field}")
-            return False
-    # version check
-    if txn_data["version"] > 2 or txn_data["version"] < 0:
-        print(f"ERROR::> Possible Transaction versions :: 1 and 2")
-        return False
-    # vin and vout check - Empty or not
-    if len(txn_data["vin"]) < 1 or len(txn_data["vout"]) < 1:
-        print(f"ERROR::> Vin or Vout fields can't be empty")
-        return False
-    # Amount Consistency <vin >= vout> as coinbase txn are not present in mempool
-    if sum([vin["prevout"]["value"] for vin in txn_data["vin"]]) < sum([vout["value"] for vout in txn_data["vout"]]):
-        print("ERROR::> value_Vin shouldn't be less than value_Vout")
-        return False
-
-    return True
-
-print(validate("0a3c3139b32f021a35ac9a7bef4d59d4abba9ee0160910ac94b4bcefb294f196"))
-
-
-
-## HAVE TO CHECK TXN WITH LEGACY AND SEGWIT TXN.
-## WTXID::> HASH256 EVERYTHING(all THE FIELDS)
-
 ################
 ## Txn Weight ##
 ################
-
 def txn_weight(txnId):
     txn_bytes = len(create_raw_txn_hash(txnId))//2
     txn_weight = 4*(len(create_raw_txn_hash_wo_witness(txnId))//2) + (txn_bytes - len(create_raw_txn_hash_wo_witness(txnId))//2)
@@ -170,25 +123,17 @@ def _little_endian(num, size):
 #################
 ## TxnId Check ##
 #################
-def check_txn_id_non_segwit(txn_id):
+def get_txn_id(txn_id):
     txn_data = create_raw_txn_hash(txn_id) # get raw txn_data
+    if txn_data[8:12] == "0001":
+        txn_data = create_raw_txn_hash_wo_witness(txn_id)
     txn_hash = hashlib.sha256(hashlib.sha256(bytes.fromhex(txn_data)).digest()).digest().hex() # 2xSHA256
     reversed_bytes = bytes.fromhex(txn_hash)[::-1].hex() # bytes reversal
     txnId = hashlib.sha256(bytes.fromhex(reversed_bytes)).digest().hex() # last sha256
     return txnId
 
-def check_txn_id_segwit(txn_id):
-    txn_data = create_raw_txn_hash_wo_witness(txn_id) # get raw txn_data
-    txn_hash = hashlib.sha256(hashlib.sha256(bytes.fromhex(txn_data)).digest()).digest().hex() # 2xSHA256
-    reversed_bytes = bytes.fromhex(txn_hash)[::-1].hex() # bytes reversal
-    txnId = hashlib.sha256(bytes.fromhex(reversed_bytes)).digest().hex() # last sha256
-    return txnId
+get_txn_id("ff0717b6f0d2b2518cfb85eed7ccea44c3a3822e2a0ce6e753feecf68df94a7f") 
 
-check_txn_id_segwit("ff0717b6f0d2b2518cfb85eed7ccea44c3a3822e2a0ce6e753feecf68df94a7f") 
-
-# 0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240
-# 896aeeb4d8af739da468ad05932455c639073fa3763d3256ff3a2c86122bda4e - HASH256 (2xSHA256)
-# 
 # h = create_raw_txn_hash("0a3c3139b32f021a35ac9a7bef4d59d4abba9ee0160910ac94b4bcefb294f196")
 # print(h + "\n")        
 # h = create_raw_txn_hash_wo_witness("0a3c3139b32f021a35ac9a7bef4d59d4abba9ee0160910ac94b4bcefb294f196")
@@ -200,4 +145,5 @@ check_txn_id_segwit("ff0717b6f0d2b2518cfb85eed7ccea44c3a3822e2a0ce6e753feecf68df
 # print(h + "\n")        
 
 # h = create_raw_txn_hash("ff0717b6f0d2b2518cfb85eed7ccea44c3a3822e2a0ce6e753feecf68df94a7f")
-# print(h + "\n")        
+# print(h + "\n")
+
