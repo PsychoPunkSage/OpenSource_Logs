@@ -144,15 +144,9 @@ def _little_endian(num, size):
 #         print("ERROR (Signature verification)::> ", e)
 #         return False
 def verify_signature(signature, public_key, message):
-    # Convert the public key to a VerifyingKey object
     vk = ecdsa.VerifyingKey.from_string(bytes.fromhex(public_key), curve=ecdsa.SECP256k1, hashfunc=hashlib.sha256)
-    
-    # Decode the DER-encoded signature
     r, s = sigdecode_der(bytes.fromhex(signature), secp256k1_generator.order)
     print(f"r: {r}, s: {s}")
-    
-    # Verify the signature
-
     return vk.verify(ecdsa.util.sigencode_der(r, s, secp256k1_generator.order), bytes.fromhex(message))
 
 
