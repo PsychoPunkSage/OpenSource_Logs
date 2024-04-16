@@ -230,11 +230,8 @@ if os.path.exists(file_path):
         txn_data = json.load(file)
         print(txn_data)
 scriptsig_asm = txn_data["vin"][0]["scriptsig_asm"].split(" ")
-# scriptsig = txn_data["vin"][0]["scriptsig"]
 scriptpubkey_asm = txn_data["vin"][0]["prevout"]["scriptpubkey_asm"].split(" ")
 print(create_raw_txn_hash("0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240"))
-# print(create_raw_txn_hash("0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240")+"01000000")
-# 0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240
 print(validate_p2pkh_txn(scriptsig_asm[1], scriptsig_asm[3], scriptpubkey_asm, create_raw_txn_hash("0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240")))
 
 
