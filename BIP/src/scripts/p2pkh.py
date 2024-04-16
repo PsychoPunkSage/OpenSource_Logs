@@ -21,8 +21,8 @@ def create_raw_txn_hash(txn_id):
             for iN in data["vin"]:
                 txn_hash += f"{bytes.fromhex(iN['txid'])[::-1].hex()}"
                 txn_hash += f"{_little_endian(iN['vout'], 4)}"
-                txn_hash += f"{_to_compact_size(len(iN['scriptsig'])//2)}" # FLAG@> maybe not divided by 2
-                txn_hash += f"{iN['scriptsig']}"
+                # txn_hash += f"{_to_compact_size(len(iN['scriptsig'])//2)}" # FLAG@> maybe not divided by 2
+                # txn_hash += f"{iN['scriptsig']}"
                 txn_hash += f"{_little_endian(iN['sequence'], 4)}"
 
             # No. of outputs
@@ -97,9 +97,10 @@ def verify_sig(signature, pubKey, msg_bytes):
     message = msg_bytes
     public_key = pubKey
     sig = signature
-
+    print("entering VK")
     vk = ecdsa.VerifyingKey.from_string(bytes.fromhex(public_key), curve=ecdsa.SECP256k1, hashfunc=hashlib.sha256) # the default is sha1
-    return vk.verify(bytes.fromhex(sig), message)
+    print(f"VK ::> {vk}")
+    return vk.verify(bytes.fromhex(sig), bytes.fromhex(message))
 
 
 def hash160(hex_input):
@@ -148,7 +149,14 @@ def validate_p2pkh_txn(signature, pubkey, scriptpubkey_asm, txn_data):
         if i == "OP_CHECKSIG":
             print("===========")
             print("OP_CHECKSIG")
-            return verify_sig(stack[0], stack[1], bytes.fromhex(txn_data))
+            if signature[-2:] == "01":
+                der_sig = signature[:-2]
+                msg = txn_data + "01000000"
+                msg_hash = hashlib.sha256(hashlib.sha256(bytes.fromhex(msg)).digest()).digest().hex()
+                print(f"msg: : {msg}")
+                print(f"msg_hash: : {msg_hash}")
+                verify_sig(der_sig, pubkey, msg_hash)
+            # return verify_sig(stack[0], stack[1], bytes.fromhex(txn_data))
 
         if i == "OP_PUSHBYTES_20":
             print("===========")
@@ -165,5 +173,8 @@ if os.path.exists(file_path):
 scriptsig_asm = txn_data["vin"][0]["scriptsig_asm"].split(" ")
 # scriptsig = txn_data["vin"][0]["scriptsig"]
 scriptpubkey_asm = txn_data["vin"][0]["prevout"]["scriptpubkey_asm"].split(" ")
+print(create_raw_txn_hash("0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240"))
+# print(create_raw_txn_hash("0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240")+"01000000")
+# 0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240
 print(validate_p2pkh_txn(scriptsig_asm[1], scriptsig_asm[3], scriptpubkey_asm, create_raw_txn_hash("0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240")))
 
