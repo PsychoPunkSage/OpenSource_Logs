@@ -116,19 +116,19 @@ def _to_compact_size(value):
 def _little_endian(num, size):
     return num.to_bytes(size, byteorder='little').hex()
 
-def verify_sig(signature, pubKey, msg):
-    msg_bytes = bytes.fromhex(msg)
-    print("entering VK")
-    vk = ecdsa.VerifyingKey.from_string(bytes.fromhex(pubKey), curve=ecdsa.SECP256k1) # the default is sha1
-    try:
-        if vk.verify(signature, msg_bytes, hashfunc=hashlib.sha256, sigdecode=ecdsa.util.sigdecode_der):
-            return True
-        else:
-            print("SHIFTER")
-            return False
-    except Exception as e:
-        print("ERROR (Signature verification)::> ", e)
-        return False
+# def verify_sig(signature, pubKey, msg):
+#     msg_bytes = bytes.fromhex(msg)
+#     print("entering VK")
+#     vk = ecdsa.VerifyingKey.from_string(bytes.fromhex(pubKey), curve=ecdsa.SECP256k1) # the default is sha1
+#     try:
+#         if vk.verify(signature, msg_bytes, hashfunc=hashlib.sha256, sigdecode=ecdsa.util.sigdecode_der):
+#             return True
+#         else:
+#             print("SHIFTER")
+#             return False
+#     except Exception as e:
+#         print("ERROR (Signature verification)::> ", e)
+#         return False
 # def verify_signature(signature, public_key, message):
 #     # Convert the public key to a VerifyingKey object
 #     vk = ecdsa.VerifyingKey.from_string(bytes.fromhex(public_key), curve=ecdsa.SECP256k1, hashfunc=hashlib.sha256)
