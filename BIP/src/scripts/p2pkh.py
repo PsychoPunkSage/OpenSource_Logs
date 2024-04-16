@@ -7,6 +7,8 @@ import hashlib
 import ecdsa.util
 from ecdsa.util import sigdecode_der
 
+import pycoin
+from pycoin.ecdsa.secp256k1 import secp256k1_generator
 def compressed_pubkey_to_uncompressed(compressed):
     prefix = compressed[:2]
     x = int(compressed[2:], 16)
@@ -129,15 +131,17 @@ def _little_endian(num, size):
 #     except Exception as e:
 #         print("ERROR (Signature verification)::> ", e)
 #         return False
-# def verify_signature(signature, public_key, message):
-#     # Convert the public key to a VerifyingKey object
-#     vk = ecdsa.VerifyingKey.from_string(bytes.fromhex(public_key), curve=ecdsa.SECP256k1, hashfunc=hashlib.sha256)
+def verify_signature(signature, public_key, message):
+    # Convert the public key to a VerifyingKey object
+    vk = ecdsa.VerifyingKey.from_string(bytes.fromhex(public_key), curve=ecdsa.SECP256k1, hashfunc=hashlib.sha256)
     
-#     # Decode the DER-encoded signature
-#     r, s = sigdecode_der(bytes.fromhex(signature))
+    # Decode the DER-encoded signature
+    r, s = sigdecode_der(bytes.fromhex(signature), secp256k1_generator.order)
+    print(f"r: {r}, s: {s}")
     
-#     # Verify the signature
-#     return vk.verify(ecdsa.util.sigencode_der(r, s), bytes.fromhex(message))
+    # Verify the signature
+
+    return vk.verify(ecdsa.util.sigencode_der(r, s), bytes.fromhex(message))
 
 
 
@@ -197,8 +201,8 @@ def validate_p2pkh_txn(signature, pubkey, scriptpubkey_asm, txn_data):
                 # print(f"msg_hash: : {msg_hash}")
                 print(f"pubkey_xy: : {pubkey_xy}")
                 # verify_sig(der_sig, pubkey, bytes.fromhex(msg_hash))
-                # print(verify_signature(der_sig, pubkey, msg))
-                print(verify_sig(der_sig, pubkey, msg))
+                print(verify_signature(der_sig, pubkey, msg))
+                # print(verify_sig(der_sig, pubkey, msg))
             # return verify_sig(stack[0], stack[1], bytes.fromhex(txn_data))
 
         if i == "OP_PUSHBYTES_20":
