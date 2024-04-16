@@ -141,7 +141,7 @@ def verify_signature(signature, public_key, message):
     
     # Verify the signature
 
-    return vk.verify(ecdsa.util.sigencode_der(r, s), bytes.fromhex(message))
+    return vk.verify(ecdsa.util.sigencode_der(r, s, secp256k1_generator.order), bytes.fromhex(message))
 
 
 
