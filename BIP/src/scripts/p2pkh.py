@@ -9,6 +9,22 @@ from ecdsa.util import sigdecode_der
 
 import pycoin
 from pycoin.ecdsa.secp256k1 import secp256k1_generator
+
+def verify_signature(signature, public_key, message):
+    # Convert the public key to a (x, y) coordinate pair
+    x, y = sec_to_public_pair(public_key)
+
+    # Verify the public key
+    if not is_public_pair_valid(generator_secp256k1, (x, y)):
+        return False, "Invalid public key"
+
+    # Decode the DER-encoded signature
+    r, s = sigdecode_der(signature)
+
+    # Verify the signature
+    return verify(generator_secp256k1, (x, y), hashlib.sha256(message.encode()).digest(), (r, s))
+
+
 def compressed_pubkey_to_uncompressed(compressed):
     prefix = compressed[:2]
     x = int(compressed[2:], 16)
