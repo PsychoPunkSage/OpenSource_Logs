@@ -2,7 +2,33 @@ import os
 import json
 import ecdsa
 import hashlib
+# from src.helper import pubKey_uncompressor as xy
 
+import ecdsa.util
+from ecdsa.util import sigdecode_der
+
+def compressed_pubkey_to_uncompressed(compressed):
+    prefix = compressed[:2]
+    x = int(compressed[2:], 16)
+
+    p = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f
+
+    y_sq = (x**3 + 7) % p  # everything is modulo p
+
+    y = pow(y_sq, (p+1)//4, p)  # use modular exponentiation
+    if prefix == "02" and y % 2 != 0:  # if prefix is 02 and y isn't even, use other y value
+        y = (p - y) % p
+    if prefix == "03" and y % 2 == 0:  # if prefix is 03 and y is even, use other y value
+        y = (p - y) % p
+
+    return (x, y)
+
+"""
+Example::> 
+Pubkey: 03ab996ad23c7930cee68f950e739fa067aa70a0e63786572b864900985879c4c4
+            |_> x: 77616561961719797560395316518092500847148122687187451311177913683967720670404
+            |_> y: 69589226102335479499252171152551221549584577390107066575000126767261437088529
+"""
 def create_raw_txn_hash(txn_id):
     txn_hash = ""
 
@@ -90,14 +116,30 @@ def _to_compact_size(value):
 def _little_endian(num, size):
     return num.to_bytes(size, byteorder='little').hex()
 
-def verify_sig(signature, pubKey, msg_bytes):
-    message = msg_bytes
-    public_key = pubKey
-    sig = signature
+def verify_sig(signature, pubKey, msg):
+    msg_bytes = bytes.fromhex(msg)
     print("entering VK")
-    vk = ecdsa.VerifyingKey.from_string(bytes.fromhex(public_key), curve=ecdsa.SECP256k1, hashfunc=hashlib.sha256) # the default is sha1
-    print(f"VK ::> {vk}")
-    return vk.verify(bytes.fromhex(sig), bytes.fromhex(message))
+    vk = ecdsa.VerifyingKey.from_string(bytes.fromhex(pubKey), curve=ecdsa.SECP256k1) # the default is sha1
+    try:
+        if vk.verify(signature, msg_bytes, hashfunc=hashlib.sha256, sigdecode=ecdsa.util.sigdecode_der):
+            return True
+        else:
+            print("SHIFTER")
+            return False
+    except Exception as e:
+        print("ERROR (Signature verification)::> ", e)
+        return False
+# def verify_signature(signature, public_key, message):
+#     # Convert the public key to a VerifyingKey object
+#     vk = ecdsa.VerifyingKey.from_string(bytes.fromhex(public_key), curve=ecdsa.SECP256k1, hashfunc=hashlib.sha256)
+    
+#     # Decode the DER-encoded signature
+#     r, s = sigdecode_der(bytes.fromhex(signature))
+    
+#     # Verify the signature
+#     return vk.verify(ecdsa.util.sigencode_der(r, s), bytes.fromhex(message))
+
+
 
 
 def hash160(hex_input):
@@ -150,9 +192,13 @@ def validate_p2pkh_txn(signature, pubkey, scriptpubkey_asm, txn_data):
                 der_sig = signature[:-2]
                 msg = txn_data + "01000000"
                 msg_hash = hashlib.sha256(hashlib.sha256(bytes.fromhex(msg)).digest()).digest().hex()
-                print(f"msg: : {msg}")
-                print(f"msg_hash: : {msg_hash}")
-                verify_sig(der_sig, pubkey, msg_hash)
+                pubkey_xy = compressed_pubkey_to_uncompressed(pubkey)
+                # print(f"msg: : {msg}")
+                # print(f"msg_hash: : {msg_hash}")
+                print(f"pubkey_xy: : {pubkey_xy}")
+                # verify_sig(der_sig, pubkey, bytes.fromhex(msg_hash))
+                # print(verify_signature(der_sig, pubkey, msg))
+                print(verify_sig(der_sig, pubkey, msg))
             # return verify_sig(stack[0], stack[1], bytes.fromhex(txn_data))
 
         if i == "OP_PUSHBYTES_20":
@@ -166,7 +212,7 @@ file_path = os.path.join('mempool', "0a8b21af1cfcc26774df1f513a72cd362a14f5a598e
 if os.path.exists(file_path):
     with open(file_path, 'r') as file:
         txn_data = json.load(file)
-
+        print(txn_data)
 scriptsig_asm = txn_data["vin"][0]["scriptsig_asm"].split(" ")
 # scriptsig = txn_data["vin"][0]["scriptsig"]
 scriptpubkey_asm = txn_data["vin"][0]["prevout"]["scriptpubkey_asm"].split(" ")
