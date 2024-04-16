@@ -4,11 +4,21 @@ import ecdsa
 import hashlib
 # from src.helper import pubKey_uncompressor as xy
 
+import coincurve
+
 import ecdsa.util
 from ecdsa.util import sigdecode_der
 
 import pycoin
 from pycoin.ecdsa.secp256k1 import secp256k1_generator
+
+# import coincurve 
+
+def validate_signature(signature, message, publicKey):
+    b_sig = bytes.fromhex(signature)
+    b_msg = bytes.fromhex(message)
+    b_pub = bytes.fromhex(publicKey)
+    return coincurve.verify_signature(b_sig, b_msg, b_pub)
 
 # def verify_signature(signature, public_key, message):
 #     x, y = sec_to_public_pair(public_key)
@@ -143,11 +153,10 @@ def _little_endian(num, size):
 #     except Exception as e:
 #         print("ERROR (Signature verification)::> ", e)
 #         return False
-def verify_signature(signature, public_key, message):
-    vk = ecdsa.VerifyingKey.from_string(bytes.fromhex(public_key), curve=ecdsa.SECP256k1, hashfunc=hashlib.sha256)
+def rs(signature):
     r, s = sigdecode_der(bytes.fromhex(signature), secp256k1_generator.order)
     print(f"r: {r}, s: {s}")
-    return vk.verify(ecdsa.util.sigencode_der(r, s, secp256k1_generator.order), bytes.fromhex(message))
+    return (r, s)
 
 
 
@@ -201,13 +210,20 @@ def validate_p2pkh_txn(signature, pubkey, scriptpubkey_asm, txn_data):
             if signature[-2:] == "01":
                 der_sig = signature[:-2]
                 msg = txn_data + "01000000"
-                msg_hash = hashlib.sha256(hashlib.sha256(bytes.fromhex(msg)).digest()).digest().hex()
-                pubkey_xy = compressed_pubkey_to_uncompressed(pubkey)
+                msg_hash = hashlib.sha256(bytes.fromhex(msg)).digest().hex()
+                # pubkey_xy = compressed_pubkey_to_uncompressed(pubkey)
                 # print(f"msg: : {msg}")
                 # print(f"msg_hash: : {msg_hash}")
-                print(f"pubkey_xy: : {pubkey_xy}")
+                # print(f"pubkey_xy: : {pubkey_xy}")
                 # verify_sig(der_sig, pubkey, bytes.fromhex(msg_hash))
-                print(verify_signature(der_sig, pubkey, msg))
+                # print(verify_signature(der_sig, pubkey, msg))
+                # print(verify_signature(der_sig, pubkey, msg))
+                print(f"der_sig ::> {der_sig}")
+                print(f"msg     ::> {msg}")
+                print(f"msg_hash::> {msg_hash}")
+                print(f"pubkey  ::> {pubkey}")
+                # print(validate_signature(rs(der_sig), msg_hash, compressed_pubkey_to_uncompressed(pubkey)))
+                print(validate_signature(der_sig, msg_hash, pubkey))
                 # print(verify_sig(der_sig, pubkey, msg))
             # return verify_sig(stack[0], stack[1], bytes.fromhex(txn_data))
 
@@ -220,7 +236,7 @@ def validate_p2pkh_txn(signature, pubkey, scriptpubkey_asm, txn_data):
 # file_path = os.path.join('mempool', "1ccd927e58ef5395ddef40eee347ded55d2e201034bc763bfb8a263d66b99e5e.json") # file path
 file_path = os.path.join('mempool', "0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240.json") # file path
 if os.path.exists(file_path):
-    with open(file_path, 'r') as file:
+    with open(file_path, 'r') as file: 
         txn_data = json.load(file)
         print(txn_data)
 scriptsig_asm = txn_data["vin"][0]["scriptsig_asm"].split(" ")
