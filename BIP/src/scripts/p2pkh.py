@@ -18,8 +18,8 @@ def create_raw_txn_hash(txn_id):
             for iN in data["vin"]:
                 txn_hash += f"{bytes.fromhex(iN['txid'])[::-1].hex()}"
                 txn_hash += f"{_little_endian(iN['vout'], 4)}"
-                txn_hash += f"{_to_compact_size(len(iN['prevout']["scriptpubkey"])//2)}" # FLAG@> maybe not divided by 2
-                txn_hash += f"{iN['scriptsig']['prevout']["scriptpubkey"]}"
+                txn_hash += f"{_to_compact_size(len(iN['prevout']['scriptpubkey'])//2)}" # FLAG@> maybe not divided by 2
+                txn_hash += f"{iN['prevout']['scriptpubkey']}"
                 txn_hash += f"{_little_endian(iN['sequence'], 4)}"
 
             # No. of outputs
@@ -180,7 +180,6 @@ print(validate_p2pkh_txn(scriptsig_asm[1], scriptsig_asm[3], scriptpubkey_asm, c
 """
 30450221008f619822a97841ffd26eee942d41c1c4704022af2dd42600f006336ce686353a0220659476204210b21d605baab00bef7005ff30e878e911dc99413edb6c1e022acd01
 
-02000000 01 25c9f7c56ab4b9c358cb159175de542b41c7d38bf862a045fa5da51979e37ffb 01000000 6b4830450221008f619822a97841ffd26eee942d41c1c4704022af2dd42600f006336ce686353a0220659476204210b21d605baab00bef7005ff30e878e911dc99413edb6c1e022acd012102c371793f2e19d1652408efef67704a2e9953a43a9dd54360d56fc93277a5667dffffffff0254e80500000000001976a9141ef7874d338d24ecf6577e6eadeeee6cd579c67188acc8910000000000001976a9142e391b6c47778d35586b1f4154cbc6b06dc9840c88ac0000000001000000
-01000000 01 b7994a0db2f373a29227e1d90da883c6ce1cb0dd2d6812e4558041ebbbcfa54b 00000000 19 76a9144299ff317fcd12ef19047df66d72454691797bfc88ac ffffffff 01 983a000000000000 19 76a914b3e2819b6262e0b1f19fc7229d75677f347c91ac88ac 00000000 01000000
-                                                                                         76a914286eb663201959fb12eff504329080e4c56ae28788ac
+02000000 01 25c9f7c56ab4b9c358cb159175de542b41c7d38bf862a045fa5da51979e37ffb 01000000 19 76a914286eb663201959fb12eff504329080e4c56ae28788ac ffffffff 02 54e8050000000000 19 76a9141ef7874d338d24ecf6577e6eadeeee6cd579c67188ac c891000000000000 19 76a9142e391b6c47778d35586b1f4154cbc6b06dc9840c88ac 00000000 01000000
+01000000 01 b7994a0db2f373a29227e1d90da883c6ce1cb0dd2d6812e4558041ebbbcfa54b 00000000 19 76a9144299ff317fcd12ef19047df66d72454691797bfc88ac ffffffff 01 983a000000000000 19 76a914b3e2819b6262e0b1f19fc7229d75677f347c91ac88ac 00000000 01000000       
 """
