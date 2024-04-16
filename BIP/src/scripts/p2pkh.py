@@ -17,50 +17,52 @@ def segwit_txn_data(txn_id):
         with open(file_path, 'r') as f:
             data = json.load(f)
             # Version
-            txn_hash += f"{_little_endian(data['version'], 4)}"
+            ver += f"{_little_endian(data['version'], 4)}"
 
+            # HASH256 (txid + vout) || HASH256 (sequece)
             serialized_txid_vout = ""
+            serialized_sequese= ""
             for iN in data["vin"]:
                 serialized_txid_vout += f"{bytes.fromhex(iN['txid'])[::-1].hex()}"
                 serialized_txid_vout += f"{_little_endian(iN['vout'], 4)}"
+                serialized_sequese += f"{_little_endian(iN['sequence'], 4)}"
                 # serialized_txid_vout += " "
+            
+            # Outputs
+            serialized_output= ""
+            for out in data["vout"]:
+                serialized_output += f"{_little_endian(out['value'], 8)}"
+                serialized_output += f"{_to_compact_size(len(out['scriptpubkey'])//2)}"
+                serialized_output += f"{out['scriptpubkey']}"
+            locktime = f"{_little_endian(data['locktime'], 4)}"
             print(serialized_txid_vout)
+            print(serialized_sequese)
+            print(serialized_output)
             hash256_stv = hashlib.sha256(hashlib.sha256(bytes.fromhex(serialized_txid_vout)).digest()).digest().hex()
-            print(f"hash256::> {hash256_stv}")
+            hash256_seq = hashlib.sha256(hashlib.sha256(bytes.fromhex(serialized_sequese)).digest()).digest().hex()
+            hash256_out = hashlib.sha256(hashlib.sha256(bytes.fromhex(serialized_output)).digest()).digest().hex()
+            # serialized_txid_vout
+
+
+            print(f"hash256 (txid + vout)::> {hash256_stv}")
+            print(f"hash256 (sequesnce)  ::> {hash256_seq}")
+
+            # preimage = version + hash256(inputs) + hash256(sequences) + input + scriptcode + amount + sequence + hash256(outputs) + locktime
+            preimage = ver + hash256_stv + hash256_seq + hash256_out + serialized_txid_vout + locktime
     return txn_hash
-            # # MArker + flag
-            # txn_hash += "0001"
-            # # No. of inputs:
-            # txn_hash += f"{str(_to_compact_size(len(data['vin'])))}"
-            # # Inputs
-            # for iN in data["vin"]:
-            #     txn_hash += f"{bytes.fromhex(iN['txid'])[::-1].hex()}"
-            #     txn_hash += f"{_little_endian(iN['vout'], 4)}"
-            #     txn_hash += f"{_to_compact_size(len(iN['prevout']['scriptpubkey'])//2)}" # FLAG@> maybe not divided by 2
-            #     txn_hash += f"{iN['prevout']['scriptpubkey']}"
-            #     txn_hash += f"{_little_endian(iN['sequence'], 4)}"
 
-            # # No. of outputs
-            # txn_hash += f"{str(_to_compact_size(len(data['vout'])))}"
+"""
 
-            # # Outputs
-            # for out in data["vout"]:
-            #     txn_hash += f"{_little_endian(out['value'], 8)}"
-            #     txn_hash += f"{_to_compact_size(len(out['scriptpubkey'])//2)}"
-            #     txn_hash += f"{out['scriptpubkey']}"
+    P2PKH (legacy) - Lock the output to the hash of a public key. To unlock you need to provide the original public key and a valid signature.
+    Example: 76a914{publickeyhash}88ac
+    P2SH (legacy) - Lock the output to the hash of a custom script. To unlock you need to provide the original script along with the script that satisfies it.
+    Example: a914{scripthash}87
+    P2WPKH - Lock the output to the hash of a public key. Works the same as a P2PKH, but the unlocking code goes in the witness field instead of the scriptsig field.
+    Example: 0014{publickeyhash}
+    P2WSH - Lock the output to the hash of a custom script. Works the same as a P2SH, but the unlocking code goes in the witness field instead of the scriptsig field.
+    Example: 0020{scripthash}
 
-            # # # witness
-            # # for i in data["vin"]:
-            # #     if "witness" in i and i["witness"]:
-            # #         txn_hash += f"{_to_compact_size(len(i['witness']))}"
-            # #         for j in i["witness"]:
-            # #             txn_hash += f"{_to_compact_size(len(j) // 2)}"
-            # #             txn_hash += f"{j}"
-
-            # # Locktime
-            # txn_hash += f"{_little_endian(data['locktime'], 4)}"
-            # # print(f"txn_hash: {txn_hash}")
-
+"""
 
 def legacy_txn_data(txn_id):
     txn_hash = ""
@@ -188,6 +190,12 @@ print(legacy_txn_data(filename))
 print(validate_p2pkh_txn(scriptsig_asm[1], scriptsig_asm[3], scriptpubkey_asm, legacy_txn_data(filename)))
 
 """
+STEPS::>
+* serialize the TXID+VOUT for the specific input we want to create a signature for.
+* sequence field for the input we're creating the signature for.
+
+
+
 02000000 0001 02 659a6eaf8d943ad2ff01ec8c79aaa7cb4f57002d49d9b8cf3c9a7974c5bd3608 06000000 19 76a9147db10cfe69dae5e67b85d7b59616056e68b3512288ac fdffffff 2cbc395e5c16b1204f1ced9c0d1699abf5abbbb6b2eee64425c55252131df6c4 00000000 16 00146dee3ed7e9a03ad379f2f78d13138f9141c794ed fdffffff 01 878a03000000000017a914f043430ec4acf2cc3233309bbd1e43ae5efc81748700000000
 020000000125c9f7c56ab4b9c358cb159175de542b41c7d38bf862a045fa5da51979e37ffb010000001976a914286eb663201959fb12eff504329080e4c56ae28788acffffffff0254e80500000000001976a9141ef7874d338d24ecf6577e6eadeeee6cd579c67188acc8910000000000001976a9142e391b6c47778d35586b1f4154cbc6b06dc9840c88ac00000000
 """
