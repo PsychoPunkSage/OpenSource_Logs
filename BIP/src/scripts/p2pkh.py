@@ -9,15 +9,27 @@ def validate_signature(signature, message, publicKey):
     b_pub = bytes.fromhex(publicKey)
     return coincurve.verify_signature(b_sig, b_msg, b_pub)
 
-def segwit_txn_data(txn_id):
-    txn_hash = ""
+def _to_compact_size(value):
+    if value < 0xfd:
+        return value.to_bytes(1, byteorder='little').hex()
+    elif value <= 0xffff:
+        return (0xfd).to_bytes(1, byteorder='little').hex() + value.to_bytes(2, byteorder='little').hex()
+    elif value <= 0xffffffff:
+        return (0xfe).to_bytes(1, byteorder='little').hex() + value.to_bytes(4, byteorder='little').hex()
+    else:
+        return (0xff).to_bytes(1, byteorder='little').hex() + value.to_bytes(8, byteorder='little').hex()
 
+def _little_endian(num, size):
+    return num.to_bytes(size, byteorder='little').hex()
+
+
+def segwit_txn_data(txn_id):
     file_path = os.path.join("mempool", f"{txn_id}.json")
     if os.path.exists(file_path):
         with open(file_path, 'r') as f:
             data = json.load(f)
             # Version
-            ver += f"{_little_endian(data['version'], 4)}"
+            ver = f"{_little_endian(data['version'], 4)}"
 
             # HASH256 (txid + vout) || HASH256 (sequece)
             serialized_txid_vout = ""
@@ -26,7 +38,6 @@ def segwit_txn_data(txn_id):
                 serialized_txid_vout += f"{bytes.fromhex(iN['txid'])[::-1].hex()}"
                 serialized_txid_vout += f"{_little_endian(iN['vout'], 4)}"
                 serialized_sequese += f"{_little_endian(iN['sequence'], 4)}"
-                # serialized_txid_vout += " "
             
             # Outputs
             serialized_output= ""
@@ -34,10 +45,22 @@ def segwit_txn_data(txn_id):
                 serialized_output += f"{_little_endian(out['value'], 8)}"
                 serialized_output += f"{_to_compact_size(len(out['scriptpubkey'])//2)}"
                 serialized_output += f"{out['scriptpubkey']}"
+
+            ###############################################################################
+            # TXN Specific #
+            pkh = f"{data['vin'][0]['prevout']['scriptpubkey'][6:-4]}" 
+            scriptcode = f"1976a914{pkh}88ac"
+
+            in_amt = f"{_little_endian(data['vin'][0]['prevout']['value'], 8)}"
+
+            sequence_txn = f"{_little_endian(data['vin'][0]['sequence'], 4)}"
+            ###############################################################################
+
             locktime = f"{_little_endian(data['locktime'], 4)}"
             print(serialized_txid_vout)
             print(serialized_sequese)
             print(serialized_output)
+            print(sequence_txn)
             hash256_stv = hashlib.sha256(hashlib.sha256(bytes.fromhex(serialized_txid_vout)).digest()).digest().hex()
             hash256_seq = hashlib.sha256(hashlib.sha256(bytes.fromhex(serialized_sequese)).digest()).digest().hex()
             hash256_out = hashlib.sha256(hashlib.sha256(bytes.fromhex(serialized_output)).digest()).digest().hex()
@@ -46,11 +69,20 @@ def segwit_txn_data(txn_id):
 
             print(f"hash256 (txid + vout)::> {hash256_stv}")
             print(f"hash256 (sequesnce)  ::> {hash256_seq}")
+            print(f"hash256 (output)     ::> {hash256_out}")
 
             # preimage = version + hash256(inputs) + hash256(sequences) + input + scriptcode + amount + sequence + hash256(outputs) + locktime
-            preimage = ver + hash256_stv + hash256_seq + hash256_out + serialized_txid_vout + locktime
-    return txn_hash
+            preimage = ver + hash256_stv + hash256_seq + serialized_txid_vout + scriptcode + in_amt + sequence_txn + hash256_out + locktime
+            preimage += "01000000"
+            print(f"preimage ::> {preimage}")
+    return hashlib.sha256(bytes.fromhex(preimage)).digest().hex()
 
+"""
+02000000 f81369411d3fba4eb8575cc858ead8a859ef74b94e160a036b8c1c5b023a6fae 957879fdce4d8ab885e32ff307d54e75884da52522cc53d3c4fdb60edb69a098 659a6eaf8d943ad2ff01ec8c79aaa7cb4f57002d49d9b8cf3c9a7974c5bd3608:06000000-2cbc395e5c16b1204f1ced9c0d1699abf5abbbb6b2eee64425c55252131df6c4:00000000 1976a914-7db10cfe69dae5e67b85d7b59616056e68b35122-88ac f1a2010000000000 fdffffff 0f38c28e7d8b977cd40352d825270bd20bcef66ceac3317f2b2274d26f973f0f 00000000 01000000
+02000000 cbfaca386d65ea7043aaac40302325d0dc7391a73b585571e28d3287d6b16203 3bb13029ce7b1f559ef5e747fcac439f1455a2ec7c5f09b72290795e70665044 ac4994014aa36b7f53375658ef595b3cb2891e1735fe5b441686f5e53338e76a:01000000                                                                           1976a914-aa966f56de599b4094b61aa68a2b3df9e97e9c48-88ac 3075000000000000 ffffffff 900a6c6ff6cd938bf863e50613a4ed5fb1661b78649fe354116edaf5d4abb952 00000000 01000000
+"""
+
+print(segwit_txn_data("1ccd927e58ef5395ddef40eee347ded55d2e201034bc763bfb8a263d66b99e5e"))
 """
 
     P2PKH (legacy) - Lock the output to the hash of a public key. To unlock you need to provide the original public key and a valid signature.
@@ -96,20 +128,6 @@ def legacy_txn_data(txn_id):
             txn_hash += f"{_little_endian(data['locktime'], 4)}"
     return txn_hash
 
-def _to_compact_size(value):
-    if value < 0xfd:
-        return value.to_bytes(1, byteorder='little').hex()
-    elif value <= 0xffff:
-        return (0xfd).to_bytes(1, byteorder='little').hex() + value.to_bytes(2, byteorder='little').hex()
-    elif value <= 0xffffffff:
-        return (0xfe).to_bytes(1, byteorder='little').hex() + value.to_bytes(4, byteorder='little').hex()
-    else:
-        return (0xff).to_bytes(1, byteorder='little').hex() + value.to_bytes(8, byteorder='little').hex()
-
-def _little_endian(num, size):
-    return num.to_bytes(size, byteorder='little').hex()
-
-print(segwit_txn_data("1ccd927e58ef5395ddef40eee347ded55d2e201034bc763bfb8a263d66b99e5e"))
 # def rs(signature):
 #     r, s = sigdecode_der(bytes.fromhex(signature), secp256k1_generator.order)
 #     print(f"r: {r}, s: {s}")
@@ -186,8 +204,8 @@ if os.path.exists(file_path):
         txn_data = json.load(file)
 scriptsig_asm = txn_data["vin"][0]["scriptsig_asm"].split(" ")
 scriptpubkey_asm = txn_data["vin"][0]["prevout"]["scriptpubkey_asm"].split(" ")
-print(legacy_txn_data(filename))
-print(validate_p2pkh_txn(scriptsig_asm[1], scriptsig_asm[3], scriptpubkey_asm, legacy_txn_data(filename)))
+# print(legacy_txn_data(filename))
+# print(validate_p2pkh_txn(scriptsig_asm[1], scriptsig_asm[3], scriptpubkey_asm, legacy_txn_data(filename)))
 
 """
 STEPS::>
