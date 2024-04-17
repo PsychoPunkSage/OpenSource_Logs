@@ -74,9 +74,10 @@ def segwit_txn_data(txn_id):
 
             # preimage = version + hash256(inputs) + hash256(sequences) + input + scriptcode + amount + sequence + hash256(outputs) + locktime
             preimage = ver + hash256_in + hash256_seq + ser_tx_vout_sp + scriptcode + in_amt + sequence_txn + hash256_out + locktime
-            preimage += "01000000"
-            print(f"preimage 11111 ::> {preimage}")
-    return hashlib.sha256(bytes.fromhex(preimage)).digest().hex()
+            # preimage += "01000000"
+            # print(f"preimage 11111 ::> {preimage}")
+    # return hashlib.sha256(bytes.fromhex(preimage)).digest().hex()
+    return preimage
 
 """
 ORG::> 02000000 cbfaca386d65ea7043aaac40302325d0dc7391a73b585571e28d3287d6b16203 3bb13029ce7b1f559ef5e747fcac439f1455a2ec7c5f09b72290795e70665044 ac4994014aa36b7f53375658ef595b3cb2891e1735fe5b441686f5e53338e76a:01000000 1976a914aa966f56de599b4094b61aa68a2b3df9e97e9c4888ac 3075000000000000 ffffffff 900a6c6ff6cd938bf863e50613a4ed5fb1661b78649fe354116edaf5d4abb952 00000000 01000000
@@ -190,6 +191,7 @@ def validate_p2pkh_txn(signature, pubkey, scriptpubkey_asm, txn_data):
                 msg_hash = hashlib.sha256(bytes.fromhex(msg)).digest().hex()
                 print(der_sig) 
                 print(pubkey) 
+                print(msg)
                 print(msg_hash)
                 return validate_signature(der_sig, msg_hash, pubkey)
 
@@ -210,15 +212,14 @@ if os.path.exists(file_path):
 scriptsig_asm = txn_data["vin"][0]["scriptsig_asm"].split(" ")
 scriptpubkey_asm = txn_data["vin"][0]["prevout"]["scriptpubkey_asm"].split(" ")
 print(legacy_txn_data(filename))
-print(f"p2pkh::> {validate_p2pkh_txn(scriptsig_asm[1], scriptsig_asm[3], scriptpubkey_asm, legacy_txn_data(filename))}")
+print(f"p2pkh::> {validate_p2pkh_txn(scriptsig_asm[1], scriptsig_asm[3], scriptpubkey_asm, segwit_txn_data(filename))}")
 
 """
 STEPS::>
 * serialize the TXID+VOUT for the specific input we want to create a signature for.
 * sequence field for the input we're creating the signature for.
 
+02000000 f81369411d3fba4eb8575cc858ead8a859ef74b94e160a036b8c1c5b023a6fae 957879fdce4d8ab885e32ff307d54e75884da52522cc53d3c4fdb60edb69a098 659a6eaf8d943ad2ff01ec8c79aaa7cb4f57002d49d9b8cf3c9a7974c5bd3608:06000000 1976a9147db10cfe69dae5e67b85d7b59616056e68b3512288ac f1a2010000000000 fdffffff 0f38c28e7d8b977cd40352d825270bd20bcef66ceac3317f2b2274d26f973f0f 00000000 01000000
 
-
-02000000 0001 02 659a6eaf8d943ad2ff01ec8c79aaa7cb4f57002d49d9b8cf3c9a7974c5bd3608 06000000 19 76a9147db10cfe69dae5e67b85d7b59616056e68b3512288ac fdffffff 2cbc395e5c16b1204f1ced9c0d1699abf5abbbb6b2eee64425c55252131df6c4 00000000 16 00146dee3ed7e9a03ad379f2f78d13138f9141c794ed fdffffff 01 878a03000000000017a914f043430ec4acf2cc3233309bbd1e43ae5efc81748700000000
-020000000125c9f7c56ab4b9c358cb159175de542b41c7d38bf862a045fa5da51979e37ffb010000001976a914286eb663201959fb12eff504329080e4c56ae28788acffffffff0254e80500000000001976a9141ef7874d338d24ecf6577e6eadeeee6cd579c67188acc8910000000000001976a9142e391b6c47778d35586b1f4154cbc6b06dc9840c88ac00000000
+02000000 f81369411d3fba4eb8575cc858ead8a859ef74b94e160a036b8c1c5b023a6fae 957879fdce4d8ab885e32ff307d54e75884da52522cc53d3c4fdb60edb69a098 659a6eaf8d943ad2ff01ec8c79aaa7cb4f57002d49d9b8cf3c9a7974c5bd3608:06000000 1976a9147db10cfe69dae5e67b85d7b59616056e68b3512288ac f1a2010000000000 fdffffff 0f38c28e7d8b977cd40352d825270bd20bcef66ceac3317f2b2274d26f973f0f 00000000 01000000
 """
