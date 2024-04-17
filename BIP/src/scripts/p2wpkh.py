@@ -51,15 +51,15 @@ def segwit_txn_data(txn_id):
             ###############################################################################
             # TXN Specific #
             ## TXID and VOUT for the REQUIRED_input
-            ser_tx_vout_sp = f"{bytes.fromhex(data['vin'][1]['txid'])[::-1].hex()}{_little_endian(data['vin'][1]['vout'], 4)}"
+            ser_tx_vout_sp = f"{bytes.fromhex(data['vin'][0]['txid'])[::-1].hex()}{_little_endian(data['vin'][0]['vout'], 4)}"
             print(ser_tx_vout_sp)
             ## Scriptcode
-            pkh = f"{data['vin'][1]['prevout']['scriptpubkey'][4:]}" 
+            pkh = f"{data['vin'][0]['prevout']['scriptpubkey'][4:]}" 
             scriptcode = f"1976a914{pkh}88ac"
             ## Input amount
-            in_amt = f"{_little_endian(data['vin'][1]['prevout']['value'], 8)}"
+            in_amt = f"{_little_endian(data['vin'][0]['prevout']['value'], 8)}"
             ## SEQUENCE for the REQUIRED_input
-            sequence_txn = f"{_little_endian(data['vin'][1]['sequence'], 4)}"
+            sequence_txn = f"{_little_endian(data['vin'][0]['sequence'], 4)}"
             ###############################################################################
 
             # Outputs
@@ -92,14 +92,15 @@ def validate_p2wpkh_txn(witness, wit_scriptpubkey_asm, txn_data):
 
     return p2pkh.validate_p2pkh_txn(wit_sig, wit_pubkey,scriptpubkey_asm, txn_data)
 
-filename = "1ccd927e58ef5395ddef40eee347ded55d2e201034bc763bfb8a263d66b99e5e"
+# filename = "1ccd927e58ef5395ddef40eee347ded55d2e201034bc763bfb8a263d66b99e5e"
+filename = "0a3fd98f8b3d89d2080489d75029ebaed0c8c631d061c2e9e90957a40e99eb4c"
 file_path = os.path.join('mempool', f"{filename}.json") # file path
 if os.path.exists(file_path):
     with open(file_path, 'r') as file: 
         txn_data = json.load(file)
 
-wit = txn_data["vin"][1]["witness"]
-wit_asm = txn_data["vin"][1]["prevout"]["scriptpubkey_asm"]
+wit = txn_data["vin"][0]["witness"]
+wit_asm = txn_data["vin"][0]["prevout"]["scriptpubkey_asm"]
 txn_data = segwit_txn_data(filename)
 
 print(f"p2wpkh::> {validate_p2wpkh_txn(wit, wit_asm, txn_data)}")
