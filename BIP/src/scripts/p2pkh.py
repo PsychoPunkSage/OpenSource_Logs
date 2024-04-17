@@ -74,9 +74,6 @@ def segwit_txn_data(txn_id):
 
             # preimage = version + hash256(inputs) + hash256(sequences) + input + scriptcode + amount + sequence + hash256(outputs) + locktime
             preimage = ver + hash256_in + hash256_seq + ser_tx_vout_sp + scriptcode + in_amt + sequence_txn + hash256_out + locktime
-            # preimage += "01000000"
-            # print(f"preimage 11111 ::> {preimage}")
-    # return hashlib.sha256(bytes.fromhex(preimage)).digest().hex()
     return preimage
 
 """
