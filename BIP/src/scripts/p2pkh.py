@@ -182,7 +182,7 @@ def validate_p2pkh_txn(signature, pubkey, scriptpubkey_asm, txn_data):
         if i == "OP_CHECKSIG":
             print("===========")
             print("OP_CHECKSIG")
-            if signature[-2:] == "01": # SIGHASH_ALL
+            if signature[-2:] == "01": # SIGHASH_ALL ONLY
                 der_sig = signature[:-2]
                 msg = txn_data + "01000000"
                 msg_hash = hashlib.sha256(bytes.fromhex(msg)).digest().hex()
