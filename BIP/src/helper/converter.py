@@ -24,3 +24,9 @@ def to_hash160(hex_input):
 
 def to_hash256(hex_input):
     return hashlib.sha256(hashlib.sha256(bytes.fromhex(hex_input)).digest()).digest().hex()
+
+def to_sha256(hex_input):
+    return hashlib.sha256(bytes.fromhex(hex_input)).digest().hex()
+
+def to_reverse_bytes_string(hex_input):
+    return bytes.fromhex(hex_input)[::-1].hex()
