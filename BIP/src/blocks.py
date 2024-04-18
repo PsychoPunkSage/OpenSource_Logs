@@ -3,8 +3,92 @@ import json
 import time
 import hashlib
 import validate_txn
+import helper.converter as convert
 
 DIFFICULTY = "0000ffff00000000000000000000000000000000000000000000000000000000"
+
+def raw_block_data(txn_ids, nonce):
+    block_header = ""
+
+    ## Version : 4 ##
+    block_header += "02000000"
+
+    # Previous block :32 ## here = 0000000000000000000000000000000000000000000000000000000000000000
+    prev_block_hash = "0000000000000000000000000000000000000000000000000000000000000000"
+    block_header += f"{prev_block_hash}"
+
+    ## Merkle root :32 ##
+
+    ## time :4 ##
+    uinx_timestamap = int(time.time())
+    block_header += f"{convert.to_little_endian(uinx_timestamap, 4)}"
+
+    ## bits :4 ##
+    bits = "1f00ffff" # related to difficulty
+    block_header += f"{bits}"
+
+    ## Nonce :4 ##
+    block_header += f"{convert.to_little_endian(nonce, 4)}"
+
+    ## Transaction Count ##
+    txn_count = len(txn_ids)
+    block_header += f"{convert.to_little_endian(txn_count, 4)}"
+
+    ## Transaction IDs ##
+    for txn_id in txn_ids:
+        block_header += f"{convert.to_compact_size(txn_id)}"
+
+    return block_header
+
+    ## Transactions ##
+    # Coinbase transaction
+
+    # Regular Transactions
+
+"""
+Block Hash::> - double-SHA256'ing the block header
+              - the block hash is in reverse byte order when searching for a block in a block explorer.
+              - block hash must get below the current target for the block to get added on to the blockchain.
+"""
+
+
+def mine(txn_ids):
+    nonce = 0
+    while raw_block_data(txn_ids, nonce) > DIFFICULTY:
+        nonce += 1
+    return raw_block_data(txn_ids, nonce)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ##############
 # Block init #
@@ -103,7 +187,7 @@ def create_coinbase_txn_data(txn_list):
     sequence = "ffffffff"
 
     out_count = "01"
-    out_amt = f"{validate_txn._little_endian(reward, 8)}"
+    out_amt = f"{validate_txn.to_little_endian(reward, 8)}"
 
     return version+in_count+in_txnId+vout+scriptsig_size+scriptsig+sequence+out_count+out_amt
 
