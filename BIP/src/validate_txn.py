@@ -132,6 +132,18 @@ def get_txn_id(txn_id):
     txnId = hashlib.sha256(bytes.fromhex(reversed_bytes)).digest().hex() # last sha256
     return txnId
 
+#######################
+## Segwit/Non-Segwit ##
+#######################
+def is_segwit(txn_id):
+    txn_data = create_raw_txn_hash(txn_id) # get raw txn_data
+    # print(txn_data) # print
+    # print(txn_data[8:12])
+    if txn_data[8:12] == "0001":
+        return True
+    return False
+
+print(f"is_segwit::> {is_segwit('0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240')}")
 
 def validate(txnId):
 
@@ -174,6 +186,15 @@ def validate(txnId):
     ########################
     if txnId != get_txn_id(txnId):
         return False
+    
+    ############################
+    ## TXN INPUT VERIFICATION ##    
+    ############################
+
+    ## P2PKH:
+    # for i in txn_data["vin"]:
+
+
     return True
 
 
