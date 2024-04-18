@@ -1,5 +1,8 @@
 import os
 import validate_txn
+# import helper.merkle_root as merkle 
+# import helper.converter as convert
+# import helper.get_txn_id as tx_id
 '''
 @title read transaction form mempool
 @notice parses each json object in `mempool` and append an internal list with all txn_ids
@@ -24,8 +27,17 @@ def list_valid_txn():
     for txn_id in unchecked_txn_ids:
         if validate_txn.validate(txn_id):
             valid_txn_ids.append(txn_id)
+
+
     return valid_txn_ids
 
 
-# print(list_valid_txn())
-# print(len(list_valid_txn())) # p2pkh - 311
+
+# lst = list_valid_txn()
+# a_lst = [tx_id.get_txn_id(i) for i in lst]
+# with open('output.txt', 'w') as f:
+#     for txn_id in a_lst:
+#         f.write(txn_id + '\n')
+
+# CalculatedMerkleRoot = str(merkle.merkleCalculator(a_lst), 'utf-8')
+# print('Calculated MerkleRoot : ' + CalculatedMerkleRoot)
