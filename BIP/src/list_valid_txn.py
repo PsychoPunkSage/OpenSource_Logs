@@ -11,6 +11,7 @@ def read_transactions():
     try:
         for filename in os.listdir(mempool_dir):
             with open(os.path.join(mempool_dir, filename), "r") as file:
+                # locktime ka locha #
                 txn_ids.append(filename[:-5])
         return txn_ids
     except Exception as e:
@@ -26,5 +27,5 @@ def list_valid_txn():
     return valid_txn_ids
 
 
-print(list_valid_txn())
-print(len(list_valid_txn())) # p2pkh - 311
+# print(list_valid_txn())
+# print(len(list_valid_txn())) # p2pkh - 311
