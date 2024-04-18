@@ -128,10 +128,6 @@ def legacy_txn_data(txn_id):
             txn_hash += f"{_little_endian(data['locktime'], 4)}"
     return txn_hash
 
-# def rs(signature):
-#     r, s = sigdecode_der(bytes.fromhex(signature), secp256k1_generator.order)
-#     print(f"r: {r}, s: {s}")
-#     return (r, s)
 
 def hash160(hex_input):
     # print(hex_input)
@@ -155,61 +151,102 @@ def validate_p2pkh_txn(signature, pubkey, scriptpubkey_asm, txn_data):
     for i in scriptpubkey_asm:
         if i == "OP_DUP":
             stack.append(stack[-1])
-            print("===========")
-            print("OP_DUP")
-            print(stack)
+            # print("===========")
+            # print("OP_DUP")
+            # print(stack)
 
         if i == "OP_HASH160":
-            print("===========")
-            print("OP_HASH160")
+            # print("===========")
+            # print("OP_HASH160")
             ripemd160_hash = hash160(stack[-1])
             stack.pop(-1)
-            print(stack)
+            # print(stack)
             stack.append(ripemd160_hash)
-            print(stack)
+            # print(stack)
 
         if i == "OP_EQUALVERIFY":
-            print("===========")
-            print("OP_EQUALVERIFY")
+            # print("===========")
+            # print("OP_EQUALVERIFY")
             if stack[-1] != stack[-2]:
                 return False
             else:
                 stack.pop(-1)
-                print(stack)
+                # print(stack)
                 stack.pop(-1)
-                print(stack)
+                # print(stack)
 
         if i == "OP_CHECKSIG":
-            print("===========")
-            print("OP_CHECKSIG")
+            # print("===========")
+            # print("OP_CHECKSIG")
             if signature[-2:] == "01": # SIGHASH_ALL ONLY
                 der_sig = signature[:-2]
                 msg = txn_data + "01000000"
                 msg_hash = hashlib.sha256(bytes.fromhex(msg)).digest().hex()
-                print(der_sig) 
-                print(pubkey) 
-                print(msg)
-                print(msg_hash)
+                # print(der_sig) 
+                # print(pubkey) 
+                # print(msg)
+                # print(msg_hash)
                 return validate_signature(der_sig, msg_hash, pubkey)
 
         if i == "OP_PUSHBYTES_20":
-            print("===========")
-            print("OP_PUSHBYTES_20")
+            # print("===========")
+            # print("OP_PUSHBYTES_20")
             stack.append(scriptpubkey_asm[scriptpubkey_asm.index("OP_PUSHBYTES_20") + 1])
-            print(stack)
+            # print(stack)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# def rs(signature):
+#     r, s = sigdecode_der(bytes.fromhex(signature), secp256k1_generator.order)
+#     print(f"r: {r}, s: {s}")
+#     return (r, s)
+
+
+
+
+# def legacy_p2pkh_txn_validation(signature, pubkey, scriptpubkey_asm, )
 ###<INJECTION>###
-# file_path = os.path.join('mempool', "0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240.json") # file path
-filename = "1ccd927e58ef5395ddef40eee347ded55d2e201034bc763bfb8a263d66b99e5e"
+# filename = "1ccd927e58ef5395ddef40eee347ded55d2e201034bc763bfb8a263d66b99e5e"
 # filename = "0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240"
-file_path = os.path.join('mempool', f"{filename}.json") # file path
-if os.path.exists(file_path):
-    with open(file_path, 'r') as file: 
-        txn_data = json.load(file)
-scriptsig_asm = txn_data["vin"][0]["scriptsig_asm"].split(" ")
-scriptpubkey_asm = txn_data["vin"][0]["prevout"]["scriptpubkey_asm"].split(" ")
-print(legacy_txn_data(filename))
-print(f"p2pkh::> {validate_p2pkh_txn(scriptsig_asm[1], scriptsig_asm[3], scriptpubkey_asm, segwit_txn_data(filename))}")
+# file_path = os.path.join('mempool', f"{filename}.json") # file path
+# if os.path.exists(file_path):
+#     with open(file_path, 'r') as file: 
+#         txn_data = json.load(file)
+# scriptsig_asm = txn_data["vin"][0]["scriptsig_asm"].split(" ")
+# scriptpubkey_asm = txn_data["vin"][0]["prevout"]["scriptpubkey_asm"].split(" ")
+# print(legacy_txn_data(filename))
+# print(f"p2pkh::> {validate_p2pkh_txn(scriptsig_asm[1], scriptsig_asm[3], scriptpubkey_asm, legacy_txn_data(filename))}")
 
 """
 STEPS::>
