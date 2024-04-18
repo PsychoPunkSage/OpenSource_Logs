@@ -4,6 +4,8 @@ import time
 import hashlib
 import validate_txn
 import helper.converter as convert
+import helper.merkle_root as merkle 
+import helper.get_txn_id as tx_id
 
 DIFFICULTY = "0000ffff00000000000000000000000000000000000000000000000000000000"
 
@@ -18,6 +20,9 @@ def raw_block_data(txn_ids, nonce):
     block_header += f"{prev_block_hash}"
 
     ## Merkle root :32 ##
+    actual_txn_ids = [tx_id.get_txn_id(ID) for ID in txn_ids]
+    calc_merkle_root = str(merkle.merkleCalculator(actual_txn_ids), 'utf-8')
+    block_header += f"{calc_merkle_root}"
 
     ## time :4 ##
     uinx_timestamap = int(time.time())
@@ -30,15 +35,15 @@ def raw_block_data(txn_ids, nonce):
     ## Nonce :4 ##
     block_header += f"{convert.to_little_endian(nonce, 4)}"
 
-    ## Transaction Count ##
-    txn_count = len(txn_ids)
-    block_header += f"{convert.to_little_endian(txn_count, 4)}"
-
-    ## Transaction IDs ##
-    for txn_id in txn_ids:
-        block_header += f"{convert.to_compact_size(txn_id)}"
-
     return block_header
+    # ## Transaction Count ##
+    # txn_count = len(txn_ids)
+    # block_header += f"{convert.to_little_endian(txn_count, 4)}"
+
+    # ## Transaction IDs ##
+    # for txn_id in txn_ids:
+    #     block_header += f"{convert.to_compact_size(txn_id)}"
+
 
     ## Transactions ##
     # Coinbase transaction
@@ -49,18 +54,46 @@ def raw_block_data(txn_ids, nonce):
 Block Hash::> - double-SHA256'ing the block header
               - the block hash is in reverse byte order when searching for a block in a block explorer.
               - block hash must get below the current target for the block to get added on to the blockchain.
+
+Reverse Byte Order
+              - used externally wen searching for blocks on block explorers
 """
 
 
 def mine(txn_ids):
     nonce = 0
-    while raw_block_data(txn_ids, nonce) > DIFFICULTY:
+    while convert.to_hash256(raw_block_data(txn_ids, nonce)) > DIFFICULTY: # Block_hash > Difficulty
         nonce += 1
     return raw_block_data(txn_ids, nonce)
 
+def _get_coinbase_raw_data(txn_ids):
+    reward = 0
+    block_subsidy = 5000000000
+    for txnId in txn_ids:
+        reward += validate_txn.fees(txnId)
+    
+    version = "01000000"
+    in_count = "01"
+    in_txnId = "0000000000000000000000000000000000000000000000000000000000000000"
+    vout = "ffffffff"
+    scriptsig = "4d6164652062792050737963686f50756e6b53616765" # RANDOM
+    scriptsig_size = f"{convert.to_compact_size(len(scriptsig)//2)}"
+    sequence = "ffffffff"
+    
+    out_count = "01"
+    out_amt = f"{validate_txn.to_little_endian(reward + block_subsidy, 8)}"
+    script_public_key_size = "19"
+    script_public_key = "76a9142c30a6aaac6d96687291475d7d52f4b469f665a688ac"
+    locktime = "00000000"
 
+    return version+in_count+in_txnId+vout+scriptsig_size+scriptsig+sequence+out_count+out_amt+script_public_key_size+script_public_key+locktime
 
-
+def coinbase_txn_id(txn_ids):
+    raw_data = _get_coinbase_raw_data(txn_ids)
+    coinbase_hash = convert.to_hash256(raw_data)
+    reversed_bytes = convert.to_reverse_bytes_string(coinbase_hash)
+    txnId = convert.to_sha256(reversed_bytes)
+    return txnId
 
 
 
@@ -111,53 +144,11 @@ class Block:
             self.nonce += 1
         print("Block mined:", self.compute_hash())
 
-#########################
-# merkel root formation #
-#########################
-def compute_merkle_root(txn_hashes, include_witness_commit=False):
-    # if no. transactions is odd
-    if len(txn_hashes) % 2 == 1:
-        txn_hashes.append(txn_hashes[-1])
-
-    tree = [_double_sha256(hash) for hash in txn_hashes]
-
-    while len(tree) > 1:
-        pairs = [(tree[i], tree[i+1]) for i in range(0, len(tree), 2)]
-        tree = [_double_sha256(pair[0] + pair[1]) for pair in pairs]
-
-    merkle_root = tree[0]
-
-    if include_witness_commit:
-        # Assuming the witness commitment is concatenated with the Merkle root
-        # Here, you would include the witness commitment of the coinbase transaction
-        # If the transactions are SegWit
-        witness_commitment = get_witness_commitment()
-        if witness_commitment:
-            merkle_root += witness_commitment
-
-    return merkle_root
 
 def get_witness_commitment():
     # Implement the logic to extract witness commitment from the coinbase transaction
     # If it exists
     pass
-
-def _double_sha256(data):
-    return hashlib.sha256(hashlib.sha256(data).digest()).digest()
-
-def _extract_txn_hashes_from_folder(folder_path, txn_list):
-    txn_hashes = []
-    # Iterate over JSON txns in the folder
-    for filename in txn_list:
-        file_path = os.path.join(folder_path, filename)
-        if os.path.exists(file_path) and filename.endswith(".json"):
-            with open(file_path, 'r') as f:
-                data = json.load(f)
-                txn_hash = hashlib.sha256(json.dumps(data).encode()).digest()
-                txn_hashes.append(txn_hash)
-    return txn_hashes
-
-import json
 
 """
 COINBASE TXN::>
