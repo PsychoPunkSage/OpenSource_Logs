@@ -1,6 +1,5 @@
 import hashlib
 
-
 def to_compact_size(value):
     if value < 0xfd:
         return value.to_bytes(1, byteorder='little').hex()
