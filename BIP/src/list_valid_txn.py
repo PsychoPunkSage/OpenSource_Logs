@@ -31,7 +31,7 @@ def list_valid_txn():
 
     return valid_txn_ids
 
-
+# print(len(list_valid_txn()))
 
 # lst = list_valid_txn()
 # a_lst = [tx_id.get_txn_id(i) for i in lst]
