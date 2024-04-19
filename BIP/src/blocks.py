@@ -22,6 +22,7 @@ def raw_block_data(txn_ids, nonce):
     ## Merkle root :32 ##
     actual_txn_ids = [tx_id.get_txn_id(ID) for ID in txn_ids]
     calc_merkle_root = str(merkle.merkleCalculator(actual_txn_ids), 'utf-8')
+    print(len(calc_merkle_root))
     block_header += f"{calc_merkle_root}"
 
     ## time :4 ##
