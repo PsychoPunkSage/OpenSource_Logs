@@ -2,6 +2,7 @@ import os
 import json
 import hashlib
 import coincurve
+import helper.converter as convert
 
 def validate_signature(signature, message, publicKey):
     b_sig = bytes.fromhex(signature)
@@ -29,48 +30,48 @@ def segwit_txn_data(txn_id):
         with open(file_path, 'r') as f:
             data = json.load(f)
             ## Version
-            ver = f"{_little_endian(data['version'], 4)}"
+            ver = f"{convert.to_little_endian(data['version'], 4)}"
 
             ## (txid + vout)
             serialized_txid_vout = ""
             for iN in data["vin"]:
                 serialized_txid_vout += f"{bytes.fromhex(iN['txid'])[::-1].hex()}"
-                serialized_txid_vout += f"{_little_endian(iN['vout'], 4)}"
+                serialized_txid_vout += f"{convert.to_little_endian(iN['vout'], 4)}"
             # HASH256 (txid + vout)
-            hash256_in = hashlib.sha256(hashlib.sha256(bytes.fromhex(serialized_txid_vout)).digest()).digest().hex()
+            hash256_in = convert.to_hash256(serialized_txid_vout)
             
             ## (sequense)
             serialized_sequense= ""
             for iN in data["vin"]:
-                serialized_sequense += f"{_little_endian(iN['sequence'], 4)}"
+                serialized_sequense += f"{convert.to_little_endian(iN['sequence'], 4)}"
             ## HASH256 (sequense)
-            hash256_seq = hashlib.sha256(hashlib.sha256(bytes.fromhex(serialized_sequense)).digest()).digest().hex()
+            hash256_seq = convert.to_hash256(serialized_sequense)
             
             ###############################################################################
             # TXN Specific #
             ## TXID and VOUT for the REQUIRED_input
-            ser_tx_vout_sp = f"{bytes.fromhex(data['vin'][0]['txid'])[::-1].hex()}{_little_endian(data['vin'][0]['vout'], 4)}"
+            ser_tx_vout_sp = f"{bytes.fromhex(data['vin'][0]['txid'])[::-1].hex()}{convert.to_little_endian(data['vin'][0]['vout'], 4)}"
             print(ser_tx_vout_sp)
             ## Scriptcode
             pkh = f"{data['vin'][0]['prevout']['scriptpubkey'][6:-4]}" 
             scriptcode = f"1976a914{pkh}88ac"
             ## Input amount
-            in_amt = f"{_little_endian(data['vin'][0]['prevout']['value'], 8)}"
+            in_amt = f"{convert.to_little_endian(data['vin'][0]['prevout']['value'], 8)}"
             ## SEQUENCE for the REQUIRED_input
-            sequence_txn = f"{_little_endian(data['vin'][0]['sequence'], 4)}"
+            sequence_txn = f"{convert.to_little_endian(data['vin'][0]['sequence'], 4)}"
             ###############################################################################
 
             # Outputs
             serialized_output= ""
             for out in data["vout"]:
-                serialized_output += f"{_little_endian(out['value'], 8)}"
-                serialized_output += f"{_to_compact_size(len(out['scriptpubkey'])//2)}"
+                serialized_output += f"{convert.to_little_endian(out['value'], 8)}"
+                serialized_output += f"{convert.to_compact_size(len(out['scriptpubkey'])//2)}"
                 serialized_output += f"{out['scriptpubkey']}"
             ## HASH256 (output)
-            hash256_out = hashlib.sha256(hashlib.sha256(bytes.fromhex(serialized_output)).digest()).digest().hex()
+            hash256_out = convert.to_hash256(serialized_output)
 
             ## locktime
-            locktime = f"{_little_endian(data['locktime'], 4)}"
+            locktime = f"{convert.to_little_endian(data['locktime'], 4)}"
 
             # preimage = version + hash256(inputs) + hash256(sequences) + input + scriptcode + amount + sequence + hash256(outputs) + locktime
             preimage = ver + hash256_in + hash256_seq + ser_tx_vout_sp + scriptcode + in_amt + sequence_txn + hash256_out + locktime
@@ -82,7 +83,6 @@ NEW::> 02000000 f81369411d3fba4eb8575cc858ead8a859ef74b94e160a036b8c1c5b023a6fae
        02000000 f81369411d3fba4eb8575cc858ead8a859ef74b94e160a036b8c1c5b023a6fae 957879fdce4d8ab885e32ff307d54e75884da52522cc53d3c4fdb60edb69a098 2cbc395e5c16b1204f1ced9c0d1699abf5abbbb6b2eee64425c55252131df6c4:00000000 1976a9146dee3ed7e9a03ad379f2f78d13138f9141c794ed88ac f306020000000000 fdffffff 0f38c28e7d8b977cd40352d825270bd20bcef66ceac3317f2b2274d26f973f0f 00000000 01000000
 """
 
-# print(segwit_txn_data("1ccd927e58ef5395ddef40eee347ded55d2e201034bc763bfb8a263d66b99e5e"))
 """
 
     P2PKH (legacy) - Lock the output to the hash of a public key. To unlock you need to provide the original public key and a valid signature.
@@ -96,6 +96,7 @@ NEW::> 02000000 f81369411d3fba4eb8575cc858ead8a859ef74b94e160a036b8c1c5b023a6fae
 
 """
 
+# print(segwit_txn_data("1ccd927e58ef5395ddef40eee347ded55d2e201034bc763bfb8a263d66b99e5e"))
 def legacy_txn_data(txn_id):
     txn_hash = ""
 
@@ -104,38 +105,29 @@ def legacy_txn_data(txn_id):
         with open(file_path, 'r') as f:
             data = json.load(f)
             # Version
-            txn_hash += f"{_little_endian(data['version'], 4)}"
+            txn_hash += f"{convert.to_little_endian(data['version'], 4)}"
             # No. of inputs:
-            txn_hash += f"{str(_to_compact_size(len(data['vin'])))}"
+            txn_hash += f"{str(convert.to_compact_size(len(data['vin'])))}"
             # Inputs
             for iN in data["vin"]:
                 txn_hash += f"{bytes.fromhex(iN['txid'])[::-1].hex()}"
-                txn_hash += f"{_little_endian(iN['vout'], 4)}"
-                txn_hash += f"{_to_compact_size(len(iN['prevout']['scriptpubkey'])//2)}" # FLAG@> maybe not divided by 2
+                txn_hash += f"{convert.to_little_endian(iN['vout'], 4)}"
+                txn_hash += f"{convert.to_compact_size(len(iN['prevout']['scriptpubkey'])//2)}" # FLAG@> maybe not divided by 2
                 txn_hash += f"{iN['prevout']['scriptpubkey']}"
-                txn_hash += f"{_little_endian(iN['sequence'], 4)}"
+                txn_hash += f"{convert.to_little_endian(iN['sequence'], 4)}"
 
             # No. of outputs
-            txn_hash += f"{str(_to_compact_size(len(data['vout'])))}"
+            txn_hash += f"{str(convert.to_compact_size(len(data['vout'])))}"
 
             # Outputs
             for out in data["vout"]:
-                txn_hash += f"{_little_endian(out['value'], 8)}"
-                txn_hash += f"{_to_compact_size(len(out['scriptpubkey'])//2)}"
+                txn_hash += f"{convert.to_little_endian(out['value'], 8)}"
+                txn_hash += f"{convert.to_compact_size(len(out['scriptpubkey'])//2)}"
                 txn_hash += f"{out['scriptpubkey']}"
 
             # Locktime
-            txn_hash += f"{_little_endian(data['locktime'], 4)}"
+            txn_hash += f"{convert.to_little_endian(data['locktime'], 4)}"
     return txn_hash
-
-
-def hash160(hex_input):
-    # print(hex_input)
-    sha = hashlib.sha256(bytes.fromhex(hex_input)).hexdigest()
-    hash_160 = hashlib.new('ripemd160')
-    hash_160.update(bytes.fromhex(sha))
-
-    return hash_160.hexdigest()
 
 ##########
 ## MAIN ##
@@ -158,7 +150,7 @@ def validate_p2pkh_txn(signature, pubkey, scriptpubkey_asm, txn_data):
         if i == "OP_HASH160":
             # print("===========")
             # print("OP_HASH160")
-            ripemd160_hash = hash160(stack[-1])
+            ripemd160_hash = convert.to_hash160(stack[-1])
             stack.pop(-1)
             # print(stack)
             stack.append(ripemd160_hash)
@@ -181,7 +173,7 @@ def validate_p2pkh_txn(signature, pubkey, scriptpubkey_asm, txn_data):
             if signature[-2:] == "01": # SIGHASH_ALL ONLY
                 der_sig = signature[:-2]
                 msg = txn_data + "01000000"
-                msg_hash = hashlib.sha256(bytes.fromhex(msg)).digest().hex()
+                msg_hash = convert.to_sha256(msg)
                 # print(der_sig) 
                 # print(pubkey) 
                 # print(msg)
@@ -193,9 +185,6 @@ def validate_p2pkh_txn(signature, pubkey, scriptpubkey_asm, txn_data):
             # print("OP_PUSHBYTES_20")
             stack.append(scriptpubkey_asm[scriptpubkey_asm.index("OP_PUSHBYTES_20") + 1])
             # print(stack)
-
-
-
 
 
 
