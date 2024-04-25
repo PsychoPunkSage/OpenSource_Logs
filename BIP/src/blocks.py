@@ -1,15 +1,20 @@
+import binascii
 import os
 import json
 import time
 import hashlib
 import validate_txn
+import coinbase_txn_my as coinbase
 import helper.converter as convert
 import helper.merkle_root as merkle 
-import helper.get_txn_id as tx_id
+import helper.txn_info as txinfo
 
+OUTPUT_FILE = "output.txt"
 DIFFICULTY = "0000ffff00000000000000000000000000000000000000000000000000000000"
+BLOCK_VERSION = 4
+MEMPOOL_DIR = "mempool"
 
-def raw_block_data(txn_ids, nonce):
+def raw_block_data(txn_files, nonce):
     block_header = ""
 
     ## Version : 4 ##
@@ -20,8 +25,8 @@ def raw_block_data(txn_ids, nonce):
     block_header += f"{prev_block_hash}"
 
     ## Merkle root :32 ##
-    actual_txn_ids = [tx_id.get_txn_id(ID) for ID in txn_ids]
-    calc_merkle_root = str(merkle.merkleCalculator(actual_txn_ids), 'utf-8')
+    actual_txn_ids = [txinfo.txid(ID) for ID in txn_files]
+    calc_merkle_root = str(merkle.generate_merkle_root(actual_txn_ids), 'utf-8')
     print(len(calc_merkle_root))
     block_header += f"{calc_merkle_root}"
 
@@ -60,46 +65,212 @@ Reverse Byte Order
               - used externally wen searching for blocks on block explorers
 """
 
-
-def mine(txn_ids):
+def mine_block(transaction_files):
+    """
+    Mine a block with the given transactions.
+    """
     nonce = 0
-    while convert.to_hash256(raw_block_data(txn_ids, nonce)) > DIFFICULTY: # Block_hash > Difficulty
+    txids = [txinfo.txid(tx) for tx in transaction_files]
+    # print(f"txids::> {txids}")
+
+    # Create a coinbase transaction with no inputs and two outputs: one for the block reward and one for the witness commitment
+    witness_commitment = coinbase.calculate_witness_commitment(transaction_files)
+    print("witneness commitment:", witness_commitment)
+
+    coinbase_hex, coinbase_txid = coinbase.serialize_coinbase_transaction(witness_commitment=witness_commitment)
+
+    # Calculate the Merkle root of the transactions
+    merkle_root = merkle.generate_merkle_root([coinbase_txid]+txids)
+
+    # Construct the block header
+    block_version_bytes = BLOCK_VERSION.to_bytes(4, "little")
+    prev_block_hash_bytes = bytes.fromhex(
+        "0000000000000000000000000000000000000000000000000000000000000000"
+    )
+    merkle_root_bytes = bytes.fromhex(merkle_root)
+    timestamp_bytes = int(time.time()).to_bytes(4, "little")
+    bits_bytes = (0x1F00FFFF).to_bytes(4, "little")
+    nonce_bytes = nonce.to_bytes(4, "little")
+
+    # Combine the header parts
+    block_header = (
+        block_version_bytes
+        + prev_block_hash_bytes
+        + merkle_root_bytes
+        + timestamp_bytes
+        + bits_bytes
+        + nonce_bytes
+    )
+
+    # Attempt to find a nonce that results in a hash below the difficulty target
+    target = int(DIFFICULTY, 16)
+    print("target:", target)
+    while True:
+        block_hash = hashlib.sha256(hashlib.sha256(block_header).digest()).digest()
+        reversed_hash = block_hash[::-1]
+        if int.from_bytes(reversed_hash, "big") <= target:
+            break
         nonce += 1
-    return raw_block_data(txn_ids, nonce)
+        nonce_bytes = nonce.to_bytes(4, "little")
+        block_header = block_header[:-4] + nonce_bytes  # Update the nonce in the header
+        # Validate nonce range within the mining loop
+        if nonce < 0x0 or nonce > 0xFFFFFFFF:
+            raise ValueError("Invalid nonce")
 
-def _get_coinbase_raw_data(txn_ids):
-    reward = 0
-    block_subsidy = 5000000000
-    for txnId in txn_ids:
-        reward += validate_txn.fees(txnId)
-    
-    version = "01000000"
-    in_count = "01"
-    in_txnId = "0000000000000000000000000000000000000000000000000000000000000000"
-    vout = "ffffffff"
-    scriptsig = "4d6164652062792050737963686f50756e6b53616765" # RANDOM
-    scriptsig_size = f"{convert.to_compact_size(len(scriptsig)//2)}"
-    sequence = "ffffffff"
-    
-    out_count = "01"
-    out_amt = f"{validate_txn.to_little_endian(reward + block_subsidy, 8)}"
-    script_public_key_size = "19"
-    script_public_key = "76a9142c30a6aaac6d96687291475d7d52f4b469f665a688ac"
-    locktime = "00000000"
+    block_header_hex = block_header.hex()
 
-    return version+in_count+in_txnId+vout+scriptsig_size+scriptsig+sequence+out_count+out_amt+script_public_key_size+script_public_key+locktime
+    return block_header_hex, txids, nonce, coinbase_hex, coinbase_txid
 
-def coinbase_txn_id(txn_ids):
-    raw_data = _get_coinbase_raw_data(txn_ids)
-    coinbase_hash = convert.to_hash256(raw_data)
-    reversed_bytes = convert.to_reverse_bytes_string(coinbase_hash)
-    txnId = convert.to_sha256(reversed_bytes)
-    return txnId
+'''
+Critical comments::>
+
+* CONBASE
+if (coinbaseTx.outs.length !== 2) {
+    throw new Error(
+      'Coinbase transaction must have exactly 2 outputs. One for the block reward and one for the witness commitment',
+    )
+  }
+
+* MERKLE:
+  let level = txids.map((txid) => Buffer.from(txid, 'hex').reverse().toString('hex')) ### IMP LINE
+'''
+
+def read_transactions():
+    txn_files = []
+    mempool_dir = "mempool"
+    try:
+        for filename in os.listdir(mempool_dir):
+            with open(os.path.join(mempool_dir, filename), "r") as file:
+                # locktime ka locha #
+                txn_files.append(filename[:-5])
+        # print(txn_files[:])
+        # return txn_files[:5]
+        return ["7cd041411276a4b9d0ea004e6dd149f42cb09bd02ca5dda6851b3df068749b2d", "c990d29bd10828ba40991b687362f532df79903424647dd1f9a5e2ace3edabca", "119604185a31e515e86ba0aec70559e7169600eab5adf943039b0a8b794b40df", "c3576a146165bdd8ecbfc79f18c54c8c51abd46bc0d093b01e640b6692372a93", "9fbc187e552b9e93406df86a4ebac8b67ccc0c4c321d0297edd8ffb87d4f5a45"]
+    except Exception as e:
+        print("Error:", e)
+        return None
+
+# ["7cd041411276a4b9d0ea004e6dd149f42cb09bd02ca5dda6851b3df068749b2d", "2b1c455ca2329487041f5bdfeae4920a970efab2932a6aed04981c2a7cd25fd5", "119604185a31e515e86ba0aec70559e7169600eab5adf943039b0a8b794b40df", "c3576a146165bdd8ecbfc79f18c54c8c51abd46bc0d093b01e640b6692372a93", "9fbc187e552b9e93406df86a4ebac8b67ccc0c4c321d0297edd8ffb87d4f5a45"]
+
+# def validate_header(header, target_difficulty):
+#     header_bytes = binascii.unhexlify(header)
+#     if len(header_bytes) != 80:
+#         print(f"header_bytes::> {len(header_bytes)}")
+#         raise ValueError("Invalid header length")
+
+#     # Calculate double SHA256 hash of the block header
+#     h1 = hashlib.sha256(header_bytes).digest()
+#     h2 = hashlib.sha256(h1).digest()
+
+#     # Reverse the hash
+#     reversed_hash = h2[::-1]
+
+#     # Convert hash and target difficulty to integers
+#     reversed_hash_int = int.from_bytes(reversed_hash, byteorder="big")
+#     target_int = int(target_difficulty, 16)
+
+#     # Check if the hash is less than or equal to the target difficulty
+#     if reversed_hash_int > target_int:
+#         raise ValueError("Block does not meet target difficulty")
+
+# def pre_process_transaction(transaction):
+#     """
+#     Pre-process a transaction by adding default values and calculating the fee.
+#     """
+#     global p2pkh, p2wpkh, p2sh
+#     transaction["txid"] = convert.to_reverse_bytes_string(convert.to_hash256(txinfo.txid(transaction)))
+#     transaction["weight"] = 1  # Assign a fixed weight of 1 for simplicity
+#     transaction["wtxid"] = convert.to_reverse_bytes_string(convert.to_hash256(txinfo.wtxid(transaction)))
+#     return transaction
+
+# def read_transaction_file(filename):
+#     """
+#     Read a JSON transaction file and return the transaction data.
+#     """
+#     with open(os.path.join(MEMPOOL_DIR, filename), "r") as file:
+#         transaction = json.load(file)
+
+#     pre_process_transaction(transaction)
+#     return transaction
+
+# def verify_witness_commitment(coinbase_tx, witness_commitment):
+#     """
+#     Verify the witness commitment in the coinbase transaction.
+#     """
+#     for output in coinbase_tx["vout"]:
+#         script_hex = output["scriptPubKey"]["hex"]
+#         if script_hex.startswith("6a24aa21a9ed") and script_hex.endswith(
+#             witness_commitment
+#         ):
+#             return True
+#     return False
+
+# def validate_block(txids, transactions):
+#     """
+#     Validate the block with the given coinbase transaction and txids.
+#     """
+#     # Validate coinbase transaction structure
+#     # validate_coinbase_transaction(coinbase_tx)
+
+#     # Read the mempool transactions from the JSON files and create a set of valid txids
+#     mempool_txids = set()
+#     for filename in os.listdir(MEMPOOL_DIR):
+#         tx_data = read_transaction_file(filename)
+#         # Extract the 'txid' from the first item in the 'vin' list
+#         if "vin" in tx_data and len(tx_data["vin"]) > 0 and "txid" in tx_data["vin"][0]:
+#             mempool_txids.add(tx_data["vin"][0]["txid"])
+#         else:
+#             raise ValueError(f"Transaction file {filename} is missing 'txid' in 'vin'")
+
+    # Validate the presence of each transaction ID in the block against the mempool
+    # for txid in txids:
+    #     if txid not in mempool_txids:
+    #         raise ValueError(f"Invalid txid found in block: {txid}")
+
+    # Calculate total weight and fee of the transactions in the block
+    # total_weight, total_fee = calculate_total_weight_and_fee(transactions)
+
+    # Verify the witness commitment in the coinbase transaction
+    # witness_commitment = txinfo.calculate_witness_commitment(transactions)
+    # if not verify_witness_commitment(coinbase_tx, witness_commitment):
+    #     raise ValueError("Invalid witness commitment in coinbase transaction")
+
+    # print(
+    #     "test pass"
+    # )
+
+def main():
+    # Read transaction files
+    transactions = read_transactions()
+
+    # with open("valid-cache.json", "r") as file:
+    #     unverified_txns = json.load(file)
+
+    # for tx in unverified_txns[:1900]:
+    #     verified_tx = pre_process_transaction(tx)
+    #     transactions.append(verified_tx)
+
+
+    print(f"Total transactions: {len(transactions)}")
+
+    if not any(transactions):
+        raise ValueError("No valid transactions to include in the block")
+
+    # Mine the block
+    block_header, txids, nonce, coinbase_tx_hex, coinbase_txid = mine_block(transactions)
+
+    # validate_header(block_header, DIFFICULTY)
+    # validate_block(txids, transactions)
+
+    # Corrected writing to output file
+    with open(OUTPUT_FILE, "w") as file:
+        file.write(f"{block_header}\n{coinbase_tx_hex}\n{coinbase_txid}\n")
+        file.writelines(f"{txid}\n" for txid in txids)
 
 
 
-
-
+if __name__ == "__main__":
+    main()
 
 
 
