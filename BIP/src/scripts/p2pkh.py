@@ -2,7 +2,10 @@ import os
 import json
 import hashlib
 import coincurve
-import helper.converter as convert
+# import helper.converter as convert
+# from mempool import *
+# from src.helper import converter as convert
+# from ..helper import converter as convert
 
 def validate_signature(signature, message, publicKey):
     b_sig = bytes.fromhex(signature)
@@ -24,6 +27,63 @@ def _little_endian(num, size):
     return num.to_bytes(size, byteorder='little').hex()
 
 
+def segwit_txn_data(txn_id):
+    file_path = os.path.join("mempool", f"{txn_id}.json")
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as f:
+            data = json.load(f)
+            ## Version
+            ver = f"{_little_endian(data['version'], 4)}"
+
+            ## (txid + vout)
+            serialized_txid_vout = ""
+            for iN in data["vin"]:
+                serialized_txid_vout += f"{bytes.fromhex(iN['txid'])[::-1].hex()}"
+                serialized_txid_vout += f"{_little_endian(iN['vout'], 4)}"
+            # HASH256 (txid + vout)
+            # hash256_in = convert.to_hash256(serialized_txid_vout)
+            hash256_in = hashlib.sha256(hashlib.sha256(bytes.fromhex(serialized_txid_vout)).digest()).digest().hex()
+            
+            ## (sequense)
+            serialized_sequense= ""
+            for iN in data["vin"]:
+                serialized_sequense += f"{_little_endian(iN['sequence'], 4)}"
+            ## HASH256 (sequense)
+            # hash256_seq = convert.to_hash256(serialized_sequense)
+            hash256_seq = hashlib.sha256(hashlib.sha256(bytes.fromhex(serialized_sequense)).digest()).digest().hex()
+            
+            ###############################################################################
+            # TXN Specific #
+            ## TXID and VOUT for the REQUIRED_input
+            ser_tx_vout_sp = f"{bytes.fromhex(data['vin'][0]['txid'])[::-1].hex()}{_little_endian(data['vin'][0]['vout'], 4)}"
+            print(ser_tx_vout_sp)
+            ## Scriptcode
+            pkh = f"{data['vin'][0]['prevout']['scriptpubkey'][6:-4]}" 
+            scriptcode = f"1976a914{pkh}88ac"
+            ## Input amount
+            in_amt = f"{_little_endian(data['vin'][0]['prevout']['value'], 8)}"
+            ## SEQUENCE for the REQUIRED_input
+            sequence_txn = f"{_little_endian(data['vin'][0]['sequence'], 4)}"
+            ###############################################################################
+
+            # Outputs
+            serialized_output= ""
+            for out in data["vout"]:
+                serialized_output += f"{_little_endian(out['value'], 8)}"
+                serialized_output += f"{_to_compact_size(len(out['scriptpubkey'])//2)}"
+                serialized_output += f"{out['scriptpubkey']}"
+            ## HASH256 (output)
+            # hash256_out = convert.to_hash256(serialized_output)
+            hash256_out = hashlib.sha256(hashlib.sha256(bytes.fromhex(serialized_output)).digest()).digest().hex()
+
+            ## locktime
+            locktime = f"{_little_endian(data['locktime'], 4)}"
+
+            # preimage = version + hash256(inputs) + hash256(sequences) + input + scriptcode + amount + sequence + hash256(outputs) + locktime
+            preimage = ver + hash256_in + hash256_seq + ser_tx_vout_sp + scriptcode + in_amt + sequence_txn + hash256_out + locktime
+    return preimage
+
+"""
 def segwit_txn_data(txn_id):
     file_path = os.path.join("mempool", f"{txn_id}.json")
     if os.path.exists(file_path):
@@ -76,7 +136,7 @@ def segwit_txn_data(txn_id):
             # preimage = version + hash256(inputs) + hash256(sequences) + input + scriptcode + amount + sequence + hash256(outputs) + locktime
             preimage = ver + hash256_in + hash256_seq + ser_tx_vout_sp + scriptcode + in_amt + sequence_txn + hash256_out + locktime
     return preimage
-
+"""
 """
 ORG::> 02000000 cbfaca386d65ea7043aaac40302325d0dc7391a73b585571e28d3287d6b16203 3bb13029ce7b1f559ef5e747fcac439f1455a2ec7c5f09b72290795e70665044 ac4994014aa36b7f53375658ef595b3cb2891e1735fe5b441686f5e53338e76a:01000000 1976a914aa966f56de599b4094b61aa68a2b3df9e97e9c4888ac 3075000000000000 ffffffff 900a6c6ff6cd938bf863e50613a4ed5fb1661b78649fe354116edaf5d4abb952 00000000 01000000
 NEW::> 02000000 f81369411d3fba4eb8575cc858ead8a859ef74b94e160a036b8c1c5b023a6fae 957879fdce4d8ab885e32ff307d54e75884da52522cc53d3c4fdb60edb69a098 659a6eaf8d943ad2ff01ec8c79aaa7cb4f57002d49d9b8cf3c9a7974c5bd3608:06000000 1976a9147db10cfe69dae5e67b85d7b59616056e68b3512288ac f1a2010000000000 fdffffff 0f38c28e7d8b977cd40352d825270bd20bcef66ceac3317f2b2274d26f973f0f 00000000 01000000
@@ -105,28 +165,28 @@ def legacy_txn_data(txn_id):
         with open(file_path, 'r') as f:
             data = json.load(f)
             # Version
-            txn_hash += f"{convert.to_little_endian(data['version'], 4)}"
+            txn_hash += f"{_little_endian(data['version'], 4)}"
             # No. of inputs:
-            txn_hash += f"{str(convert.to_compact_size(len(data['vin'])))}"
+            txn_hash += f"{str(_to_compact_size(len(data['vin'])))}"
             # Inputs
             for iN in data["vin"]:
                 txn_hash += f"{bytes.fromhex(iN['txid'])[::-1].hex()}"
-                txn_hash += f"{convert.to_little_endian(iN['vout'], 4)}"
-                txn_hash += f"{convert.to_compact_size(len(iN['prevout']['scriptpubkey'])//2)}" # FLAG@> maybe not divided by 2
+                txn_hash += f"{_little_endian(iN['vout'], 4)}"
+                txn_hash += f"{_to_compact_size(len(iN['prevout']['scriptpubkey'])//2)}" # FLAG@> maybe not divided by 2
                 txn_hash += f"{iN['prevout']['scriptpubkey']}"
-                txn_hash += f"{convert.to_little_endian(iN['sequence'], 4)}"
+                txn_hash += f"{_little_endian(iN['sequence'], 4)}"
 
             # No. of outputs
-            txn_hash += f"{str(convert.to_compact_size(len(data['vout'])))}"
+            txn_hash += f"{str(_to_compact_size(len(data['vout'])))}"
 
             # Outputs
             for out in data["vout"]:
-                txn_hash += f"{convert.to_little_endian(out['value'], 8)}"
-                txn_hash += f"{convert.to_compact_size(len(out['scriptpubkey'])//2)}"
+                txn_hash += f"{_little_endian(out['value'], 8)}"
+                txn_hash += f"{_to_compact_size(len(out['scriptpubkey'])//2)}"
                 txn_hash += f"{out['scriptpubkey']}"
 
             # Locktime
-            txn_hash += f"{convert.to_little_endian(data['locktime'], 4)}"
+            txn_hash += f"{_little_endian(data['locktime'], 4)}"
     return txn_hash
 
 ##########
@@ -150,10 +210,14 @@ def validate_p2pkh_txn(signature, pubkey, scriptpubkey_asm, txn_data):
         if i == "OP_HASH160":
             # print("===========")
             # print("OP_HASH160")
-            ripemd160_hash = convert.to_hash160(stack[-1])
+            # ripemd160_hash = convert.to_hash160(stack[-1])
+            sha = hashlib.sha256(bytes.fromhex(stack[-1])).hexdigest()
+            hash_160 = hashlib.new('ripemd160')
+            hash_160.update(bytes.fromhex(sha))
+
             stack.pop(-1)
             # print(stack)
-            stack.append(ripemd160_hash)
+            stack.append(hash_160.hexdigest())
             # print(stack)
 
         if i == "OP_EQUALVERIFY":
@@ -173,11 +237,12 @@ def validate_p2pkh_txn(signature, pubkey, scriptpubkey_asm, txn_data):
             if signature[-2:] == "01": # SIGHASH_ALL ONLY
                 der_sig = signature[:-2]
                 msg = txn_data + "01000000"
-                msg_hash = convert.to_sha256(msg)
+                msg_hash = hashlib.sha256(bytes.fromhex(msg)).digest().hex()
                 # print(der_sig) 
                 # print(pubkey) 
-                # print(msg)
-                # print(msg_hash)
+                print("============VALIDAREA=================")
+                print(msg)
+                print(msg_hash)
                 return validate_signature(der_sig, msg_hash, pubkey)
 
         if i == "OP_PUSHBYTES_20":
@@ -189,11 +254,32 @@ def validate_p2pkh_txn(signature, pubkey, scriptpubkey_asm, txn_data):
 
 
 
+# filename = "0a8b21af1cfcc26774df1f513a72cd362a14f5a598ec39d915323078efb5a240"
+# filename = "1ccd927e58ef5395ddef40eee347ded55d2e201034bc763bfb8a263d66b99e5e"
+# file_path = os.path.join('mempool', f"{filename}.json") # file path
+# if os.path.exists(file_path):
+#     with open(file_path, 'r') as file: 
+#         txn_data = json.load(file)
+#         # print(f"txn_data: {txn_data}")
+# else:
+#     print(f"file not found: {file_path}")
+# signature = txn_data['vin'][0]["scriptsig_asm"].split(" ")[1]
+# pubkey = txn_data['vin'][0]["scriptsig_asm"].split(" ")[3]
+# scriptpubkey_asm = txn_data['vin'][0]["prevout"]["scriptpubkey_asm"].split(" ")
+# # raw_txn_data = legacy_txn_data(filename)
+# raw_txn_data = segwit_txn_data(filename)
+# print(raw_txn_data)
+
+# print(f"p2pkh::> {validate_p2pkh_txn(signature, pubkey, scriptpubkey_asm, raw_txn_data)}")
 
 
 
+"""
+02000000 f81369411d3fba4eb8575cc858ead8a859ef74b94e160a036b8c1c5b023a6fae957879fdce4d8ab885e32ff307d54e75884da52522cc53d3c4fdb60edb69a098659a6eaf8d943ad2ff01ec8c79aaa7cb4f57002d49d9b8cf3c9a7974c5bd3608060000001976a9147db10cfe69dae5e67b85d7b59616056e68b3512288acf1a2010000000000fdffffff0f38c28e7d8b977cd40352d825270bd20bcef66ceac3317f2b2274d26f973f0f0000000001000000
+02000000 f81369411d3fba4eb8575cc858ead8a859ef74b94e160a036b8c1c5b023a6fae957879fdce4d8ab885e32ff307d54e75884da52522cc53d3c4fdb60edb69a098659a6eaf8d943ad2ff01ec8c79aaa7cb4f57002d49d9b8cf3c9a7974c5bd3608060000001976a914147db10cfe69dae5e67b85d7b59616056e68b3512288ac88acf1a2010000000000fdffffff0f38c28e7d8b977cd40352d825270bd20bcef66ceac3317f2b2274d26f973f0f0000000001000000
 
-
+02000000 9a0c2ad742ec53644bda0e38b09b7546714540959016a1b457005d4368c0302118606b350cd8bf565266bc352f0caddcf01e8fa789dd8a15386327cf8cabe19828945f452bcb038a679fc33fb03d06561a59585d6f36090894471b17b615b5b9000000001976a914371e036c75b663254314287faa19c7b3f6c35e8a88ac4af07c1100000000feffffff188874c3c72a2fa0da3253b57b8f1403348c00d38c99e0af1d033b497683b6f34dbc0c0001000000
+"""
 
 
 
