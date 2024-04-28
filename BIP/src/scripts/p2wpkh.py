@@ -93,14 +93,20 @@ def validate_p2wpkh_txn(witness, wit_scriptpubkey_asm, txn_data):
     return p2pkh.validate_p2pkh_txn(wit_sig, wit_pubkey,scriptpubkey_asm, txn_data)
 
 # filename = "1ccd927e58ef5395ddef40eee347ded55d2e201034bc763bfb8a263d66b99e5e"
-filename = "0a3fd98f8b3d89d2080489d75029ebaed0c8c631d061c2e9e90957a40e99eb4c"
-file_path = os.path.join('mempool', f"{filename}.json") # file path
-if os.path.exists(file_path):
-    with open(file_path, 'r') as file: 
-        txn_data = json.load(file)
+# filename = "0a3fd98f8b3d89d2080489d75029ebaed0c8c631d061c2e9e90957a40e99eb4c"
+# file_path = os.path.join('mempool', f"{filename}.json") # file path
+# if os.path.exists(file_path):
+#     with open(file_path, 'r') as file: 
+#         txn_data = json.load(file)
 
-wit = txn_data["vin"][0]["witness"]
-wit_asm = txn_data["vin"][0]["prevout"]["scriptpubkey_asm"]
-txn_data = segwit_txn_data(filename)
+# wit = txn_data["vin"][0]["witness"]
+# wit_asm = txn_data["vin"][0]["prevout"]["scriptpubkey_asm"]
+# txn_data = segwit_txn_data(filename)
 
-print(f"p2wpkh::> {validate_p2wpkh_txn(wit, wit_asm, txn_data)}")
+# print(f"p2wpkh::> {validate_p2wpkh_txn(wit, wit_asm, txn_data)}")
+
+'''
+CRITICAL COMMENTS::
+
+presence of <OP_PUSHNUM_3>
+'''
