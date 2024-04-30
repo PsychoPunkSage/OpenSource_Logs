@@ -61,6 +61,6 @@ These restrictions are designed to deepen your understanding of bitcoin technica
 By completing this assignment, you will gain hands-on experience with the technology that make bitcoin secure and trustless.
 Remember, the goal of this challenge is not just to produce a working solution but to engage critically with the fundamental components of bitcoin. This is an opportunity to showcase your problem-solving skills and your ability to implement complex algorithms from scratch.
 
-## Additional Information
+## Additional Informationgit 
 - This challenge is designed to test your understanding of bitcoin fundamentals, including transaction validation and block mining processes.
 - While the challenge focuses on the simulation of these processes, you are encouraged to implement your solution in a way that demonstrates depth of understanding and creativity.
