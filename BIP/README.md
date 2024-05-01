@@ -1,66 +1,135 @@
-# Task::> Block Creation
+# **Work Documentation**
 
-## Overview
-In this challenge, you are tasked with the simulation of mining process of a block, which includes validating and including transactions from a given set of transactions.
-The repository contains a folder `mempool` which contains JSON files. 
-These files represent individual transactions, some of which may be invalid. Your goal is to successfully mine a block by including only the valid transactions, following the specific requirements outlined below.
+>> **The purpose of the work documentation is to offer transparency and clarity regarding the execution of tasks and the attainment of objectives. It serves as a reference point for evaluators to understand the workflow and rationale behind various actions undertaken during the project.**
 
-## Objective
-Your primary objective is to write a script that processes a series of transactions, validates them, and then mines them into a block. The output of your script should be a file named `output.txt` that follows a specific format.
+> **Disclaimer:**
 
-## Requirements
-### Input
-- You are provided with a folder named `mempool` containing several JSON files. Each file represents a transaction that includes all necessary information for validation.
-- Among these transactions, some are invalid. Your script should be able to discern valid transactions from invalid ones.
+The limited number of commits visible in my project repository is attributed to the initial stages of development conducted within a sandbox environment. During this phase, I diligently iterated on the project, periodically pushing updates to the sandbox repository. Only after achieving a significant milestone and ensuring the quality and stability of the code did I transition it to my primary repository. This approach allowed for thorough testing and validation before committing to the main repository, ensuring that only appreciable progress was reflected in the public-facing version.
 
-### Output
-Your script must generate an output file named `output.txt` with the following structure:
-- First line: The block header.
-- Second line: The serialized coinbase transaction.
-- Following lines: The transaction IDs (txids) of the transactions mined in the block, in order. The first txid should be that of the coinbase transaction
+**`Sandbox Environment::> `** [LINK](https://github.com/PsychoPunkSage/OpenSource_Logs/tree/main/BIP)
 
-### Difficulty Target
-The difficulty target is `0000ffff00000000000000000000000000000000000000000000000000000000`. This is the value that the block hash must be less than for the block to be successfully mined.
+## **Design Approach:**
 
-## Execution
-- Create a file named `run.sh` that contains the command to execute your script. This file should ideally contain a single command like `python main.py` or `node index.js`.
-- Your script should autonomously perform all tasks when `run.sh` is executed, without requiring any manual intervention.
+> **Tree View (Main code)**
 
-## Evaluation Criteria
-Your submission will be evaluated based on the following criteria:
+<details>
+<summary>Tree Structure</summary>
 
-- **Score**: Your code output will be scored bases on the fee collected and the amount of available block space utilised. **You must score at least 60 points to pass the challenge.**
-- **Correctness**: The `output.txt` file must be correctly formatted in the manner described above.
-- **Code Quality**: Your code should be well-organized, commented, and follow best practices.
-- **Efficiency**: Your solution should process transactions and mine the block efficiently.
+```
+src
+├── blocks.py
+├── coinbase_data.py
+├── helper
+│   ├── converter.py
+│   ├── merkle_root.py
+│   ├── pubKey_uncompressor.py
+│   ├── __pycache__
+│   │   ├── converter.cpython-311.pyc
+│   │   ├── merkle_root.cpython-311.pyc
+│   │   ├── txn_info.cpython-311.pyc
+│   │   └── txn_metrics.cpython-311.pyc
+│   ├── txn_info.py
+│   └── txn_metrics.py
+├── list_valid_txn.py
+├── __pycache__
+│   ├── coinbase_data.cpython-311.pyc
+│   ├── coinbase_txn_my.cpython-311.pyc
+│   ├── list_valid_txn.cpython-311.pyc
+│   └── validate_txn.cpython-311.pyc
+├── scripts
+│   ├── p2pkh.py
+│   ├── p2sh.py
+│   ├── p2wpkh.py
+│   └── __pycache__
+│       ├── p2pkh.cpython-311.pyc
+│       ├── p2sh.cpython-311.pyc
+│       └── p2wpkh.cpython-311.pyc
+└── validate_txn.py
 
-## Document your work
+6 directories, 23 files
+```
 
-Apart from the code, you must also publish a `SOLUTION.md` file explaining your solution in the following format:
-- **Design Approach:** Describe the approach you took to design your block construction program, explain all the key concepts of creating a valid block.
-- **Implementation Details:** Provide pseudo code of your implementation, including sequence of logic, algorithms and variables used etc.
-- **Results and Performance:** Present the results of your solution, and analyze the efficiency of your solution.
-- **Conclusion:** Discuss any insights gained from solving the problem, and outline potential areas for future improvement or research. Include a list of references or resources consulted during the problem-solving process.
+</details><br>
 
-## What NOT to Do
 
-In this challenge, it's crucial to understand and adhere to the following restrictions. These are put in place to ensure that you engage with the core concepts of bitcoin and apply your problem-solving skills to implement the solution from first principles.
+* As evident (from above tree str), the primary codebase resides within the **`src`** directory. Each file and folder within this directory is meticulously named to reflect its designated functionality, thereby ensuring clarity and ease of understanding.
+* My codebase follows a strictly **discretized structure**, adhering to the principle of `Write Once and Use Many` times, with some exceptions where necessary. Each file is organized based on its functionality, ensuring clarity and efficiency in code management. For instance, within the `helper/converter directory`, you'll find code dedicated to data conversion tasks, such as transforming data formats like `HASH256` and `HASH160`. This modular approach enhances code reusability, maintainability, and overall development agility.
 
-- **Do Not Use Bitcoin Libraries for Transaction Validation:** You must not use any Bitcoin-specific libraries or frameworks that automate transaction validation processes. The intent of this challenge is for you to understand and implement the validation logic manually.
-- **Permissible Libraries:** The use of standard cryptographic libraries, such as secp256k1 for elliptic curve cryptography, and standard hashing libraries (e.g., for SHA-256) is allowed and encouraged. These libraries are essential for implementing the cryptographic underpinnings of bitcoin without reinventing the wheel.
- - **Implement the Mining Algorithm Yourself:** You are required to implement the mining algorithm on your own. This includes creating a way to correctly form a block header, calculate the hash, and meet the challenge of finding a hash below a certain target.
+### Quick Rundown of COdeBase
 
-### Plagiarism Policy:
-Our plagiarism detection checker thoroughly identifies any instances of copying or cheating. Participants are required to publish their solutions in the designated repository, which is private and accessible only to the individual and the administrator. Solutions should not be shared publicly or with peers. In case of plagiarism, both parties involved will be directly disqualified to maintain fairness and integrity.
+1. `helper`
+   - These modules encapsulate functionality that is extensively utilized throughout the entire codebase on numerous occasions.
+   - **converter.py** ::> `to_compact_size(())` `to_little_endian()` `to_hash160()` `to_hash256()` `to_sha256()` `to_reverse_bytes_string()`
+   - **merkle_root.py** ::> `merkle_root_calculator()`
+   - **txn_info.py** ::> `create_raw_txn_data_min()` `create_raw_txn_data_full()` `txid()` `wtxid()` `coinbase_txn_id()`
+   - **txn_metrics.py** ::> `txn_weight()` `fees()`
+   - Each file has a distinct set of functions, each characterized by a consistent level of performance.
 
-### AI Usage Disclaimer:
-You may use AI tools like ChatGPT to gather information and explore alternative approaches, but avoid relying solely on AI for complete solutions. Verify and validate any insights obtained and maintain a balance between AI assistance and independent problem-solving.
+2. `scripts`
+   - These files are designed to function autonomously and can be executed individually, operating independently from one another. Each file encapsulates its own distinct codebase, complete with requisite helper functions, ensuring self-sufficiency and seamless execution in isolation.
+   - **p2pkh** ::> `validate_signature` `_to_compact_size` `_little_endian` `to_hash160` `segwit_txn_data` `legacy_txn_data` `validate_p2pkh_txn`
+   - **p2wpkh** ::> `validate_signature` `_to_compact_size` `_little_endian ` `segwit_txn_data` `to_hash160` `_validate_p2wpkh_txn` `validate_p2wpkh_txn`
+   - **p2sh** ::> `to_hash160` `to_compact_size` `to_little_endian` `legacy_txn_data` `validate_p2sh_txn_basic` `validate_p2sh_txn_adv`
+   - As you can see I have only verified **`p2sh`**(partially) **`p2wpkh`** and **`p2pkh`**  transactions. I used these transaction to formulate my block.
 
-## Why These Restrictions?
-These restrictions are designed to deepen your understanding of bitcoin technicals.
-By completing this assignment, you will gain hands-on experience with the technology that make bitcoin secure and trustless.
-Remember, the goal of this challenge is not just to produce a working solution but to engage critically with the fundamental components of bitcoin. This is an opportunity to showcase your problem-solving skills and your ability to implement complex algorithms from scratch.
+3. `coinbase_data.py`
+   - **Implementation**: `calculate_witness_commitment()` and `create_coinbase_transaction()`
+   - The function `create_coinbase_transaction` is used to generate coinbase transaction data and its corresponding transaction ID, aligning with its descriptive name. Conversely, `calculate_witness_commitment` is specifically used for computing the witness commitment of the coinbase transaction. 
+   - This file exclusively handles operations pertaining to coinbase transactions.
 
-## Additional Informationgit 
-- This challenge is designed to test your understanding of bitcoin fundamentals, including transaction validation and block mining processes.
-- While the challenge focuses on the simulation of these processes, you are encouraged to implement your solution in a way that demonstrates depth of understanding and creativity.
+4. `validate_txn.py`
+   - This script systematically evaluates each transaction, providing a comprehensive assessment of their validity.
+   - It orchestrates fundamental validation procedures alongwith transaction validation scripts housed in the designated **`scripts`** folder.
+   - It serves as the central hub for all transaction validation operations, seamlessly integrating various components and functionalities related to transaction validation.
+
+5. `list_valid_txn.py`
+   - The script undertakes a comprehensive parsing process, examining each transaction contained within the **MEMPOOL** directory. Utilizing the validation scripts within the **`validate_txn`** file, it cross-validates each transaction to ascertain its integrity.
+
+   - Upon completion of the validation process, the script generates a list of valid transactions. It arranges this list to ensure that all **SegWit transactions** are positioned at the **forefront**, followed by non-SegWit transactions. This arrangement aims to optimize the mining process by prioritizing SegWit transactions, ***thereby maximizing the accrued fees*** and enhancing overall efficiency.
+
+6. `blocks.py`
+   - This is the **main function** that orchestrates the process of block mining, utilizing key implementations such as `_block_header_wo_nonce()`, `mine_block()`, and `main()`. It receives a list of valid transactions from **`list_valid_txn.py`** and determining the total transactions to be included in the block within the constraints of *maximum weight allowance*. Subsequently, the function calculates the **block header** by identifying the appropriate **nonce** that fulfills the specified difficulty criteria, ultimately resulting in the successful mining of the block.
+
+## **Implementation Details:**
+
+### Work-flow:
+![Work-flow diagram](<image/workflow.jpg>)
+- from the above diagram you can see how different components of my code interact with each-other at runtime.
+
+## **Results and Performance:**
+
+> **Result logs**
+
+|                        |                                                                  |
+| ---------------------- | ---------------------------------------------------------------- |
+| Transactions Validated | 3968                                                             |
+| Total transactions     | 2284                                                             |
+| Witness Root           | 37721af725740a34084aa123ae52754ae1a16c16ffb7c510b61257d2089f35da |
+| Witness Commitment     | 11f4eb2e023708d315aa69a4529709e519d35df82580ca05550031e44fd2d594 |
+| Fees Collected         | 17076156                                                         |
+| Nonce                  | 109007                                                           |
+
+  - As observed, the code successfully validates a total of `3968` transactions. However, adhering to the `MAX_WEIGHT` (4000000) restriction, only `2284` transactions (weight: **3978643** and fees **17076156**) are incorporated into the block. Notably, Segwit transactions take precedence in block inclusion due to their lower weight, followed by non-Segwit transactions. Since I have validated only one type Segwit transactions i.e. `p2wpkh`, most of the included transactions are **p2wpkh**.
+
+  - **Efficiency:**
+      * My workflow prioritizes the inclusion of verified Segwit transactions in the block ahead of non-Segwit transactions. This preference is rooted in the fact that Segwit transactions generally have lower weight compared to non-Segwit transactions. By prioritizing Segwit transactions, I aim to maximize the fee collection potential, as more transactions can be accommodated in the block due to their lower weight. This strategic approach enables me to generate higher fees by capitalizing on the increased transaction throughput facilitated by Segwit transactions.
+      * While non-Segwit transactions may occasionally offer significantly higher fees despite their higher weight, optimizing transaction selection involves considering various factors. One approach is leveraging a straightforward machine learning model to explore potential transaction combinations, aiming to identify a set that maximizes fee revenue while minimizing overall weight.
+
+## **Conclusion:**
+
+- The provided problem statement was both intriguing and demanding. It offered a valuable opportunity to gain practical experience with the inner workings of the Bitcoin system. By implementing validation scripts for various transactions, performing cryptographic validation, and simulating block mining, I gained a deeper understanding of the intricacies involved. This project solidified the crucial distinction between theoretical knowledge and practical implementation.
+
+- The experience significantly enhanced my skillset, particularly in utilizing cryptographic functions. Moreover, it provided firsthand insight into the robustness of Bitcoin's cryptographic security. Overall, working on this project proved to be an immensely rewarding experience. While the initial challenges seemed daunting, I was able to persevere and ultimately achieve success.
+
+- **Future Imrovements:**
+  - Implement validation for additional transaction types beyond the currently supported ones. This includes `P2TR` and `P2WSH` transactions, ensuring broader compatibility with the evolving Bitcoin ecosystem.
+  - Integrate a mechanism to identify the most cost-effective transactions. This could involve:
+      * *Weight-Based Analysis*: Prioritize transactions with lower weight (amount of data they occupy on the blockchain), leading to incorporate more transactions.
+      * *Fee Rate Optimization*: Employ a simple Machine Learning (ML) model to predict optimal set of transactions to maximize rewards.
+- **Reference:**
+  - [learmebitcoin](https://learnmeabitcoin.com/)
+  - [OP_CHECKSIG](https://en.bitcoin.it/wiki/OP_CHECKSIG)
+  - [Sig Validation](https://bitcoin.stackexchange.com/questions/32305/how-does-the-ecdsa-verification-algorithm-work-during-transaction)
+  - [deserializer](https://rsbondi.github.io/btc-adventure/)
+  - Grokking Book
+  - Lots of help from `Discord Assignment channel`
