@@ -1,4 +1,14 @@
-def generate_merkle_root(txids):
+import helper.converter as convert
+
+def merkle_root_calculator(txids):
+    """
+    Calculate the Merkle root of a list of transaction IDs.
+
+    @param txids: The list of transaction IDs.
+    @type  txids: list of str
+    @return     : The Merkle root of the provided transaction IDs.
+    @rtype      : str
+    """
     if len(txids) == 0:
         return None
 
@@ -9,10 +19,10 @@ def generate_merkle_root(txids):
         next_level = []
         for i in range(0, len(level), 2):
             if i + 1 == len(level):
-                # In case of an odd number of elements, duplicate the last one
-                pair_hash = hash256(level[i] + level[i])
+                # Duplicate the last one, in case of an odd number of elements
+                pair_hash = convert.to_hash256(level[i] + level[i])
             else:
-                pair_hash = hash256(level[i] + level[i + 1])
+                pair_hash = convert.to_hash256(level[i] + level[i + 1])
             next_level.append(pair_hash)
         level = next_level
     return level[0]
