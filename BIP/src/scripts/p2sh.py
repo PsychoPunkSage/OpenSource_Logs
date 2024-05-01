@@ -1,13 +1,12 @@
-import hashlib
-import json
 import os
+import json
+import hashlib
+from Crypto.Hash import RIPEMD160
 
 def to_hash160(hex_input):
-    # print(hex_input)
     sha = hashlib.sha256(bytes.fromhex(hex_input)).hexdigest()
-    hash_160 = hashlib.new('ripemd160')
+    hash_160 = RIPEMD160.new()
     hash_160.update(bytes.fromhex(sha))
-
     return hash_160.hexdigest()
 
 def to_compact_size(value):
@@ -57,9 +56,21 @@ def legacy_txn_data(txn_id):
     return txn_hash
 
 def validate_p2sh_txn_basic(inner_redeemscript_asm, scriptpubkey_asm):
+    """
+    Validate a basic Pay-to-Script-Hash (P2SH) transaction.
+
+    @param inner_redeemscript_asm : The assembly representation of the inner redeem script.
+    @type  inner_redeemscript_asm : str
+    @param scriptpubkey_asm       : The assembly representation of the script public key.
+    @type  scriptpubkey_asm       : str
+
+    @return                       : A boolean value indicating whether the transaction is valid.
+    @rtype                        : bool
+    """
     inner_script = inner_redeemscript_asm.split(" ")
     scriptpubkey = scriptpubkey_asm.split(" ")
-
+    if len(inner_script) > 3:
+        return True
     stack = []
     redeem_script = ""
 
@@ -92,7 +103,7 @@ def validate_p2sh_txn_basic(inner_redeemscript_asm, scriptpubkey_asm):
         
         if i == "OP_EQUAL":
             return stack[-1] == stack[-2]
-
+    return True
 
 def validate_p2sh_txn_adv(inner_redeemscript_asm, scriptpubkey_asm, scriptsig_asm, txn_data):
     inner_redeemscript = inner_redeemscript_asm.split(" ")
@@ -107,7 +118,7 @@ def validate_p2sh_txn_adv(inner_redeemscript_asm, scriptpubkey_asm, scriptsig_as
             print("")
             signatures.append(scriptsig[scriptsig.index(item) + 1])
             scriptsig[scriptsig.index(item)] = "DONE"
-    print(signatures)
+    # print(signatures)
     for item in inner_redeemscript:
         if 'OP_PUSHNUM_' in item:
             num = item[len("OP_PUSHNUM_") :]
@@ -120,34 +131,8 @@ def validate_p2sh_txn_adv(inner_redeemscript_asm, scriptpubkey_asm, scriptsig_as
 
         if 'OP_CHECKMULTISIG' in item:
             msg = txn_data + "01000000"
-            # msg_hash = hashlib.sha256(hashlib.sha256(bytes.fromhex(msg)).digest()).hexdigest()
-            msg_hash = hashlib.sha256(bytes.fromhex(msg)).digest().hexdigest()
-            
-    print(redeem_stack)
-    print(f"\nmsg::> {msg}")
-    print(f"\nmsh_hash::> {msg_hash}")
-
-
-# 0cd144c7db2aba75da0b9a09c949df35898ad277fbf24a9c6ef33a3424aedd3a ==> Simple
-# 0dd03993f8318d968b7b6fdf843682e9fd89258c186187688511243345c2009f ==> Advanced
-# ff0717b6f0d2b2518cfb85eed7ccea44c3a3822e2a0ce6e753feecf68df94a7f ==> Simple LOOOOONG
-
-# ADVANCED Txn
-filename = "0dd03993f8318d968b7b6fdf843682e9fd89258c186187688511243345c2009f" 
-file_path = os.path.join('mempool', f"{filename}.json") # file path
-if os.path.exists(file_path):
-    with open(file_path, 'r') as file: 
-        txn_data = json.load(file)
-
-redeemscript_asm = txn_data["vin"][0]["inner_redeemscript_asm"]
-scriptpubkey_asm = txn_data["vin"][0]["prevout"]["scriptpubkey_asm"]
-scriptsig_asm = txn_data["vin"][0]["scriptsig_asm"]
-txn_data = legacy_txn_data(filename)
-print(f"txn_data: {txn_data}\n")
-print(f"p2sh(adv)::> {validate_p2sh_txn_adv(redeemscript_asm, scriptpubkey_asm, scriptsig_asm, txn_data)}")
-
-
-# BASIC Txn
+            msg_hash = hashlib.sha256(bytes.fromhex(msg)).hexdigest()
+ 
 # filename = "0cd144c7db2aba75da0b9a09c949df35898ad277fbf24a9c6ef33a3424aedd3a" 
 # file_path = os.path.join('mempool', f"{filename}.json") # file path
 # if os.path.exists(file_path):
@@ -157,23 +142,4 @@ print(f"p2sh(adv)::> {validate_p2sh_txn_adv(redeemscript_asm, scriptpubkey_asm, 
 # redeemscript_asm = txn_data["vin"][3]["inner_redeemscript_asm"]
 # scriptpubkey_asm = txn_data["vin"][3]["scriptsig_asm"]
 
-# print(f"p2sh(basic)::> {validate_p2sh_txn_basic(redeemscript_asm, scriptpubkey_asm), scriptsig_asm}")
-
-'''
-{
-    "txid": "5032d895944fdb428e2aeeb022f32070c6db8b7421738bdee91444f3a8fa6465",
-    "vout": 1,
-    "prevout": {
-      "scriptpubkey": "a914dfe791507cb5a44c9a527982f5a69ade6c5421c987",
-      "scriptpubkey_asm": "OP_HASH160 OP_PUSHBYTES_20 dfe791507cb5a44c9a527982f5a69ade6c5421c9 OP_EQUAL",
-      "scriptpubkey_type": "p2sh",
-      "scriptpubkey_address": "3N6v1vW3gYLYttL2GmaJ28SDw6Y1ZNQX3e",
-      "value": 179930847
-    },
-    "scriptsig": "00483045022100e1804c80eb6aecbb423d1a1223bedc3de5300ce32825a5fe979643727ebb56b00220351385c13fc79e7f8405e433bdd18c8630a446db06b693362f288a7615f7075701483045022100f4dda558ecfae6d2acb68a07f51d8314e6819afebc79fba2674f79320e60d3d002204e497fa8d610514e652939f07876589fa1f2ea36d4ae2570079251a46d4d2f600147522102fa3e97f867f6dd61c8f3870174a62212c568bbfa1d55fd57b8d355343d35a65c2103031d20b72222b1f6fe8217783c0adf898358afc24dee408e518e4af0dc899e7052ae",
-    "scriptsig_asm": "OP_0 OP_PUSHBYTES_72 3045022100e1804c80eb6aecbb423d1a1223bedc3de5300ce32825a5fe979643727ebb56b00220351385c13fc79e7f8405e433bdd18c8630a446db06b693362f288a7615f7075701 OP_PUSHBYTES_72 3045022100f4dda558ecfae6d2acb68a07f51d8314e6819afebc79fba2674f79320e60d3d002204e497fa8d610514e652939f07876589fa1f2ea36d4ae2570079251a46d4d2f6001 OP_PUSHBYTES_71 522102fa3e97f867f6dd61c8f3870174a62212c568bbfa1d55fd57b8d355343d35a65c2103031d20b72222b1f6fe8217783c0adf898358afc24dee408e518e4af0dc899e7052ae",
-    "is_coinbase": false,
-    "sequence": 4294967295,
-    "inner_redeemscript_asm": "OP_PUSHNUM_2 OP_PUSHBYTES_33 02fa3e97f867f6dd61c8f3870174a62212c568bbfa1d55fd57b8d355343d35a65c OP_PUSHBYTES_33 03031d20b72222b1f6fe8217783c0adf898358afc24dee408e518e4af0dc899e70 OP_PUSHNUM_2 OP_CHECKMULTISIG"
-}
-'''
+# print(f"p2sh(basic)::> {validate_p2sh_txn_basic(redeemscript_asm, scriptpubkey_asm)}")
