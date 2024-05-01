@@ -12,57 +12,6 @@ DIFFICULTY = "0000ffff00000000000000000000000000000000000000000000000000000000"
 BLOCK_VERSION = 4
 MEMPOOL_DIR = "mempool"
 
-def raw_block_data(txn_files, nonce):
-    block_header = ""
-
-    ## Version : 4 ##
-    block_header += "02000000"
-
-    # Previous block :32 ## here = 0000000000000000000000000000000000000000000000000000000000000000
-    prev_block_hash = "0000000000000000000000000000000000000000000000000000000000000000"
-    block_header += f"{prev_block_hash}"
-
-    ## Merkle root :32 ##
-    actual_txn_ids = [txinfo.txid(ID) for ID in txn_files]
-    calc_merkle_root = str(merkle.generate_merkle_root(actual_txn_ids), 'utf-8')
-    print(len(calc_merkle_root))
-    block_header += f"{calc_merkle_root}"
-
-    ## time :4 ##
-    uinx_timestamap = int(time.time())
-    block_header += f"{convert.to_little_endian(uinx_timestamap, 4)}"
-
-    ## bits :4 ##
-    bits = "1f00ffff" # related to difficulty
-    block_header += f"{bits}"
-
-    ## Nonce :4 ##
-    block_header += f"{convert.to_little_endian(nonce, 4)}"
-
-    return block_header
-    # ## Transaction Count ##
-    # txn_count = len(txn_ids)
-    # block_header += f"{convert.to_little_endian(txn_count, 4)}"
-
-    # ## Transaction IDs ##
-    # for txn_id in txn_ids:
-    #     block_header += f"{convert.to_compact_size(txn_id)}"
-
-
-    ## Transactions ##
-    # Coinbase transaction
-
-    # Regular Transactions
-
-"""
-Block Hash::> - double-SHA256'ing the block header
-              - the block hash is in reverse byte order when searching for a block in a block explorer.
-              - block hash must get below the current target for the block to get added on to the blockchain.
-
-Reverse Byte Order
-              - used externally wen searching for blocks on block explorers
-"""
-
 def mine_block(transaction_files):
     """
     Mine a block with the given transactions.
