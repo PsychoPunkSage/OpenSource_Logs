@@ -7,17 +7,6 @@ import helper.txn_info as txinfo
 
 WTXID_COINBASE = bytes(32).hex()
 
-def fees(txnId):
-    file_path = os.path.join('mempool', f'{txnId}.json') # file path
-    if os.path.exists(file_path):
-        # Read the JSON data from the file
-        with open(file_path, 'r') as file:
-            txn_data = json.load(file)
-
-    amt_vin = sum([vin["prevout"]["value"] for vin in txn_data["vin"]])
-    amt_vout = sum([vout["value"] for vout in txn_data["vout"]])
-
-    return amt_vin - amt_vout
 
 def calculate_witness_commitment(txn_files):
     """
