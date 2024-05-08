@@ -65,8 +65,6 @@ def read_transactionsII():
     
     print(f"p2sh::> {c_p2sh}")
     print(f"p2tr::> {c_p2tr}")
-    print(f"p2ms::> {c_p2ms}")
-    print(f"p2pk::> {c_p2pk}")
     print(f"p2pkh::> {c_p2pkh}")
     print(f"p2wpkh::> {c_p2wpkh}")
     print(f"p2wsh::> {c_p2wsh}")
