@@ -8,8 +8,6 @@ def read_transactionsII():
     mempool_dir = "valid-mempool"
     c_p2sh = 0
     c_p2tr = 0
-    c_p2ms = 0
-    c_p2pk = 0
     c_p2pkh = 0
     c_p2wsh = 0
     c_p2wpkh = 0
@@ -59,22 +57,6 @@ def read_transactionsII():
                     if not os.path.exists(p2tr_dir):
                         os.makedirs(p2tr_dir)
                     destination_file = os.path.join(p2tr_dir, filename)
-                    shutil.copyfile(os.path.join(mempool_dir, filename), destination_file)
-                
-                if "p2ms" in type_txn:
-                    c_p2ms += 1
-                    p2ms_dir = os.path.join(os.path.dirname(mempool_dir), "p2ms_txn")
-                    if not os.path.exists(p2ms_dir):
-                        os.makedirs(p2ms_dir)
-                    destination_file = os.path.join(p2ms_dir, filename)
-                    shutil.copyfile(os.path.join(mempool_dir, filename), destination_file)
-
-                if type_txn == "p2pk":
-                    c_p2pk +=  1
-                    p2pk_dir = os.path.join(os.path.dirname(mempool_dir), "ELSE_txn")
-                    if not os.path.exists(p2pk_dir):
-                        os.makedirs(p2pk_dir)
-                    destination_file = os.path.join(p2pk_dir, filename)
                     shutil.copyfile(os.path.join(mempool_dir, filename), destination_file)
 
     except Exception as e:
