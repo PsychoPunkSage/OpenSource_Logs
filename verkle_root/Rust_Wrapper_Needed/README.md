@@ -1,5 +1,7 @@
 # Required RUST wrapper of Methods for Verkle
 
+>>> the API that the cryptography layer needs to expose to the verkle trie layer.
+
 ## Elliptic Curve API:
 
 >> Need to define a Elliptic curve `𝐸` over a base field `𝐹𝑝` with a scalar field `𝐹𝑟`<br>
