@@ -17,8 +17,10 @@
 
 ### Algorithms Required:
 
-**Prove**:
+**Prove**: This algorithm takes in as input a list of tuples of the form (𝐶𝑖,𝑓𝑖(𝑋),𝑧𝑖,𝑦𝑖) and produces a proof 𝜋 that each 𝑓𝑖(𝑧𝑖)=𝑦𝑖.
 
-**Commit**:
+𝐶𝑖 is the commitment to the function 𝑓𝑖(𝑋) and is produced by using the Commit algorithm.
 
-**Verify**
+**Commit**: This algorithm takes as input a function 𝑓(𝑋) and produces a commitment to that function 𝐶.
+
+**Verify**: This algorithm takes as input a proof 𝜋, and a list of tuples 𝐶𝑖,𝑧𝑖,𝑦𝑖. The output is true, if the proof can attest to the fact that, for all 𝑖, 𝐶𝑖 commits to a function 𝑓𝑖(𝑋) using Commit and 𝑓𝑖(𝑧𝑖)=𝑦𝑖.
